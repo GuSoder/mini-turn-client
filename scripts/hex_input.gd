@@ -107,11 +107,13 @@ func handle_mouse_hover(screen_pos: Vector2):
 	var query = PhysicsRayQueryParameters3D.create(from, to)
 	var result = space_state.intersect_ray(query)
 	
-	if result:
-		var hex_pos = world_to_hex(result.position)
-		var world_pos = hex_to_world(hex_pos)
-		print("Hover: ", hex_pos, " -> ", world_pos)
-		hover_mark.position = world_pos
+	if result and result.collider:
+		# Get the hex node position directly from the collision body
+		var hex_node = result.collider
+		var hex_world_pos = hex_node.global_position
+		
+		print("Hover: Hit hex at ", hex_world_pos)
+		hover_mark.position = hex_world_pos
 		hover_mark.visible = true
 	else:
 		print("No ray intersection")
