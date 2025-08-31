@@ -114,7 +114,7 @@ func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	var x = 1.7 * q + 0.85 * r
 	var z = 1.5 * r
 	
-	return Vector3(x, 1, z)
+	return Vector3(x, 0, z)
 
 func animate_along_path(player_node: Node3D, positions: Array[Vector3]):
 	if positions.size() < 2:
