@@ -118,6 +118,10 @@ func animate_player_move(player_index: int, path: Array):
 		if node_pos != Vector3.ZERO:
 			world_positions.append(node_pos)
 	
+	# Start player at first position in path before animating
+	if world_positions.size() > 0:
+		player_node.position = world_positions[0]
+	
 	animate_along_path(player_node, world_positions)
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
