@@ -7,10 +7,12 @@ var client: Client
 var camera: Camera3D
 var current_path: Array[Vector2i] = []
 var is_selecting_path: bool = false
+var hover_mark: MeshInstance3D
 
 func _ready():
 	client = get_parent() as Client
 	camera = get_viewport().get_camera_3d()
+	hover_mark = client.get_node("HoverMark")
 
 
 func handle_mouse_click(screen_pos: Vector2):
@@ -90,3 +92,34 @@ func _input(event):
 			print("Move submitted!")
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		handle_mouse_click(event.position)
+	elif event is InputEventMouseMotion:
+		handle_mouse_hover(event.position)
+
+func handle_mouse_hover(screen_pos: Vector2):
+	if not camera or not hover_mark:
+		return
+	
+	var from = camera.project_ray_origin(screen_pos)
+	var to = from + camera.project_ray_normal(screen_pos) * 1000
+	
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(from, to)
+	var result = space_state.intersect_ray(query)
+	
+	if result:
+		var hex_pos = world_to_hex(result.position)
+		var world_pos = hex_to_world(hex_pos)
+		hover_mark.position = world_pos
+		hover_mark.visible = true
+	else:
+		hover_mark.visible = false
+
+func hex_to_world(hex_pos: Vector2i) -> Vector3:
+	# Convert hex coordinates (q, r) to world position
+	var q = float(hex_pos.x)
+	var r = float(hex_pos.y)
+	
+	var x = 1.7 * q + 0.85 * r
+	var z = 1.5 * r
+	
+	return Vector3(x, 0, z)
