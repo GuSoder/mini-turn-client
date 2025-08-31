@@ -9,6 +9,7 @@ extends Node3D
 var http_request: HTTPRequest
 var players_node: Node3D
 var grid_node: Node3D
+var turn_marker_node: MeshInstance3D
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
@@ -17,6 +18,7 @@ var is_animating: bool = false
 func _ready():
 	players_node = get_node("Players")
 	grid_node = get_node("Grid")
+	turn_marker_node = get_node("TurnMarker")
 	
 	http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -71,6 +73,9 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
+
+	# Update turn marker position
+	update_turn_marker_position(state)
 
 	# Check for path changes and animate
 	if "lastPaths" in state:
@@ -195,3 +200,16 @@ func update_player_position(player_index: int, state: Dictionary):
 		var hex_node_pos = get_hex_node_position(new_hex_pos)
 		if hex_node_pos != Vector3.ZERO:
 			player_node.position = hex_node_pos
+
+func update_turn_marker_position(state: Dictionary):
+	if not turn_marker_node or not "playerInTurn" in state or not "positions" in state:
+		return
+	
+	var current_player = state.playerInTurn
+	var player_pos = state.positions[current_player]
+	var hex_pos = Vector2i(player_pos.q, player_pos.r)
+	
+	# Position turn marker above the current player's hex
+	var hex_world_pos = get_hex_node_position(hex_pos)
+	if hex_world_pos != Vector3.ZERO:
+		turn_marker_node.position = hex_world_pos + Vector3(0, 2, 0)
