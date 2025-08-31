@@ -10,6 +10,7 @@ var http_request: HTTPRequest
 var players_node: Node3D
 var grid_node: Node3D
 var turn_marker_node: MeshInstance3D
+var path_markers_node: Node3D
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
@@ -19,6 +20,10 @@ func _ready():
 	players_node = get_node("Players")
 	grid_node = get_node("Grid")
 	turn_marker_node = get_node("TurnMarker")
+	path_markers_node = get_node("PathMarkers")
+	
+	# Hide all path markers initially
+	hide_all_path_markers()
 	
 	http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -211,3 +216,29 @@ func update_turn_marker_position(state: Dictionary):
 	# Position turn marker above the current player's hex
 	var hex_world_pos = get_hex_node_position(hex_pos)
 	turn_marker_node.position = hex_world_pos
+
+func hide_all_path_markers():
+	if not path_markers_node:
+		return
+	
+	for i in range(path_markers_node.get_child_count()):
+		var marker = path_markers_node.get_child(i)
+		marker.visible = false
+
+func show_path_markers(path: Array[Vector2i]):
+	if not path_markers_node:
+		return
+	
+	hide_all_path_markers()
+	
+	# Show numbered markers for each step in path (skip first position as it's current)
+	for i in range(1, min(path.size(), path_markers_node.get_child_count() + 1)):
+		var hex_pos = path[i]
+		var hex_world_pos = get_hex_node_position(hex_pos)
+		
+		if hex_world_pos != Vector3.UP * 1000:
+			var marker_index = i - 1  # Marker numbering starts at 0
+			if marker_index < path_markers_node.get_child_count():
+				var marker = path_markers_node.get_child(marker_index)
+				marker.position = hex_world_pos + Vector3(0, 1, 0)  # Slightly above hex
+				marker.visible = true
