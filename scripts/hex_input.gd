@@ -66,22 +66,30 @@ func handle_hex_click(hex_pos: Vector2i):
 			current_path.append(hex_pos)
 			print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
 		else:
-			print("Invalid move - not adjacent to last position in path")
+			var last_pos = current_path[-1] if current_path.size() > 0 else Vector2i(-1, -1)
+			var diff = hex_pos - last_pos
+			print("Invalid move - not adjacent. Last: ", last_pos, " Clicked: ", hex_pos, " Diff: ", diff)
 
 func is_adjacent_to_last_in_path(hex_pos: Vector2i) -> bool:
 	if current_path.is_empty():
 		return false
 	
 	var last_pos = current_path[-1]
-	return is_adjacent_hex(last_pos, hex_pos)
+	return is_adjacent_hex_by_distance(last_pos, hex_pos)
 
-func is_adjacent_hex(pos1: Vector2i, pos2: Vector2i) -> bool:
-	var diff_q = pos2.x - pos1.x
-	var diff_r = pos2.y - pos1.y
+func is_adjacent_hex_by_distance(pos1: Vector2i, pos2: Vector2i) -> bool:
+	# Get actual 3D positions of both hex nodes
+	var pos1_world = client.get_hex_node_position(pos1)
+	var pos2_world = client.get_hex_node_position(pos2)
 	
-	# Hex neighbors: (0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)
-	var neighbors = [Vector2i(0,1), Vector2i(1,0), Vector2i(1,-1), Vector2i(0,-1), Vector2i(-1,0), Vector2i(-1,1)]
-	return Vector2i(diff_q, diff_r) in neighbors
+	if pos1_world == Vector3.ZERO or pos2_world == Vector3.ZERO:
+		return false
+	
+	# Calculate 3D distance between hex centers
+	var distance = pos1_world.distance_to(pos2_world)
+	
+	# Adjacent hexes are 1.7 units apart, use 1.8 as threshold
+	return distance <= 1.8
 
 func get_hex_coordinates_from_node(hex_node: Node3D) -> Vector2i:
 	# Find the hex coordinates by looking up the node in the grid hierarchy
