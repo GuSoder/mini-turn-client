@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://v3khqkfoffuc"]
+[gd_scene load_steps=5 format=3 uid="uid://v3khqkfoffuc"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_2oaby"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_b23ep"]
 [ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://scenes/players.tscn" id="3_7sc05"]
+[ext_resource type="PackedScene" uid="uid://ck4q5unpj0kjx" path="res://scenes/rendering.tscn" id="4_7sc05"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_2oaby")
@@ -10,3 +11,5 @@ script = ExtResource("1_2oaby")
 [node name="Grid" parent="." instance=ExtResource("2_b23ep")]
 
 [node name="Players" parent="." instance=ExtResource("3_7sc05")]
+
+[node name="Rendering" parent="." instance=ExtResource("4_7sc05")]
