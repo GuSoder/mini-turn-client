@@ -83,7 +83,14 @@ func process_game_state(state: Dictionary):
 	if "positions" in state:
 		for i in range(4):
 			var pos = state.positions[i]
-			player_positions[i] = Vector2i(pos.q, pos.r)
+			var new_hex_pos = Vector2i(pos.q, pos.r)
+			player_positions[i] = new_hex_pos
+			
+			# Move player to correct world position
+			var player_node = players_node.get_child(i)
+			if player_node:
+				var world_pos = hex_to_world(new_hex_pos)
+				player_node.position = world_pos
 	else:
 		print("ERROR: positions not found in state")
 
