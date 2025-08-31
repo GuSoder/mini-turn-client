@@ -54,7 +54,7 @@ func handle_hex_click(hex_pos: Vector2i):
 			is_selecting_path = true
 			print("Started path selection from ", current_pos)
 		else:
-			print("Must start path from current position")
+			print("Must start path from current position. Clicked: ", hex_pos, " but current position is: ", current_pos)
 	else:
 		# Continue or end path
 		if hex_pos == current_pos and current_path.size() > 1:
