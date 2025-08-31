@@ -162,11 +162,10 @@ func make_move(path: Array[Vector2i]):
 func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	# Find the actual hex node in the grid and return its position
 	# Grid has 10 rows (0-9), each with 10 hexes (0-9)
-	# Convert hex coordinates to grid indices
+	# Direct mapping from hex coordinates to grid indices
 	
-	# For now, assume a simple mapping - may need adjustment based on actual grid layout
-	var row_index = hex_pos.y + 4  # Offset to handle negative coordinates
-	var hex_index = hex_pos.x + 4  # Offset to handle negative coordinates
+	var row_index = hex_pos.y
+	var hex_index = hex_pos.x
 	
 	# Clamp to valid grid bounds
 	row_index = clamp(row_index, 0, 9)
