@@ -2,7 +2,7 @@ class_name Client
 extends Node3D
 
 @export var client_number: int = 1
-@export var server_url: String = "http://localhost:5000"
+@export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
 @export var poll_interval: float = 0.5
 

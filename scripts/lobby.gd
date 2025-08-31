@@ -1,7 +1,7 @@
 extends Node3D
 
 var http_request: HTTPRequest
-var server_url: String = "http://localhost:5000"
+var server_url: String = "http://207.154.222.143:5000"
 var current_game_id: String = ""
 
 func _ready():
