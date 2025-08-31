@@ -1,0 +1,98 @@
+class_name HexInput
+extends Node3D
+
+signal hex_clicked(hex_pos: Vector2i)
+
+var client: Client
+var camera: Camera3D
+var current_path: Array[Vector2i] = []
+var is_selecting_path: bool = false
+
+func _ready():
+	client = get_parent() as Client
+	camera = get_viewport().get_camera_3d()
+
+func _input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		handle_mouse_click(event.position)
+
+func handle_mouse_click(screen_pos: Vector2):
+	if not camera:
+		return
+	
+	var from = camera.project_ray_origin(screen_pos)
+	var to = from + camera.project_ray_normal(screen_pos) * 1000
+	
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(from, to)
+	var result = space_state.intersect_ray(query)
+	
+	if result:
+		var hex_pos = world_to_hex(result.position)
+		handle_hex_click(hex_pos)
+
+func world_to_hex(world_pos: Vector3) -> Vector2i:
+	# Convert world position back to hex coordinates
+	var x = world_pos.x
+	var z = world_pos.z
+	
+	var q = (x / 1.7) - (z / 2.55)
+	var r = z / 1.5
+	
+	return Vector2i(round(q), round(r))
+
+func handle_hex_click(hex_pos: Vector2i):
+	if not client:
+		return
+	
+	var player_index = client.client_number - 1
+	var current_pos = client.player_positions[player_index]
+	
+	if not is_selecting_path:
+		# Start new path
+		if hex_pos == current_pos:
+			current_path = [current_pos]
+			is_selecting_path = true
+			print("Started path selection from ", current_pos)
+		else:
+			print("Must start path from current position")
+	else:
+		# Continue or end path
+		if hex_pos == current_pos and current_path.size() > 1:
+			# Clicked back to start, cancel path
+			current_path.clear()
+			is_selecting_path = false
+			print("Cancelled path selection")
+		elif is_adjacent_to_last_in_path(hex_pos):
+			current_path.append(hex_pos)
+			print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
+		else:
+			print("Invalid move - not adjacent to last position in path")
+
+func is_adjacent_to_last_in_path(hex_pos: Vector2i) -> bool:
+	if current_path.is_empty():
+		return false
+	
+	var last_pos = current_path[-1]
+	return is_adjacent_hex(last_pos, hex_pos)
+
+func is_adjacent_hex(pos1: Vector2i, pos2: Vector2i) -> bool:
+	var diff_q = pos2.x - pos1.x
+	var diff_r = pos2.y - pos1.y
+	
+	# Hex neighbors: (0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)
+	var neighbors = [Vector2i(0,1), Vector2i(1,0), Vector2i(1,-1), Vector2i(0,-1), Vector2i(-1,0), Vector2i(-1,1)]
+	return Vector2i(diff_q, diff_r) in neighbors
+
+func _input_confirm_move(event):
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ENTER:
+		if is_selecting_path and current_path.size() > 1:
+			client.make_move(current_path)
+			current_path.clear()
+			is_selecting_path = false
+			print("Move submitted!")
+
+func _input(event):
+	_input_confirm_move(event)
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		handle_mouse_click(event.position)
