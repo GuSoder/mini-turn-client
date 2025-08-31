@@ -57,8 +57,17 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		call_deferred("schedule_next_poll")
 		return
 	
-	var new_state = json.data
-	process_game_state(new_state)
+	var response_data = json.data
+	print("Server response: ", response_data)
+	
+	# Check if this is a move response (has "ok" field) vs game state
+	if "ok" in response_data:
+		print("Move response: ", response_data)
+		# Don't process as game state, just continue polling
+	else:
+		# This is game state data
+		process_game_state(response_data)
+	
 	call_deferred("schedule_next_poll")
 
 func process_game_state(state: Dictionary):
