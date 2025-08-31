@@ -64,20 +64,28 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 func process_game_state(state: Dictionary):
 	current_game_state = state
 	
+	print("Game state keys: ", state.keys())
+	
 	# Check for path changes and animate
-	for i in range(4):
-		var new_path = state.lastPaths[i]
-		var cached_path = cached_last_paths[i]
-		
-		if new_path != cached_path and len(new_path) > 1:
-			animate_player_move(i, new_path)
-		
-		cached_last_paths[i] = new_path.duplicate()
+	if "lastPaths" in state:
+		for i in range(4):
+			var new_path = state.lastPaths[i]
+			var cached_path = cached_last_paths[i]
+			
+			if new_path != cached_path and len(new_path) > 1:
+				animate_player_move(i, new_path)
+			
+			cached_last_paths[i] = new_path.duplicate()
+	else:
+		print("ERROR: lastPaths not found in state")
 	
 	# Update positions
-	for i in range(4):
-		var pos = state.positions[i]
-		player_positions[i] = Vector2i(pos.q, pos.r)
+	if "positions" in state:
+		for i in range(4):
+			var pos = state.positions[i]
+			player_positions[i] = Vector2i(pos.q, pos.r)
+	else:
+		print("ERROR: positions not found in state")
 
 func animate_player_move(player_index: int, path: Array):
 	var player_node = players_node.get_child(player_index)
