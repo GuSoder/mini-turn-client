@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cvbafb1qg6pnt"]
+[gd_scene load_steps=7 format=3 uid="uid://cvbafb1qg6pnt"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_4nosx"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_g72ii"]
 [ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://scenes/players.tscn" id="3_jiwu0"]
 [ext_resource type="PackedScene" uid="uid://ck4q5unpj0kjx" path="res://scenes/rendering.tscn" id="4_g72ii"]
+[ext_resource type="Material" uid="uid://dfo6ed0j18ikt" path="res://materials/light_blue.tres" id="5_rjf81"]
+[ext_resource type="ArrayMesh" uid="uid://qbqk318i3m7o" path="res://objects/hex_ring.obj" id="6_lj136"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_4nosx")
@@ -14,3 +16,7 @@ client_number = 4
 [node name="Players" parent="." instance=ExtResource("3_jiwu0")]
 
 [node name="Rendering" parent="." instance=ExtResource("4_g72ii")]
+
+[node name="HoverMark" type="MeshInstance3D" parent="."]
+material_override = ExtResource("5_rjf81")
+mesh = ExtResource("6_lj136")
