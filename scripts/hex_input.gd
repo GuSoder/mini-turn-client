@@ -48,13 +48,17 @@ func handle_hex_click(hex_pos: Vector2i):
 	var current_pos = client.player_positions[player_index]
 	
 	if not is_selecting_path:
-		# Start new path
-		if hex_pos == current_pos:
-			current_path = [current_pos]
-			is_selecting_path = true
-			print("Started path selection from ", current_pos)
-		else:
-			print("Must start path from current position. Clicked: ", hex_pos, " but current position is: ", current_pos)
+		# Start new path - auto-add current position and then the clicked hex if valid
+		current_path = [current_pos]
+		is_selecting_path = true
+		print("Started path selection from ", current_pos)
+		
+		# If clicked hex is not current position and is adjacent, add it to path
+		if hex_pos != current_pos and is_adjacent_hex_by_distance(current_pos, hex_pos):
+			current_path.append(hex_pos)
+			print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
+		elif hex_pos != current_pos:
+			print("First click must be adjacent to current position. Clicked: ", hex_pos, " Current: ", current_pos)
 	else:
 		# Continue or end path
 		if hex_pos == current_pos and current_path.size() > 1:
