@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://cqoi8xafbf0la"]
+
+[ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_uj3pq"]
+[ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_x1b1h"]
+[ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://scenes/players.tscn" id="3_iwwvi"]
+
+[node name="Client" type="Node3D"]
+script = ExtResource("1_uj3pq")
+client_number = 2
+
+[node name="Grid" parent="." instance=ExtResource("2_x1b1h")]
+
+[node name="Players" parent="." instance=ExtResource("3_iwwvi")]

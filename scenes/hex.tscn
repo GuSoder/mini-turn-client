@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtekodshcf7ss"]
+
+[ext_resource type="ArrayMesh" uid="uid://cqsb5usq70sam" path="res://objects/hex.obj" id="1_b6u1t"]
+
+[node name="Hex" type="Node3D"]
+
+[node name="BeveledMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = ExtResource("1_b6u1t")

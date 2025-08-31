@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwb8grtm4motc"]
+
+[ext_resource type="Material" uid="uid://cq1ed5l8lshj1" path="res://materials/yellow.tres" id="1_8kiq4"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_u8vuu"]
+
+[node name="Player" type="Node3D"]
+
+[node name="Capsule" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = ExtResource("1_8kiq4")
+mesh = SubResource("CapsuleMesh_u8vuu")
