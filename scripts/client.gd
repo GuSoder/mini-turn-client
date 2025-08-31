@@ -86,24 +86,23 @@ func process_game_state(state: Dictionary):
 			
 			if new_path != cached_path and len(new_path) > 1:
 				animate_player_move(i, new_path)
+			elif new_path != cached_path:
+				# No animation needed, just update position directly
+				update_player_position(i, state)
 			
 			cached_last_paths[i] = new_path.duplicate()
 	else:
 		print("ERROR: lastPaths not found in state")
 	
-	# Update positions
+	# Update positions for players that didn't animate
 	if "positions" in state:
 		for i in range(4):
-			var pos = state.positions[i]
-			var new_hex_pos = Vector2i(pos.q, pos.r)
-			player_positions[i] = new_hex_pos
+			var new_path = state.lastPaths[i] if "lastPaths" in state else []
+			var cached_path = cached_last_paths[i]
 			
-			# Move player to correct world position
-			var player_node = players_node.get_child(i)
-			if player_node:
-				var hex_node_pos = get_hex_node_position(new_hex_pos)
-				if hex_node_pos != Vector3.ZERO:
-					player_node.position = hex_node_pos
+			# Only update position if no animation was triggered
+			if new_path == cached_path or len(new_path) <= 1:
+				update_player_position(i, state)
 	else:
 		print("ERROR: positions not found in state")
 
@@ -192,3 +191,15 @@ func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	
 	print("Could not find hex node for ", hex_pos)
 	return Vector3.ZERO
+
+func update_player_position(player_index: int, state: Dictionary):
+	var pos = state.positions[player_index]
+	var new_hex_pos = Vector2i(pos.q, pos.r)
+	player_positions[player_index] = new_hex_pos
+	
+	# Move player to correct world position
+	var player_node = players_node.get_child(player_index)
+	if player_node:
+		var hex_node_pos = get_hex_node_position(new_hex_pos)
+		if hex_node_pos != Vector3.ZERO:
+			player_node.position = hex_node_pos
