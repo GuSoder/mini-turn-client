@@ -187,7 +187,7 @@ func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 				return hex_node.global_position
 	
 	print("Could not find hex node for ", hex_pos)
-	return Vector3.ZERO
+	return Vector3.UP * 1000
 
 func update_player_position(player_index: int, state: Dictionary):
 	var pos = state.positions[player_index]
@@ -198,8 +198,7 @@ func update_player_position(player_index: int, state: Dictionary):
 	var player_node = players_node.get_child(player_index)
 	if player_node:
 		var hex_node_pos = get_hex_node_position(new_hex_pos)
-		if hex_node_pos != Vector3.ZERO:
-			player_node.position = hex_node_pos
+		player_node.position = hex_node_pos
 
 func update_turn_marker_position(state: Dictionary):
 	if not turn_marker_node or not "playerInTurn" in state or not "positions" in state:
@@ -211,5 +210,4 @@ func update_turn_marker_position(state: Dictionary):
 	
 	# Position turn marker above the current player's hex
 	var hex_world_pos = get_hex_node_position(hex_pos)
-	if hex_world_pos != Vector3.ZERO:
-		turn_marker_node.position = hex_world_pos + Vector3(0, 2, 0)
+	turn_marker_node.position = hex_world_pos
