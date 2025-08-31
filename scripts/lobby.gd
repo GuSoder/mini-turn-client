@@ -4,9 +4,11 @@ var http_request: HTTPRequest
 var server_url: String = "http://207.154.222.143:5000"
 var current_game_id: String = ""
 var available_games: Array = []
+var info_box: Label
 
 func _ready():
-	print("Lobby - Press C to create game, L to list games, then 1-4 to join as player")
+	info_box = get_node("info_box")
+	update_info("Lobby - Press C to create game, L to list games, then 1-4 to join as player")
 	
 	http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -14,6 +16,11 @@ func _ready():
 	
 	# Auto-load existing games on startup
 	list_games()
+
+func update_info(text: String):
+	if info_box:
+		info_box.text = text
+	print(text)
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
@@ -44,21 +51,21 @@ func _input(event):
 					join_as_player(4)
 
 func create_game():
-	print("Creating new game...")
+	update_info("Creating new game...")
 	var url = server_url + "/games"
 	http_request.request(url, [], HTTPClient.METHOD_POST)
 
 func list_games():
-	print("Fetching active games...")
+	update_info("Fetching active games...")
 	var url = server_url + "/games"
 	http_request.request(url)
 
 func join_as_player(player_num: int):
 	if current_game_id == "":
-		print("No game selected! Press L to list games or C to create one.")
+		update_info("No game selected! Press L to list games or C to create one.")
 		return
 	
-	print("Joining as Player ", player_num)
+	update_info("Joining as Player " + str(player_num))
 	var scene_path = "res://scenes/client" + str(player_num) + ".tscn"
 	
 	get_tree().set_meta("game_id", current_game_id)
@@ -69,8 +76,7 @@ func select_game_or_join(num: int):
 		# Select game
 		if num <= available_games.size():
 			current_game_id = available_games[num - 1].gameId
-			print("Selected game: ", current_game_id)
-			print("Now press 1-4 to join as a player")
+			update_info("Selected game: " + current_game_id + "\nNow press 1-4 to join as a player")
 	else:
 		# Join as player
 		join_as_player(num)
@@ -84,23 +90,25 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 			if "gameId" in json.data:
 				# Game creation response
 				current_game_id = json.data.gameId
-				print("Game created! Game ID: ", current_game_id)
-				print("Now press 1, 2, 3, or 4 to join as a player")
+				update_info("Game created! Game ID: " + current_game_id + "\nNow press 1, 2, 3, or 4 to join as a player")
 			elif "games" in json.data:
 				# Game list response
 				available_games = json.data.games
 				if available_games.size() == 0:
-					print("No active games found. Press C to create one.")
+					update_info("No active games found. Press C to create one.")
 					current_game_id = ""
 				else:
-					print("Active games:")
+					var info_text = "Active games:\n"
 					for i in range(available_games.size()):
 						var game = available_games[i]
-						print("  ", i+1, ": ", game.gameId, " (Turn: Player ", game.playerInTurn + 1, ")")
-					print("Press 1-", available_games.size(), " to select game, then 1-4 to join as player")
+						info_text += "  " + str(i+1) + ": " + game.gameId + " (Turn: Player " + str(game.playerInTurn + 1) + ")\n"
+					info_text += "Press 1-" + str(available_games.size()) + " to select game, then 1-4 to join as player"
+					
 					# Auto-select first game if only one exists
 					if available_games.size() == 1:
 						current_game_id = available_games[0].gameId
-						print("Auto-selected game: ", current_game_id)
+						info_text += "\nAuto-selected game: " + current_game_id
+					
+					update_info(info_text)
 	else:
-		print("Server request failed. Response code: ", response_code)
+		update_info("Server request failed. Response code: " + str(response_code))
