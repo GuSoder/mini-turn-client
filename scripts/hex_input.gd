@@ -112,11 +112,11 @@ func handle_mouse_hover(screen_pos: Vector2):
 		var hex_node = result.collider
 		var hex_world_pos = hex_node.global_position
 		
-		print("Hover: Hit hex at ", hex_world_pos)
+		#print("Hover: Hit hex at ", hex_world_pos)
 		hover_mark.position = hex_world_pos
 		hover_mark.visible = true
 	else:
-		print("No ray intersection")
+		#print("No ray intersection")
 		hover_mark.visible = false
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
