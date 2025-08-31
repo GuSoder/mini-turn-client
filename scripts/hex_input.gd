@@ -27,7 +27,7 @@ func handle_mouse_click(screen_pos: Vector2):
 	var result = space_state.intersect_ray(query)
 	
 	if result:
-		var hex_pos = world_to_hex(result.position)
+		var hex_pos = get_hex_coordinates_from_node(result.collider)
 		handle_hex_click(hex_pos)
 
 func world_to_hex(world_pos: Vector3) -> Vector2i:
@@ -82,6 +82,24 @@ func is_adjacent_hex(pos1: Vector2i, pos2: Vector2i) -> bool:
 	# Hex neighbors: (0,1), (1,0), (1,-1), (0,-1), (-1,0), (-1,1)
 	var neighbors = [Vector2i(0,1), Vector2i(1,0), Vector2i(1,-1), Vector2i(0,-1), Vector2i(-1,0), Vector2i(-1,1)]
 	return Vector2i(diff_q, diff_r) in neighbors
+
+func get_hex_coordinates_from_node(hex_node: Node3D) -> Vector2i:
+	# Find the hex coordinates by looking up the node in the grid hierarchy
+	var grid_node = client.grid_node
+	
+	if not grid_node or not hex_node:
+		return Vector2i(-1, -1)
+	
+	# Find which row and hex index this node is at
+	for row_index in range(grid_node.get_child_count()):
+		var row_node = grid_node.get_child(row_index)
+		for hex_index in range(row_node.get_child_count()):
+			var grid_hex_node = row_node.get_child(hex_index)
+			if grid_hex_node == hex_node:
+				return Vector2i(hex_index, row_index)
+	
+	print("Could not find hex coordinates for node")
+	return Vector2i(-1, -1)
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ENTER:
