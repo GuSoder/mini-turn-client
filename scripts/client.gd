@@ -64,7 +64,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 func process_game_state(state: Dictionary):
 	current_game_state = state
 	
-	print("Game state keys: ", state.keys())
+	if "positions" in state and "playerInTurn" in state:
+		print("Positions: ", state.positions, " | Player in turn: ", state.playerInTurn + 1)
+	else:
+		print("Missing game state data")
 	
 	# Check for path changes and animate
 	if "lastPaths" in state:
