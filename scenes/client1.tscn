@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://v3khqkfoffuc"]
+[gd_scene load_steps=8 format=3 uid="uid://v3khqkfoffuc"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_2oaby"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_b23ep"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://ck4q5unpj0kjx" path="res://scenes/rendering.tscn" id="4_7sc05"]
 [ext_resource type="ArrayMesh" uid="uid://qbqk318i3m7o" path="res://objects/hex_ring.obj" id="5_k0yc7"]
 [ext_resource type="Material" uid="uid://dfo6ed0j18ikt" path="res://materials/light_blue.tres" id="5_o2qwl"]
+[ext_resource type="ArrayMesh" uid="uid://flyknjrhi1lm" path="res://objects/dot_above.obj" id="7_x0tw4"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_2oaby")
@@ -19,3 +20,14 @@ script = ExtResource("1_2oaby")
 [node name="HoverMark" type="MeshInstance3D" parent="."]
 material_override = ExtResource("5_o2qwl")
 mesh = ExtResource("5_k0yc7")
+
+[node name="TurnMarker" type="MeshInstance3D" parent="."]
+material_override = ExtResource("5_o2qwl")
+mesh = ExtResource("7_x0tw4")
+
+[node name="Red" type="ColorRect" parent="."]
+offset_left = 29.0
+offset_top = 32.0
+offset_right = 69.0
+offset_bottom = 72.0
+color = Color(1, 0, 0, 1)
