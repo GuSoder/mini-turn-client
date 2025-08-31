@@ -144,12 +144,8 @@ func schedule_next_poll():
 	poll_server()
 
 func make_move(path: Array[Vector2i]):
-	var current_turn = current_game_state.get("playerInTurn", -1)
-	var my_turn = client_number - 1
-	print("Turn check: current=", current_turn, " my_turn=", my_turn, " client_number=", client_number)
-	
-	if current_turn != my_turn:
-		print("Not your turn! Current turn: ", current_turn, " Your turn: ", my_turn)
+	if current_game_state.get("playerInTurn", -1) != client_number - 1:
+		print("Not your turn!")
 		return
 	
 	if is_animating:
@@ -168,12 +164,8 @@ func make_move(path: Array[Vector2i]):
 	
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]
-	var request_json = JSON.stringify(request_body)
 	
-	print("Sending move request: ", request_body)
-	print("To URL: ", url)
-	
-	http_request.request(url, headers, HTTPClient.METHOD_POST, request_json)
+	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	# Find the actual hex node in the grid and return its position
