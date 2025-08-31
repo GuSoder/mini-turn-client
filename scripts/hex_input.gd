@@ -97,6 +97,7 @@ func _input(event):
 
 func handle_mouse_hover(screen_pos: Vector2):
 	if not camera or not hover_mark:
+		print("Camera or hover_mark not found")
 		return
 	
 	var from = camera.project_ray_origin(screen_pos)
@@ -109,9 +110,11 @@ func handle_mouse_hover(screen_pos: Vector2):
 	if result:
 		var hex_pos = world_to_hex(result.position)
 		var world_pos = hex_to_world(hex_pos)
+		print("Hover: ", hex_pos, " -> ", world_pos)
 		hover_mark.position = world_pos
 		hover_mark.visible = true
 	else:
+		print("No ray intersection")
 		hover_mark.visible = false
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
