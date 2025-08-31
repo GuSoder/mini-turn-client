@@ -85,28 +85,17 @@ func process_game_state(state: Dictionary):
 			var cached_path = cached_last_paths[i]
 			
 			if new_path != cached_path and len(new_path) > 1:
-				animate_player_move(i, new_path)
-			elif new_path != cached_path:
-				# No animation needed, just update position directly
+				# Don't update position immediately - let animation handle it
+				animate_player_move(i, new_path, state)
+			else:
+				# No animation needed, update position directly
 				update_player_position(i, state)
 			
 			cached_last_paths[i] = new_path.duplicate()
 	else:
 		print("ERROR: lastPaths not found in state")
-	
-	# Update positions for players that didn't animate
-	if "positions" in state:
-		for i in range(4):
-			var new_path = state.lastPaths[i] if "lastPaths" in state else []
-			var cached_path = cached_last_paths[i]
-			
-			# Only update position if no animation was triggered
-			if new_path == cached_path or len(new_path) <= 1:
-				update_player_position(i, state)
-	else:
-		print("ERROR: positions not found in state")
 
-func animate_player_move(player_index: int, path: Array):
+func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	var player_node = players_node.get_child(player_index)
 	if not player_node:
 		return
@@ -118,11 +107,8 @@ func animate_player_move(player_index: int, path: Array):
 		if node_pos != Vector3.ZERO:
 			world_positions.append(node_pos)
 	
-	# Start player at first position in path before animating
-	if world_positions.size() > 0:
-		player_node.position = world_positions[0]
-	
-	animate_along_path(player_node, world_positions)
+	if world_positions.size() > 1:
+		animate_along_path(player_node, world_positions, player_index, state)
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	# Convert hex coordinates (q, r) to world position
@@ -134,17 +120,25 @@ func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	
 	return Vector3(x, 0, z)
 
-func animate_along_path(player_node: Node3D, positions: Array[Vector3]):
+func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_index: int, state: Dictionary):
 	if positions.size() < 2:
 		return
 	
 	is_animating = true
 	var tween = create_tween()
 	
+	# Start from first position
+	player_node.position = positions[0]
+	
+	# Animate through all positions
 	for i in range(1, positions.size()):
 		tween.tween_property(player_node, "position", positions[i], 0.3)
 	
-	tween.tween_callback(func(): is_animating = false)
+	# Update final position after animation completes
+	tween.tween_callback(func(): 
+		is_animating = false
+		update_player_position(player_index, state)
+	)
 
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout
