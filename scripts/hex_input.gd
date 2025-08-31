@@ -81,13 +81,10 @@ func is_adjacent_hex_by_distance(pos1: Vector2i, pos2: Vector2i) -> bool:
 	# Get actual 3D positions of both hex nodes
 	var pos1_world = client.get_hex_node_position(pos1)
 	var pos2_world = client.get_hex_node_position(pos2)
-	
-	if pos1_world == Vector3.ZERO or pos2_world == Vector3.ZERO:
-		return false
-	
+
 	# Calculate 3D distance between hex centers
 	var distance = pos1_world.distance_to(pos2_world)
-	
+
 	# Adjacent hexes are 1.7 units apart, use 1.8 as threshold
 	return distance <= 1.8
 

@@ -71,14 +71,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
-	
-	if "positions" in state and "playerInTurn" in state:
-		print("Positions: ", state.positions, " | Player in turn: ", state.playerInTurn + 1)
-	else:
-		print("Missing game state data")
-	
+
 	# Check for path changes and animate
 	if "lastPaths" in state:
+		print("lastPaths: ", state.lastPaths)
 		for i in range(4):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
@@ -103,8 +99,7 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	var world_positions: Array[Vector3] = []
 	for hex_pos in path:
 		var node_pos = get_hex_node_position(Vector2i(hex_pos.q, hex_pos.r))
-		if node_pos != Vector3.ZERO:
-			world_positions.append(node_pos)
+		world_positions.append(node_pos)
 	
 	if world_positions.size() > 1:
 		animate_along_path(player_node, world_positions, player_index, state)
