@@ -12,9 +12,6 @@ func _ready():
 	client = get_parent() as Client
 	camera = get_viewport().get_camera_3d()
 
-func _input(event):
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		handle_mouse_click(event.position)
 
 func handle_mouse_click(screen_pos: Vector2):
 	if not camera:
@@ -84,15 +81,12 @@ func is_adjacent_hex(pos1: Vector2i, pos2: Vector2i) -> bool:
 	var neighbors = [Vector2i(0,1), Vector2i(1,0), Vector2i(1,-1), Vector2i(0,-1), Vector2i(-1,0), Vector2i(-1,1)]
 	return Vector2i(diff_q, diff_r) in neighbors
 
-func _input_confirm_move(event):
+func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ENTER:
 		if is_selecting_path and current_path.size() > 1:
 			client.make_move(current_path)
 			current_path.clear()
 			is_selecting_path = false
 			print("Move submitted!")
-
-func _input(event):
-	_input_confirm_move(event)
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		handle_mouse_click(event.position)
