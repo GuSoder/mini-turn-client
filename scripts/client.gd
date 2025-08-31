@@ -89,8 +89,9 @@ func process_game_state(state: Dictionary):
 			# Move player to correct world position
 			var player_node = players_node.get_child(i)
 			if player_node:
-				var world_pos = hex_to_world(new_hex_pos)
-				player_node.position = world_pos
+				var hex_node_pos = get_hex_node_position(new_hex_pos)
+				if hex_node_pos != Vector3.ZERO:
+					player_node.position = hex_node_pos
 	else:
 		print("ERROR: positions not found in state")
 
@@ -102,7 +103,9 @@ func animate_player_move(player_index: int, path: Array):
 	# Convert hex path to world positions and animate
 	var world_positions: Array[Vector3] = []
 	for hex_pos in path:
-		world_positions.append(hex_to_world(Vector2i(hex_pos.q, hex_pos.r)))
+		var node_pos = get_hex_node_position(Vector2i(hex_pos.q, hex_pos.r))
+		if node_pos != Vector3.ZERO:
+			world_positions.append(node_pos)
 	
 	animate_along_path(player_node, world_positions)
 
@@ -155,3 +158,26 @@ func make_move(path: Array[Vector2i]):
 	var headers = ["Content-Type: application/json"]
 	
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
+	# Find the actual hex node in the grid and return its position
+	# Grid has 10 rows (0-9), each with 10 hexes (0-9)
+	# Convert hex coordinates to grid indices
+	
+	# For now, assume a simple mapping - may need adjustment based on actual grid layout
+	var row_index = hex_pos.y + 4  # Offset to handle negative coordinates
+	var hex_index = hex_pos.x + 4  # Offset to handle negative coordinates
+	
+	# Clamp to valid grid bounds
+	row_index = clamp(row_index, 0, 9)
+	hex_index = clamp(hex_index, 0, 9)
+	
+	if grid_node:
+		var row_node = grid_node.get_child(row_index)
+		if row_node:
+			var hex_node = row_node.get_child(hex_index)
+			if hex_node:
+				return hex_node.global_position
+	
+	print("Could not find hex node for ", hex_pos)
+	return Vector3.ZERO
