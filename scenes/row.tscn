@@ -11,32 +11,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7, 0, 0)
 
 [node name="Hex2" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 0, 0)
-skeleton = NodePath("../Hex0")
 
 [node name="Hex3" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1, 0, 0)
-skeleton = NodePath("../Hex2")
 
 [node name="Hex4" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8, 0, 0)
-skeleton = NodePath("../Hex2")
 
 [node name="Hex5" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0, 0)
-skeleton = NodePath("../Hex3")
 
 [node name="Hex6" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, 0)
-skeleton = NodePath("../Hex4")
 
 [node name="Hex7" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.9, 0, 0)
-skeleton = NodePath("../Hex5")
 
 [node name="Hex8" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.6, 0, 0)
-skeleton = NodePath("../Hex6")
 
 [node name="Hex9" parent="." instance=ExtResource("1_7024n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.3, 0, 0)
-skeleton = NodePath("../Hex7")

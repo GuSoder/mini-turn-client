@@ -231,14 +231,14 @@ func show_path_markers(path: Array[Vector2i]):
 	
 	hide_all_path_markers()
 	
-	# Show numbered markers for each step in path (skip first position as it's current)
-	for i in range(1, min(path.size(), path_markers_node.get_child_count() + 1)):
+	# Show numbered markers for each step in path
+	for i in range(0, min(path.size(), path_markers_node.get_child_count() + 1)):
 		var hex_pos = path[i]
 		var hex_world_pos = get_hex_node_position(hex_pos)
 		
 		if hex_world_pos != Vector3.UP * 1000:
-			var marker_index = i - 1  # Marker numbering starts at 0
+			var marker_index = i
 			if marker_index < path_markers_node.get_child_count():
 				var marker = path_markers_node.get_child(marker_index)
-				marker.position = hex_world_pos + Vector3(0, 1, 0)  # Slightly above hex
+				marker.position = hex_world_pos
 				marker.visible = true
