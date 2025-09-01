@@ -153,7 +153,7 @@ func make_bot_move():
 		print("Bot: Can't move in either direction, staying put")
 	
 	# Create path from current to target position
-	var path = [current_pos, target_pos]
+	var path: Array[Vector2i] = [current_pos, target_pos]
 	
 	# Make the move
 	make_move(path, _on_bot_move_response)
