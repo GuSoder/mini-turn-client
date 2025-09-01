@@ -10,6 +10,8 @@ var is_selecting_path: bool = false
 var hover_mark: MeshInstance3D
 var is_move_pending: bool = false
 var move_timeout_timer: Timer
+var move_retry_count: int = 0
+var current_move_path: Array[Vector2i] = []
 
 func _ready():
 	client = get_parent() as Client
@@ -18,7 +20,7 @@ func _ready():
 	
 	# Set up timeout timer for move requests
 	move_timeout_timer = Timer.new()
-	move_timeout_timer.wait_time = 10.0  # 10 second timeout
+	move_timeout_timer.wait_time = 0.25  # 250ms timeout
 	move_timeout_timer.one_shot = true
 	move_timeout_timer.timeout.connect(_on_move_timeout)
 	add_child(move_timeout_timer)
@@ -126,7 +128,9 @@ func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ENTER:
 		if is_selecting_path and current_path.size() > 1 and not is_move_pending:
 			is_move_pending = true
-			print("Submitting move...")
+			move_retry_count = 0
+			current_move_path = current_path.duplicate()  # Save path for retries
+			print("Submitting move (attempt 1/4)...")
 			move_timeout_timer.start()  # Start timeout timer
 			client.make_move(current_path, _on_move_response)
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
@@ -134,6 +138,8 @@ func _input(event):
 			# Cancel pending move
 			move_timeout_timer.stop()
 			is_move_pending = false
+			move_retry_count = 0
+			current_move_path.clear()
 			print("Move cancelled by player")
 		elif is_selecting_path:
 			# Cancel path selection
@@ -174,6 +180,8 @@ func handle_mouse_hover(screen_pos: Vector2):
 func _on_move_response(success: bool, response_data: Dictionary):
 	move_timeout_timer.stop()  # Stop timeout timer since we got response
 	is_move_pending = false
+	move_retry_count = 0
+	current_move_path.clear()
 	
 	if success:
 		print("Move confirmed by server!")
@@ -186,9 +194,18 @@ func _on_move_response(success: bool, response_data: Dictionary):
 		# Keep path and markers visible so player can try again
 
 func _on_move_timeout():
-	print("Move request timed out - resetting to allow retry")
-	is_move_pending = false
-	# Keep path and markers visible so player can try again
+	move_retry_count += 1
+	
+	if move_retry_count < 4:
+		print("Move request timed out - retrying (attempt ", move_retry_count + 1, "/4)...")
+		move_timeout_timer.start()  # Start timer for next attempt
+		client.make_move(current_move_path, _on_move_response)
+	else:
+		print("Move request failed after 4 attempts - giving up")
+		is_move_pending = false
+		move_retry_count = 0
+		current_move_path.clear()
+		# Keep path and markers visible so player can try again manually
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	# Convert hex coordinates (q, r) to world position
