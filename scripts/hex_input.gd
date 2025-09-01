@@ -66,9 +66,12 @@ func handle_hex_click(hex_pos: Vector2i):
 		
 		# If clicked hex is not current position and is adjacent, add it to path
 		if hex_pos != current_pos and is_adjacent_hex_by_distance(current_pos, hex_pos):
-			current_path.append(hex_pos)
-			print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
-			client.show_path_markers(current_path)
+			if hex_pos not in current_path:
+				current_path.append(hex_pos)
+				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
+				client.show_path_markers(current_path)
+			else:
+				print("Hex ", hex_pos, " is already in path")
 		elif hex_pos != current_pos:
 			print("First click must be adjacent to current position. Clicked: ", hex_pos, " Current: ", current_pos)
 	else:
@@ -80,9 +83,12 @@ func handle_hex_click(hex_pos: Vector2i):
 			print("Cancelled path selection")
 			client.hide_all_path_markers()
 		elif is_adjacent_to_last_in_path(hex_pos):
-			current_path.append(hex_pos)
-			print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
-			client.show_path_markers(current_path)
+			if hex_pos not in current_path:
+				current_path.append(hex_pos)
+				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
+				client.show_path_markers(current_path)
+			else:
+				print("Hex ", hex_pos, " is already in path")
 		else:
 			var last_pos = current_path[-1] if current_path.size() > 0 else Vector2i(-1, -1)
 			var diff = hex_pos - last_pos
