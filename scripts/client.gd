@@ -15,6 +15,7 @@ var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
 var is_animating: bool = false
+var pending_move_callback: Callable
 
 func _ready():
 	players_node = get_node("Players")
@@ -53,6 +54,19 @@ func poll_server():
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
 	if response_code != 200:
 		print("Server request failed: ", response_code)
+		# If we have a pending move callback, notify it of failure
+		if pending_move_callback.is_valid():
+			pending_move_callback.call(false, {"error": "Server request failed: " + str(response_code)})
+			pending_move_callback = Callable()
+		call_deferred("schedule_next_poll")
+		return
+	
+	if result != HTTPRequest.RESULT_SUCCESS:
+		print("HTTP request failed: ", result)
+		# If we have a pending move callback, notify it of failure
+		if pending_move_callback.is_valid():
+			pending_move_callback.call(false, {"error": "HTTP request failed: " + str(result)})
+			pending_move_callback = Callable()
 		call_deferred("schedule_next_poll")
 		return
 	
@@ -61,6 +75,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	if parse_result != OK:
 		print("Failed to parse JSON response")
+		# If we have a pending move callback, notify it of failure
+		if pending_move_callback.is_valid():
+			pending_move_callback.call(false, {"error": "Failed to parse JSON response"})
+			pending_move_callback = Callable()
 		call_deferred("schedule_next_poll")
 		return
 	
@@ -69,6 +87,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	# Check if this is a move response (has "ok" field) vs game state
 	if "ok" in response_data:
 		print("Move response: ", response_data)
+		# Call pending callback if exists
+		if pending_move_callback.is_valid():
+			pending_move_callback.call(response_data.get("ok", false), response_data)
+			pending_move_callback = Callable()
 		# Don't process as game state, just continue polling
 	else:
 		# This is game state data
@@ -148,13 +170,17 @@ func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout
 	poll_server()
 
-func make_move(path: Array[Vector2i]):
+func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
 		print("Not your turn!")
+		if callback.is_valid():
+			callback.call(false, {"error": "Not your turn"})
 		return
 	
 	if is_animating:
 		print("Animation in progress, please wait")
+		if callback.is_valid():
+			callback.call(false, {"error": "Animation in progress"})
 		return
 	
 	# Convert path to server format
@@ -166,6 +192,9 @@ func make_move(path: Array[Vector2i]):
 		"player": client_number - 1,
 		"path": server_path
 	}
+	
+	# Store callback for when response comes back
+	pending_move_callback = callback
 	
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]

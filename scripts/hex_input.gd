@@ -8,6 +8,7 @@ var camera: Camera3D
 var current_path: Array[Vector2i] = []
 var is_selecting_path: bool = false
 var hover_mark: MeshInstance3D
+var is_move_pending: bool = false
 
 func _ready():
 	client = get_parent() as Client
@@ -115,14 +116,13 @@ func get_hex_coordinates_from_node(hex_node: Node3D) -> Vector2i:
 
 func _input(event):
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ENTER:
-		if is_selecting_path and current_path.size() > 1:
-			client.make_move(current_path)
-			current_path.clear()
-			is_selecting_path = false
-			client.hide_all_path_markers()
-			print("Move submitted!")
+		if is_selecting_path and current_path.size() > 1 and not is_move_pending:
+			is_move_pending = true
+			print("Submitting move...")
+			client.make_move(current_path, _on_move_response)
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		handle_mouse_click(event.position)
+		if not is_move_pending:  # Don't allow new selections while move is pending
+			handle_mouse_click(event.position)
 	elif event is InputEventMouseMotion:
 		handle_mouse_hover(event.position)
 
@@ -149,6 +149,19 @@ func handle_mouse_hover(screen_pos: Vector2):
 	else:
 		#print("No ray intersection")
 		hover_mark.visible = false
+
+func _on_move_response(success: bool, response_data: Dictionary):
+	is_move_pending = false
+	
+	if success:
+		print("Move confirmed by server!")
+		# Clear path and markers only after server confirmation
+		current_path.clear()
+		is_selecting_path = false
+		client.hide_all_path_markers()
+	else:
+		print("Move failed: ", response_data.get("error", "Unknown error"))
+		# Keep path and markers visible so player can try again
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	# Convert hex coordinates (q, r) to world position
