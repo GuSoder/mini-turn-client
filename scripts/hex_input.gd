@@ -66,7 +66,9 @@ func handle_hex_click(hex_pos: Vector2i):
 		
 		# If clicked hex is not current position and is adjacent, add it to path
 		if hex_pos != current_pos and is_adjacent_hex_by_distance(current_pos, hex_pos):
-			if hex_pos not in current_path:
+			if is_hex_occupied_by_player(hex_pos):
+				print("Cannot move to ", hex_pos, " - hex is occupied by another player")
+			elif hex_pos not in current_path:
 				current_path.append(hex_pos)
 				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
 				client.show_path_markers(current_path)
@@ -83,7 +85,9 @@ func handle_hex_click(hex_pos: Vector2i):
 			print("Cancelled path selection")
 			client.hide_all_path_markers()
 		elif is_adjacent_to_last_in_path(hex_pos):
-			if hex_pos not in current_path:
+			if is_hex_occupied_by_player(hex_pos):
+				print("Cannot move to ", hex_pos, " - hex is occupied by another player")
+			elif hex_pos not in current_path:
 				current_path.append(hex_pos)
 				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
 				client.show_path_markers(current_path)
@@ -100,6 +104,16 @@ func is_adjacent_to_last_in_path(hex_pos: Vector2i) -> bool:
 	
 	var last_pos = current_path[-1]
 	return is_adjacent_hex_by_distance(last_pos, hex_pos)
+
+func is_hex_occupied_by_player(hex_pos: Vector2i) -> bool:
+	if not client or not client.player_positions:
+		return false
+	
+	# Check if any player is standing on this hex
+	for player_pos in client.player_positions:
+		if player_pos == hex_pos:
+			return true
+	return false
 
 func is_adjacent_hex_by_distance(pos1: Vector2i, pos2: Vector2i) -> bool:
 	# Get actual 3D positions of both hex nodes
