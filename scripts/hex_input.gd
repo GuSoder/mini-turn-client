@@ -9,11 +9,19 @@ var current_path: Array[Vector2i] = []
 var is_selecting_path: bool = false
 var hover_mark: MeshInstance3D
 var is_move_pending: bool = false
+var move_timeout_timer: Timer
 
 func _ready():
 	client = get_parent() as Client
 	camera = get_viewport().get_camera_3d()
 	hover_mark = client.get_node("HoverMark")
+	
+	# Set up timeout timer for move requests
+	move_timeout_timer = Timer.new()
+	move_timeout_timer.wait_time = 10.0  # 10 second timeout
+	move_timeout_timer.one_shot = true
+	move_timeout_timer.timeout.connect(_on_move_timeout)
+	add_child(move_timeout_timer)
 
 
 func handle_mouse_click(screen_pos: Vector2):
@@ -119,7 +127,20 @@ func _input(event):
 		if is_selecting_path and current_path.size() > 1 and not is_move_pending:
 			is_move_pending = true
 			print("Submitting move...")
+			move_timeout_timer.start()  # Start timeout timer
 			client.make_move(current_path, _on_move_response)
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if is_move_pending:
+			# Cancel pending move
+			move_timeout_timer.stop()
+			is_move_pending = false
+			print("Move cancelled by player")
+		elif is_selecting_path:
+			# Cancel path selection
+			current_path.clear()
+			is_selecting_path = false
+			client.hide_all_path_markers()
+			print("Path selection cancelled")
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if not is_move_pending:  # Don't allow new selections while move is pending
 			handle_mouse_click(event.position)
@@ -151,6 +172,7 @@ func handle_mouse_hover(screen_pos: Vector2):
 		hover_mark.visible = false
 
 func _on_move_response(success: bool, response_data: Dictionary):
+	move_timeout_timer.stop()  # Stop timeout timer since we got response
 	is_move_pending = false
 	
 	if success:
@@ -162,6 +184,11 @@ func _on_move_response(success: bool, response_data: Dictionary):
 	else:
 		print("Move failed: ", response_data.get("error", "Unknown error"))
 		# Keep path and markers visible so player can try again
+
+func _on_move_timeout():
+	print("Move request timed out - resetting to allow retry")
+	is_move_pending = false
+	# Keep path and markers visible so player can try again
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	# Convert hex coordinates (q, r) to world position
