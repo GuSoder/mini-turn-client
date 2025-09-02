@@ -19,8 +19,16 @@ script = ExtResource("1_2oaby")
 
 [node name="Bots" type="Node3D" parent="."]
 
-[node name="BotClient" type="Node3D" parent="Bots"]
+[node name="BotClient2" type="Node3D" parent="Bots"]
 script = ExtResource("4_xrimb")
+
+[node name="BotClient3" type="Node3D" parent="Bots"]
+script = ExtResource("4_xrimb")
+client_number = 3
+
+[node name="BotClient4" type="Node3D" parent="Bots"]
+script = ExtResource("4_xrimb")
+client_number = 4
 
 [node name="Rendering" parent="." instance=ExtResource("4_7sc05")]
 
