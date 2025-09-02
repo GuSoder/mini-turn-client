@@ -159,6 +159,17 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 	# Animate through all positions
 	for i in range(1, positions.size()):
 		tween.tween_property(player_node, "position", positions[i], 0.3)
+		
+		# After reaching this position, rotate to look at next position (if not the last position)
+		if i < positions.size() - 1:
+			var current_index = i  # Capture the current value
+			tween.tween_callback(func():
+				var current_pos = positions[current_index]
+				var next_pos = positions[current_index + 1]
+				var direction = (next_pos - current_pos).normalized()
+				var target_position = current_pos + direction
+				player_node.look_at(target_position, Vector3.UP)
+			)
 	
 	# Update final position after animation completes
 	tween.tween_callback(func(): 
