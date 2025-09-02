@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bs53eynrbpu4n"]
+[gd_scene load_steps=4 format=3 uid="uid://bs53eynrbpu4n"]
 
 [ext_resource type="Material" uid="uid://cnolhkfo0woq6" path="res://materials/green.tres" id="1_lttm1"]
+[ext_resource type="ArrayMesh" uid="uid://bagqr18k457cd" path="res://objects/chevron.obj" id="2_c08b3"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_u8vuu"]
 
@@ -10,3 +11,8 @@
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 material_override = ExtResource("1_lttm1")
 mesh = SubResource("CapsuleMesh_u8vuu")
+
+[node name="Chevron" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.4, 0, -6.03983e-08, 0, 0.4, 0, 6.03983e-08, 0, -0.4, 0, 0, 0.6)
+material_override = ExtResource("1_lttm1")
+mesh = ExtResource("2_c08b3")
