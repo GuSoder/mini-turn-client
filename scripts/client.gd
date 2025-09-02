@@ -156,6 +156,14 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 	# Start from first position
 	player_node.position = positions[0]
 	
+	# Rotate to face the first destination before starting movement
+	if positions.size() > 1:
+		var start_pos = positions[0]
+		var first_target = positions[1]
+		var direction = (first_target - start_pos).normalized()
+		var target_position = start_pos + direction
+		player_node.look_at(target_position, Vector3.UP)
+	
 	# Animate through all positions
 	for i in range(1, positions.size()):
 		tween.tween_property(player_node, "position", positions[i], 0.3)
