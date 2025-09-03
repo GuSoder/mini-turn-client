@@ -8,6 +8,7 @@ var camera: Camera3D
 var current_path: Array[Vector2i] = []
 var is_selecting_path: bool = false
 var hover_mark: MeshInstance3D
+var target_ring: MeshInstance3D
 var is_move_pending: bool = false
 var move_timeout_timer: Timer
 var move_retry_count: int = 0
@@ -17,6 +18,10 @@ func _ready():
 	client = get_parent() as Client
 	camera = get_viewport().get_camera_3d()
 	hover_mark = client.get_node("HoverMark")
+	target_ring = client.get_node("TargetRing")
+	
+	# Initially hide the target ring
+	target_ring.visible = false
 	
 	# Set up timeout timer for move requests
 	move_timeout_timer = Timer.new()
@@ -174,8 +179,7 @@ func _input(event):
 		handle_mouse_hover(event.position)
 
 func handle_mouse_hover(screen_pos: Vector2):
-	if not camera or not hover_mark:
-		print("Camera or hover_mark not found")
+	if not camera or not hover_mark or not target_ring:
 		return
 	
 	var from = camera.project_ray_origin(screen_pos)
@@ -189,13 +193,23 @@ func handle_mouse_hover(screen_pos: Vector2):
 		# Get the hex node position directly from the collision body
 		var hex_node = result.collider
 		var hex_world_pos = hex_node.global_position
+		var hex_pos = get_hex_coordinates_from_node(hex_node)
 		
-		#print("Hover: Hit hex at ", hex_world_pos)
-		hover_mark.position = hex_world_pos
-		hover_mark.visible = true
+		# Check if this hex is occupied by a player
+		if is_hex_occupied_by_player(hex_pos):
+			# Show TargetRing, hide HoverMark
+			target_ring.position = hex_world_pos
+			target_ring.visible = true
+			hover_mark.visible = false
+		else:
+			# Show HoverMark, hide TargetRing
+			hover_mark.position = hex_world_pos
+			hover_mark.visible = true
+			target_ring.visible = false
 	else:
-		#print("No ray intersection")
+		# No intersection - hide both markers
 		hover_mark.visible = false
+		target_ring.visible = false
 
 func _on_move_response(success: bool, response_data: Dictionary):
 	move_timeout_timer.stop()  # Stop timeout timer since we got response
