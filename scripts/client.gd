@@ -9,7 +9,8 @@ extends Node3D
 var http_request: HTTPRequest
 var players_node: Node3D
 var grid_node: Node3D
-var turn_marker_node: MeshInstance3D
+var initiative_tracker_node: Node2D
+var ui_turn_marker_node: Node2D
 var path_markers_node: Node3D
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
@@ -20,7 +21,8 @@ var pending_move_callback: Callable
 func _ready():
 	players_node = get_node("Players")
 	grid_node = get_node("Grid")
-	turn_marker_node = get_node("TurnMarker")
+	initiative_tracker_node = get_node("InitiativeTracker")
+	ui_turn_marker_node = get_node("InitiativeTracker/CharacterPanel1/TurnMarker")
 	path_markers_node = get_node("PathMarkers")
 	
 	# Hide all path markers initially
@@ -254,16 +256,27 @@ func update_player_position(player_index: int, state: Dictionary):
 		player_node.position = hex_node_pos
 
 func update_turn_marker_position(state: Dictionary):
-	if not turn_marker_node or not "playerInTurn" in state or not "positions" in state:
+	if not initiative_tracker_node or not ui_turn_marker_node or not "playerInTurn" in state:
 		return
 	
 	var current_player = state.playerInTurn
-	var player_pos = state.positions[current_player]
-	var hex_pos = Vector2i(player_pos.q, player_pos.r)
 	
-	# Position turn marker above the current player's hex
-	var hex_world_pos = get_hex_node_position(hex_pos)
-	turn_marker_node.position = hex_world_pos
+	# Move the UI turn marker to the correct character panel
+	# Player indices are 0-3, corresponding to CharacterPanel1-4
+	var target_panel_name = "CharacterPanel" + str(current_player + 1)
+	var target_panel = initiative_tracker_node.get_node(target_panel_name)
+	
+	if target_panel:
+		# Remove turn marker from current parent
+		if ui_turn_marker_node.get_parent():
+			ui_turn_marker_node.get_parent().remove_child(ui_turn_marker_node)
+		
+		# Add to new parent
+		target_panel.add_child(ui_turn_marker_node)
+		
+		# Set local position and scale as requested
+		ui_turn_marker_node.position = Vector2(0, 0)
+		ui_turn_marker_node.scale = Vector2(1, 1)
 
 func hide_all_path_markers():
 	if not path_markers_node:
