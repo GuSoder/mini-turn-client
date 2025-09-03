@@ -254,7 +254,7 @@ func update_turn_marker_position(state: Dictionary):
 		print("[TURN MARKER DEBUG] Early return - missing nodes or playerInTurn")
 		return
 	
-	var current_player = state.playerInTurn
+	var current_player = int(state.playerInTurn)
 	print("[TURN MARKER DEBUG] Current player: ", current_player)
 	
 	# Move the UI turn marker to the correct character panel
