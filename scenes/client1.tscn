@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://v3khqkfoffuc"]
+[gd_scene load_steps=16 format=3 uid="uid://v3khqkfoffuc"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_2oaby"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_b23ep"]
@@ -8,12 +8,13 @@
 [ext_resource type="ArrayMesh" uid="uid://qbqk318i3m7o" path="res://objects/hex_ring.obj" id="5_k0yc7"]
 [ext_resource type="PackedScene" uid="uid://bvmh7roeorrfe" path="res://scenes/path_markers.tscn" id="5_lvfkg"]
 [ext_resource type="Material" uid="uid://dfo6ed0j18ikt" path="res://materials/light_blue.tres" id="5_o2qwl"]
-[ext_resource type="ArrayMesh" uid="uid://flyknjrhi1lm" path="res://objects/dot_above.obj" id="7_x0tw4"]
+[ext_resource type="Material" uid="uid://dyhds6psuqs7h" path="res://materials/dark_red.tres" id="9_su2r8"]
 [ext_resource type="Texture2D" uid="uid://dv3xtwjpp8tf4" path="res://misc/icon1.svg" id="10_4b6d6"]
 [ext_resource type="PackedScene" uid="uid://cafmkn7hkrkod" path="res://scenes/character_panel.tscn" id="10_38wds"]
 [ext_resource type="Texture2D" uid="uid://ndert5mhobi6" path="res://misc/icon2.svg" id="12_k1cxj"]
 [ext_resource type="Texture2D" uid="uid://c2knufc8cgbuf" path="res://misc/icon3.svg" id="13_su2r8"]
 [ext_resource type="Texture2D" uid="uid://t7gb3iijwqsv" path="res://misc/icon4.svg" id="14_b2bku"]
+[ext_resource type="ArrayMesh" uid="uid://wjt0t7rm6kwp" path="res://objects/target_ring.obj" id="15_b2bku"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_2oaby")
@@ -43,9 +44,10 @@ client_number = 4
 material_override = ExtResource("5_o2qwl")
 mesh = ExtResource("5_k0yc7")
 
-[node name="TurnMarker" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5_o2qwl")
-mesh = ExtResource("7_x0tw4")
+[node name="TargetRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+material_override = ExtResource("9_su2r8")
+mesh = ExtResource("15_b2bku")
 
 [node name="InitiativeTracker" type="Node2D" parent="."]
 

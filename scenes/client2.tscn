@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cqoi8xafbf0la"]
+[gd_scene load_steps=15 format=3 uid="uid://cqoi8xafbf0la"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_uj3pq"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_x1b1h"]
@@ -7,7 +7,8 @@
 [ext_resource type="Material" uid="uid://dfo6ed0j18ikt" path="res://materials/light_blue.tres" id="5_7q5pk"]
 [ext_resource type="PackedScene" uid="uid://bvmh7roeorrfe" path="res://scenes/path_markers.tscn" id="5_ifukb"]
 [ext_resource type="ArrayMesh" uid="uid://qbqk318i3m7o" path="res://objects/hex_ring.obj" id="6_5pwkw"]
-[ext_resource type="ArrayMesh" uid="uid://flyknjrhi1lm" path="res://objects/dot_above.obj" id="7_5pwkw"]
+[ext_resource type="Material" uid="uid://dyhds6psuqs7h" path="res://materials/dark_red.tres" id="8_cujp5"]
+[ext_resource type="ArrayMesh" uid="uid://wjt0t7rm6kwp" path="res://objects/target_ring.obj" id="9_axtr6"]
 [ext_resource type="PackedScene" uid="uid://cafmkn7hkrkod" path="res://scenes/character_panel.tscn" id="9_cxg6n"]
 [ext_resource type="Texture2D" uid="uid://ndert5mhobi6" path="res://misc/icon2.svg" id="10_cujp5"]
 [ext_resource type="Texture2D" uid="uid://c2knufc8cgbuf" path="res://misc/icon3.svg" id="11_axtr6"]
@@ -30,9 +31,10 @@ client_number = 2
 material_override = ExtResource("5_7q5pk")
 mesh = ExtResource("6_5pwkw")
 
-[node name="TurnMarker" type="MeshInstance3D" parent="."]
-material_override = ExtResource("5_7q5pk")
-mesh = ExtResource("7_5pwkw")
+[node name="TargetRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+material_override = ExtResource("8_cujp5")
+mesh = ExtResource("9_axtr6")
 
 [node name="InitiativeTracker" type="Node2D" parent="."]
 
