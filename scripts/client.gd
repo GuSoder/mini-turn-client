@@ -47,7 +47,6 @@ func _ready():
 
 func poll_server():
 	if game_id == "":
-		print("No game ID set")
 		return
 	
 	var url = server_url + "/games/" + game_id + "/state"
@@ -55,7 +54,6 @@ func poll_server():
 
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
 	if response_code != 200:
-		print("Server request failed: ", response_code)
 		# If we have a pending move callback, notify it of failure
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Server request failed: " + str(response_code)})
@@ -64,7 +62,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		return
 	
 	if result != HTTPRequest.RESULT_SUCCESS:
-		print("HTTP request failed: ", result)
 		# If we have a pending move callback, notify it of failure
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "HTTP request failed: " + str(result)})
@@ -76,7 +73,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	var parse_result = json.parse(body.get_string_from_utf8())
 	
 	if parse_result != OK:
-		print("Failed to parse JSON response")
 		# If we have a pending move callback, notify it of failure
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Failed to parse JSON response"})
@@ -88,7 +84,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	# Check if this is a move response (has "ok" field) vs game state
 	if "ok" in response_data:
-		print("Move response: ", response_data)
 		# Call pending callback if exists
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(response_data.get("ok", false), response_data)
@@ -108,7 +103,6 @@ func process_game_state(state: Dictionary):
 
 	# Check for path changes and animate
 	if "lastPaths" in state:
-		print("lastPaths: ", state.lastPaths)
 		for i in range(4):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
@@ -121,8 +115,6 @@ func process_game_state(state: Dictionary):
 				update_player_position(i, state)
 			
 			cached_last_paths[i] = new_path.duplicate()
-	else:
-		print("ERROR: lastPaths not found in state")
 
 func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	var player_node = players_node.get_child(player_index)
@@ -193,13 +185,11 @@ func schedule_next_poll():
 
 func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
-		print("Not your turn!")
 		if callback.is_valid():
 			callback.call(false, {"error": "Not your turn"})
 		return
 	
 	if is_animating:
-		print("Animation in progress, please wait")
 		if callback.is_valid():
 			callback.call(false, {"error": "Animation in progress"})
 		return
@@ -241,7 +231,6 @@ func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 			if hex_node:
 				return hex_node.global_position
 	
-	print("Could not find hex node for ", hex_pos)
 	return Vector3.UP * 1000
 
 func update_player_position(player_index: int, state: Dictionary):
@@ -256,27 +245,42 @@ func update_player_position(player_index: int, state: Dictionary):
 		player_node.position = hex_node_pos
 
 func update_turn_marker_position(state: Dictionary):
+	print("[TURN MARKER DEBUG] update_turn_marker_position called")
+	print("[TURN MARKER DEBUG] initiative_tracker_node: ", initiative_tracker_node)
+	print("[TURN MARKER DEBUG] ui_turn_marker_node: ", ui_turn_marker_node)
+	print("[TURN MARKER DEBUG] playerInTurn in state: ", "playerInTurn" in state)
+	
 	if not initiative_tracker_node or not ui_turn_marker_node or not "playerInTurn" in state:
+		print("[TURN MARKER DEBUG] Early return - missing nodes or playerInTurn")
 		return
 	
 	var current_player = state.playerInTurn
+	print("[TURN MARKER DEBUG] Current player: ", current_player)
 	
 	# Move the UI turn marker to the correct character panel
 	# Player indices are 0-3, corresponding to CharacterPanel1-4
 	var target_panel_name = "CharacterPanel" + str(current_player + 1)
+	print("[TURN MARKER DEBUG] Target panel name: ", target_panel_name)
 	var target_panel = initiative_tracker_node.get_node(target_panel_name)
+	print("[TURN MARKER DEBUG] Target panel: ", target_panel)
 	
 	if target_panel:
+		print("[TURN MARKER DEBUG] Current parent: ", ui_turn_marker_node.get_parent())
 		# Remove turn marker from current parent
 		if ui_turn_marker_node.get_parent():
 			ui_turn_marker_node.get_parent().remove_child(ui_turn_marker_node)
+			print("[TURN MARKER DEBUG] Removed from parent")
 		
 		# Add to new parent
 		target_panel.add_child(ui_turn_marker_node)
+		print("[TURN MARKER DEBUG] Added to new parent: ", target_panel)
 		
 		# Set local position and scale as requested
 		ui_turn_marker_node.position = Vector2(0, 0)
 		ui_turn_marker_node.scale = Vector2(1, 1)
+		print("[TURN MARKER DEBUG] Set position and scale")
+	else:
+		print("[TURN MARKER DEBUG] Target panel not found!")
 
 func hide_all_path_markers():
 	if not path_markers_node:
