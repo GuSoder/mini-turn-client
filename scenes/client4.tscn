@@ -35,6 +35,7 @@ material_override = ExtResource("5_rjf81")
 mesh = ExtResource("7_lj136")
 
 [node name="InitiativeTracker" type="Node2D" parent="."]
+position = Vector2(5, 0)
 
 [node name="CharacterPanel1" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
 position = Vector2(0, 90)
@@ -44,6 +45,14 @@ scale = Vector2(1, 1)
 position = Vector2(40, 40)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("11_lxgk3")
+
+[node name="TurnMarker" type="Node2D" parent="InitiativeTracker/CharacterPanel1"]
+
+[node name="Highlight" type="ColorRect" parent="InitiativeTracker/CharacterPanel1/TurnMarker"]
+offset_top = 10.0
+offset_right = 5.0
+offset_bottom = 70.0
+color = Color(0, 1, 1, 1)
 
 [node name="CharacterPanel2" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
 position = Vector2(0, 165)

@@ -56,6 +56,14 @@ position = Vector2(40, 40)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("10_4b6d6")
 
+[node name="TurnMarker" type="Node2D" parent="InitiativeTracker/CharacterPanel1"]
+
+[node name="Highlight" type="ColorRect" parent="InitiativeTracker/CharacterPanel1/TurnMarker"]
+offset_top = 10.0
+offset_right = 5.0
+offset_bottom = 70.0
+color = Color(0, 1, 1, 1)
+
 [node name="CharacterPanel2" parent="InitiativeTracker" instance=ExtResource("10_38wds")]
 position = Vector2(0, 90)
 scale = Vector2(1, 1)
