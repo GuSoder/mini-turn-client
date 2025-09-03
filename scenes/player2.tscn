@@ -13,6 +13,6 @@ material_override = ExtResource("1_lttm1")
 mesh = SubResource("CapsuleMesh_u8vuu")
 
 [node name="Chevron" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.4, 0, -6.03983e-08, 0, 0.4, 0, 6.03983e-08, 0, -0.4, 0, 0, 0.6)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0, 0, 0)
 material_override = ExtResource("1_lttm1")
 mesh = ExtResource("2_c08b3")

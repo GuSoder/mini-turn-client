@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cvbafb1qg6pnt"]
+[gd_scene load_steps=14 format=3 uid="uid://cvbafb1qg6pnt"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://scripts/client.gd" id="1_4nosx"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://scenes/grid.tscn" id="2_g72ii"]
@@ -8,6 +8,11 @@
 [ext_resource type="Material" uid="uid://dfo6ed0j18ikt" path="res://materials/light_blue.tres" id="5_rjf81"]
 [ext_resource type="ArrayMesh" uid="uid://qbqk318i3m7o" path="res://objects/hex_ring.obj" id="6_lj136"]
 [ext_resource type="ArrayMesh" uid="uid://flyknjrhi1lm" path="res://objects/dot_above.obj" id="7_lj136"]
+[ext_resource type="PackedScene" uid="uid://cafmkn7hkrkod" path="res://scenes/character_panel.tscn" id="9_4jrir"]
+[ext_resource type="Texture2D" uid="uid://t7gb3iijwqsv" path="res://misc/icon4.svg" id="10_veiwj"]
+[ext_resource type="Texture2D" uid="uid://dv3xtwjpp8tf4" path="res://misc/icon1.svg" id="11_lxgk3"]
+[ext_resource type="Texture2D" uid="uid://ndert5mhobi6" path="res://misc/icon2.svg" id="12_li0vi"]
+[ext_resource type="Texture2D" uid="uid://c2knufc8cgbuf" path="res://misc/icon3.svg" id="13_yb83m"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_4nosx")
@@ -29,9 +34,38 @@ mesh = ExtResource("6_lj136")
 material_override = ExtResource("5_rjf81")
 mesh = ExtResource("7_lj136")
 
-[node name="Yellow" type="ColorRect" parent="."]
-offset_left = 29.0
-offset_top = 32.0
-offset_right = 69.0
-offset_bottom = 72.0
-color = Color(1, 1, 0, 1)
+[node name="InitiativeTracker" type="Node2D" parent="."]
+
+[node name="CharacterPanel1" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
+position = Vector2(0, 90)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel1"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("11_lxgk3")
+
+[node name="CharacterPanel2" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
+position = Vector2(0, 165)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel2"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("12_li0vi")
+
+[node name="CharacterPanel3" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
+position = Vector2(0, 240)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel3"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("13_yb83m")
+
+[node name="CharacterPanel4" parent="InitiativeTracker" instance=ExtResource("9_4jrir")]
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel4"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("10_veiwj")
