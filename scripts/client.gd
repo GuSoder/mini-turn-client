@@ -20,6 +20,9 @@ var current_game_state: Dictionary = {}
 var is_animating: bool = false
 var pending_move_callback: Callable
 var client_status: Status = Status.CHOOSING
+var end_turn_retry_count: int = 0
+var end_turn_timeout_timer: Timer
+var is_end_turn_pending: bool = false
 
 func _ready():
 	players_node = get_node("Players")
@@ -34,6 +37,13 @@ func _ready():
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
+	
+	# Setup end turn timeout timer
+	end_turn_timeout_timer = Timer.new()
+	add_child(end_turn_timeout_timer)
+	end_turn_timeout_timer.wait_time = 10.0  # 10 second timeout
+	end_turn_timeout_timer.one_shot = true
+	end_turn_timeout_timer.timeout.connect(_on_end_turn_timeout)
 	
 	# Get game ID from lobby
 	game_id = get_tree().get_meta("game_id", "")
@@ -85,10 +95,19 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	var response_data = json.data
 	
-	# Check if this is a move response (has "ok" field) vs game state
+	# Check if this is a move/end_turn response (has "ok" field) vs game state
 	if "ok" in response_data:
-		# Call pending callback if exists
-		if pending_move_callback.is_valid():
+		# Handle end_turn response
+		if is_end_turn_pending:
+			is_end_turn_pending = false
+			end_turn_retry_count = 0
+			end_turn_timeout_timer.stop()
+			if response_data.get("ok", false):
+				print("CLIENT: End turn confirmed by server")
+			else:
+				print("CLIENT: End turn failed: " + str(response_data.get("error", "Unknown error")))
+		# Call pending move callback if exists
+		elif pending_move_callback.is_valid():
 			pending_move_callback.call(response_data.get("ok", false), response_data)
 			pending_move_callback = Callable()
 		# Don't process as game state, just continue polling
@@ -241,6 +260,9 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func end_turn():
+	if is_end_turn_pending:
+		return  # Already have an end turn request pending
+		
 	var request_body = {
 		"player": client_number - 1
 	}
@@ -250,9 +272,33 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
-	print("CLIENT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request")
 	
+	# Setup retry tracking
+	is_end_turn_pending = true
+	end_turn_retry_count = 0
+	end_turn_timeout_timer.start()
+	
+	print("CLIENT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/4)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func _on_end_turn_timeout():
+	end_turn_retry_count += 1
+	
+	if end_turn_retry_count < 4:
+		print("CLIENT: End turn request timed out - retrying (attempt " + str(end_turn_retry_count + 1) + "/4)...")
+		end_turn_timeout_timer.start()  # Start timer for next attempt
+		
+		var request_body = {
+			"player": client_number - 1
+		}
+		var url = server_url + "/games/" + game_id + "/end_turn"
+		var headers = ["Content-Type: application/json"]
+		
+		http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+	else:
+		print("CLIENT: End turn request failed after 4 attempts - giving up")
+		is_end_turn_pending = false
+		end_turn_retry_count = 0
 
 func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	# Find the actual hex node in the grid and return its position

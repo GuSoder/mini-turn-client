@@ -17,6 +17,9 @@ var pending_move_callback: Callable
 var move_direction: int = 0  # 0 = left, 1 = right
 var has_made_move: bool = false
 var client_status: Status = Status.CHOOSING
+var end_turn_retry_count: int = 0
+var end_turn_timeout_timer: Timer
+var is_end_turn_pending: bool = false
 
 func _ready():
 	# Get game ID from lobby
@@ -29,6 +32,13 @@ func _ready():
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
+	
+	# Setup end turn timeout timer
+	end_turn_timeout_timer = Timer.new()
+	add_child(end_turn_timeout_timer)
+	end_turn_timeout_timer.wait_time = 10.0  # 10 second timeout
+	end_turn_timeout_timer.one_shot = true
+	end_turn_timeout_timer.timeout.connect(_on_end_turn_timeout)
 	
 	# Start polling
 	poll_server()
@@ -67,9 +77,19 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	var response_data = json.data
 	
-	# Check if this is a move response (has "ok" field) vs game state
+	# Check if this is a move/end_turn response (has "ok" field) vs game state
 	if "ok" in response_data:
-		if pending_move_callback.is_valid():
+		# Handle end_turn response
+		if is_end_turn_pending:
+			is_end_turn_pending = false
+			end_turn_retry_count = 0
+			end_turn_timeout_timer.stop()
+			if response_data.get("ok", false):
+				pass  # Success
+			else:
+				pass  # Failed but bot doesn't need to report it
+		# Call pending move callback if exists
+		elif pending_move_callback.is_valid():
 			pending_move_callback.call(response_data.get("ok", false), response_data)
 			pending_move_callback = Callable()
 		# Don't process as game state, just continue polling
@@ -211,6 +231,9 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func end_turn():
+	if is_end_turn_pending:
+		return  # Already have an end turn request pending
+		
 	var request_body = {
 		"player": client_number - 1
 	}
@@ -220,9 +243,33 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
-	print("BOT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request")
 	
+	# Setup retry tracking
+	is_end_turn_pending = true
+	end_turn_retry_count = 0
+	end_turn_timeout_timer.start()
+	
+	print("BOT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/4)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func _on_end_turn_timeout():
+	end_turn_retry_count += 1
+	
+	if end_turn_retry_count < 4:
+		print("BOT: End turn request timed out - retrying (attempt " + str(end_turn_retry_count + 1) + "/4)...")
+		end_turn_timeout_timer.start()  # Start timer for next attempt
+		
+		var request_body = {
+			"player": client_number - 1
+		}
+		var url = server_url + "/games/" + game_id + "/end_turn"
+		var headers = ["Content-Type: application/json"]
+		
+		http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+	else:
+		print("BOT: End turn request failed after 4 attempts - giving up")
+		is_end_turn_pending = false
+		end_turn_retry_count = 0
 
 func _on_bot_move_response(success: bool, response_data: Dictionary):
 	if success:
