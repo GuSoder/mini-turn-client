@@ -41,7 +41,7 @@ func _ready():
 	# Setup end turn timeout timer
 	end_turn_timeout_timer = Timer.new()
 	add_child(end_turn_timeout_timer)
-	end_turn_timeout_timer.wait_time = 0.5  # 500ms timeout
+	end_turn_timeout_timer.wait_time = 0.25  # 250ms timeout
 	end_turn_timeout_timer.one_shot = true
 	end_turn_timeout_timer.timeout.connect(_on_end_turn_timeout)
 	
@@ -278,14 +278,14 @@ func end_turn():
 	end_turn_retry_count = 0
 	end_turn_timeout_timer.start()
 	
-	print("CLIENT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/4)")
+	print("CLIENT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_end_turn_timeout():
 	end_turn_retry_count += 1
 	
-	if end_turn_retry_count < 4:
-		print("CLIENT: End turn request timed out - retrying (attempt " + str(end_turn_retry_count + 1) + "/4)...")
+	if end_turn_retry_count < 10:
+		print("CLIENT: End turn request timed out - retrying (attempt " + str(end_turn_retry_count + 1) + "/10)...")
 		end_turn_timeout_timer.start()  # Start timer for next attempt
 		
 		var request_body = {
@@ -296,7 +296,7 @@ func _on_end_turn_timeout():
 		
 		http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 	else:
-		print("CLIENT: End turn request failed after 4 attempts - giving up")
+		print("CLIENT: End turn request failed after 10 attempts - giving up")
 		is_end_turn_pending = false
 		end_turn_retry_count = 0
 

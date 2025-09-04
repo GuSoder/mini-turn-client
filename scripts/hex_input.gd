@@ -155,7 +155,7 @@ func _input(event):
 			is_move_pending = true
 			move_retry_count = 0
 			current_move_path = current_path.duplicate()  # Save path for retries
-			print("Submitting move (attempt 1/4)...")
+			print("Submitting move (attempt 1/10)...")
 			move_timeout_timer.start()  # Start timeout timer
 			client.make_move(current_path, _on_move_response)
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
@@ -230,12 +230,12 @@ func _on_move_response(success: bool, response_data: Dictionary):
 func _on_move_timeout():
 	move_retry_count += 1
 	
-	if move_retry_count < 4:
-		print("Move request timed out - retrying (attempt ", move_retry_count + 1, "/4)...")
+	if move_retry_count < 10:
+		print("Move request timed out - retrying (attempt ", move_retry_count + 1, "/10)...")
 		move_timeout_timer.start()  # Start timer for next attempt
 		client.make_move(current_move_path, _on_move_response)
 	else:
-		print("Move request failed after 4 attempts - giving up")
+		print("Move request failed after 10 attempts - giving up")
 		is_move_pending = false
 		move_retry_count = 0
 		current_move_path.clear()
