@@ -45,7 +45,7 @@ material_override = ExtResource("5_o2qwl")
 mesh = ExtResource("5_k0yc7")
 
 [node name="TargetRing" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
 material_override = ExtResource("9_su2r8")
 mesh = ExtResource("15_b2bku")
 
