@@ -1,6 +1,8 @@
 class_name Client
 extends Node3D
 
+enum Status { CHOOSING, MOVING }
+
 @export var client_number: int = 1
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
@@ -17,6 +19,7 @@ var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
 var is_animating: bool = false
 var pending_move_callback: Callable
+var client_status: Status = Status.CHOOSING
 
 func _ready():
 	players_node = get_node("Players")
@@ -98,6 +101,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 func process_game_state(state: Dictionary):
 	current_game_state = state
 
+	# Handle phase changes - reset to choosing if server is back in planning
+	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
+		client_status = Status.CHOOSING
+
 	# Update turn marker position
 	update_turn_marker_position(state)
 
@@ -120,6 +127,10 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	var player_node = players_node.get_child(player_index)
 	if not player_node:
 		return
+	
+	# If this is our player and we're in planning phase, switch to moving
+	if player_index == client_number - 1 and state.get("phase", "planning") == "moving":
+		client_status = Status.MOVING
 	
 	# Convert hex path to world positions and animate
 	var world_positions: Array[Vector3] = []
@@ -177,6 +188,9 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 	tween.tween_callback(func(): 
 		is_animating = false
 		update_player_position(player_index, state)
+		# If this is our player, send end turn request
+		if player_index == client_number - 1 and client_status == Status.MOVING:
+			end_turn()
 	)
 
 func schedule_next_poll():
@@ -187,6 +201,18 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
 		if callback.is_valid():
 			callback.call(false, {"error": "Not your turn"})
+		return
+	
+	# Check if server is in planning phase
+	if current_game_state.get("phase", "planning") != "planning":
+		if callback.is_valid():
+			callback.call(false, {"error": "Not in planning phase"})
+		return
+	
+	# Check if client is in choosing status
+	if client_status != Status.CHOOSING:
+		if callback.is_valid():
+			callback.call(false, {"error": "Currently moving"})
 		return
 	
 	if is_animating:
@@ -209,6 +235,19 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]
+	
+	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func end_turn():
+	var request_body = {
+		"player": client_number - 1
+	}
+	
+	var url = server_url + "/games/" + game_id + "/end_turn"
+	var headers = ["Content-Type: application/json"]
+	
+	# Reset client status to choosing
+	client_status = Status.CHOOSING
 	
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 

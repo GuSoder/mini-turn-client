@@ -1,6 +1,8 @@
 class_name BotClient
 extends Node3D
 
+enum Status { CHOOSING, MOVING }
+
 @export var client_number: int = 2
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
@@ -14,6 +16,7 @@ var is_animating: bool = false
 var pending_move_callback: Callable
 var move_direction: int = 0  # 0 = left, 1 = right
 var has_made_move: bool = false
+var client_status: Status = Status.CHOOSING
 
 func _ready():
 	# Get game ID from lobby
@@ -84,6 +87,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 func process_game_state(state: Dictionary):
 	current_game_state = state
 	
+	# Handle phase changes - reset to choosing if server is back in planning
+	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
+		client_status = Status.CHOOSING
+	
 	# Update player positions from server state
 	if "positions" in state:
 		for i in range(4):
@@ -91,7 +98,7 @@ func process_game_state(state: Dictionary):
 				var pos = state.positions[i]
 				player_positions[i] = Vector2i(pos.q, pos.r)
 	
-	# Check for path changes
+	# Check for path changes and handle animation timing
 	if "lastPaths" in state:
 		for i in range(4):
 			var new_path = state.lastPaths[i]
@@ -99,13 +106,21 @@ func process_game_state(state: Dictionary):
 			
 			if new_path != cached_path:
 				cached_last_paths[i] = new_path.duplicate()
+				# If this is our player and we're in moving phase, simulate animation
+				if i == client_number - 1 and state.get("phase", "planning") == "moving":
+					client_status = Status.MOVING
+					# Simulate animation time then send end turn
+					await get_tree().create_timer(0.5 * new_path.size()).timeout
+					if client_status == Status.MOVING:  # Make sure we're still moving
+						end_turn()
 	
-	# Check if it's our turn and make a move
+	# Check if it's our turn and make a move (only in planning phase and choosing status)
 	var current_player = state.get("playerInTurn", -1)
 	if current_player == client_number - 1 and not is_animating and not pending_move_callback.is_valid():
-		print("Bot: It's my turn! (Player ", client_number, ")")
-		await get_tree().create_timer(0.5).timeout  # Small delay before moving
-		make_bot_move()
+		if state.get("phase", "planning") == "planning" and client_status == Status.CHOOSING:
+			print("Bot: It's my turn! (Player ", client_number, ")")
+			await get_tree().create_timer(0.5).timeout  # Small delay before moving
+			make_bot_move()
 
 func make_bot_move():
 	var current_pos = player_positions[client_number - 1]
@@ -168,6 +183,20 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 			callback.call(false, {"error": "Not your turn"})
 		return
 	
+	# Check if server is in planning phase
+	if current_game_state.get("phase", "planning") != "planning":
+		print("Bot: Not in planning phase")
+		if callback.is_valid():
+			callback.call(false, {"error": "Not in planning phase"})
+		return
+	
+	# Check if client is in choosing status
+	if client_status != Status.CHOOSING:
+		print("Bot: Currently moving")
+		if callback.is_valid():
+			callback.call(false, {"error": "Currently moving"})
+		return
+	
 	if is_animating:
 		print("Bot: Animation in progress, please wait")
 		if callback.is_valid():
@@ -190,6 +219,20 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]
 	
+	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func end_turn():
+	var request_body = {
+		"player": client_number - 1
+	}
+	
+	var url = server_url + "/games/" + game_id + "/end_turn"
+	var headers = ["Content-Type: application/json"]
+	
+	# Reset client status to choosing
+	client_status = Status.CHOOSING
+	
+	print("Bot: Sending end turn request")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_bot_move_response(success: bool, response_data: Dictionary):
