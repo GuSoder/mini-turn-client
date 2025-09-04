@@ -41,7 +41,7 @@ func _ready():
 	# Setup end turn timeout timer
 	end_turn_timeout_timer = Timer.new()
 	add_child(end_turn_timeout_timer)
-	end_turn_timeout_timer.wait_time = 10.0  # 10 second timeout
+	end_turn_timeout_timer.wait_time = 0.5  # 500ms timeout
 	end_turn_timeout_timer.one_shot = true
 	end_turn_timeout_timer.timeout.connect(_on_end_turn_timeout)
 	
