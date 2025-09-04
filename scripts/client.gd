@@ -131,7 +131,7 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	# If this is our player and we're in moving phase, switch to moving
 	if player_index == client_number - 1 and state.get("phase", "planning") == "moving":
 		client_status = Status.MOVING
-		print(f"CLIENT: Player {client_number} animation starting, status -> MOVING")
+		print("CLIENT: Player " + str(client_number) + " animation starting, status -> MOVING")
 	
 	# Convert hex path to world positions and animate
 	var world_positions: Array[Vector3] = []
@@ -191,7 +191,7 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 		update_player_position(player_index, state)
 		# If this is our player, send end turn request
 		if player_index == client_number - 1 and client_status == Status.MOVING:
-			print(f"CLIENT: Player {client_number} animation complete, sending end_turn")
+			print("CLIENT: Player " + str(client_number) + " animation complete, sending end_turn")
 			end_turn()
 	)
 
@@ -250,7 +250,7 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
-	print(f"CLIENT: Player {client_number} status -> CHOOSING, sending end_turn request")
+	print("CLIENT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request")
 	
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 

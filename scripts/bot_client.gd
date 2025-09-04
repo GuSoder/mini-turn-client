@@ -104,11 +104,11 @@ func process_game_state(state: Dictionary):
 				# If this is our player and we're in moving phase, simulate animation
 				if i == client_number - 1 and state.get("phase", "planning") == "moving":
 					client_status = Status.MOVING
-					print(f"BOT: Player {client_number} animation starting, status -> MOVING")
+					print("BOT: Player " + str(client_number) + " animation starting, status -> MOVING")
 					# Simulate animation time then send end turn
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
-						print(f"BOT: Player {client_number} animation complete, sending end_turn")
+						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
 						end_turn()
 	
 	# Check if it's our turn and make a move (only in planning phase and choosing status)
@@ -220,7 +220,7 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
-	print(f"BOT: Player {client_number} status -> CHOOSING, sending end_turn request")
+	print("BOT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request")
 	
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
