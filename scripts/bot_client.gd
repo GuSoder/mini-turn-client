@@ -35,7 +35,6 @@ func _ready():
 
 func poll_server():
 	if game_id == "":
-		print("Bot: No game ID set")
 		return
 	
 	var url = server_url + "/games/" + game_id + "/state"
@@ -43,7 +42,6 @@ func poll_server():
 
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
 	if response_code != 200:
-		print("Bot: Server request failed: ", response_code)
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Server request failed: " + str(response_code)})
 			pending_move_callback = Callable()
@@ -51,7 +49,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		return
 	
 	if result != HTTPRequest.RESULT_SUCCESS:
-		print("Bot: HTTP request failed: ", result)
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "HTTP request failed: " + str(result)})
 			pending_move_callback = Callable()
@@ -62,7 +59,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	var parse_result = json.parse(body.get_string_from_utf8())
 	
 	if parse_result != OK:
-		print("Bot: Failed to parse JSON response")
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Failed to parse JSON response"})
 			pending_move_callback = Callable()
@@ -73,7 +69,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	# Check if this is a move response (has "ok" field) vs game state
 	if "ok" in response_data:
-		print("Bot: Move response: ", response_data)
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(response_data.get("ok", false), response_data)
 			pending_move_callback = Callable()
@@ -109,16 +104,17 @@ func process_game_state(state: Dictionary):
 				# If this is our player and we're in moving phase, simulate animation
 				if i == client_number - 1 and state.get("phase", "planning") == "moving":
 					client_status = Status.MOVING
+					print(f"BOT: Player {client_number} animation starting, status -> MOVING")
 					# Simulate animation time then send end turn
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
+						print(f"BOT: Player {client_number} animation complete, sending end_turn")
 						end_turn()
 	
 	# Check if it's our turn and make a move (only in planning phase and choosing status)
 	var current_player = state.get("playerInTurn", -1)
 	if current_player == client_number - 1 and not is_animating and not pending_move_callback.is_valid():
 		if state.get("phase", "planning") == "planning" and client_status == Status.CHOOSING:
-			print("Bot: It's my turn! (Player ", client_number, ")")
 			await get_tree().create_timer(0.5).timeout  # Small delay before moving
 			make_bot_move()
 
@@ -129,10 +125,8 @@ func make_bot_move():
 	# Alternate between moving left and right
 	if move_direction == 0:  # Move left
 		target_pos = Vector2i(current_pos.x - 1, current_pos.y)
-		print("Bot: Trying to move left from ", current_pos, " to ", target_pos)
 	else:  # Move right
 		target_pos = Vector2i(current_pos.x + 1, current_pos.y)
-		print("Bot: Trying to move right from ", current_pos, " to ", target_pos)
 	
 	# Ensure target position is within bounds (0-9 for both x and y)
 	target_pos.x = clamp(target_pos.x, 0, 9)
@@ -165,7 +159,6 @@ func make_bot_move():
 	# If still can't move, try staying in place (just move to current position)
 	if is_occupied or target_pos == current_pos:
 		target_pos = current_pos
-		print("Bot: Can't move in either direction, staying put")
 	
 	# Create path from current to target position
 	var path: Array[Vector2i] = [current_pos, target_pos]
@@ -178,27 +171,23 @@ func make_bot_move():
 
 func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
-		print("Bot: Not my turn!")
 		if callback.is_valid():
 			callback.call(false, {"error": "Not your turn"})
 		return
 	
 	# Check if server is in planning phase
 	if current_game_state.get("phase", "planning") != "planning":
-		print("Bot: Not in planning phase")
 		if callback.is_valid():
 			callback.call(false, {"error": "Not in planning phase"})
 		return
 	
 	# Check if client is in choosing status
 	if client_status != Status.CHOOSING:
-		print("Bot: Currently moving")
 		if callback.is_valid():
 			callback.call(false, {"error": "Currently moving"})
 		return
 	
 	if is_animating:
-		print("Bot: Animation in progress, please wait")
 		if callback.is_valid():
 			callback.call(false, {"error": "Animation in progress"})
 		return
@@ -231,16 +220,15 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
+	print(f"BOT: Player {client_number} status -> CHOOSING, sending end_turn request")
 	
-	print("Bot: Sending end turn request")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_bot_move_response(success: bool, response_data: Dictionary):
 	if success:
-		print("Bot: Move confirmed by server!")
 		has_made_move = true
 	else:
-		print("Bot: Move failed: ", response_data.get("error", "Unknown error"))
+		pass
 
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout

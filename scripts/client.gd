@@ -128,9 +128,10 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	if not player_node:
 		return
 	
-	# If this is our player and we're in planning phase, switch to moving
+	# If this is our player and we're in moving phase, switch to moving
 	if player_index == client_number - 1 and state.get("phase", "planning") == "moving":
 		client_status = Status.MOVING
+		print(f"CLIENT: Player {client_number} animation starting, status -> MOVING")
 	
 	# Convert hex path to world positions and animate
 	var world_positions: Array[Vector3] = []
@@ -190,6 +191,7 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 		update_player_position(player_index, state)
 		# If this is our player, send end turn request
 		if player_index == client_number - 1 and client_status == Status.MOVING:
+			print(f"CLIENT: Player {client_number} animation complete, sending end_turn")
 			end_turn()
 	)
 
@@ -248,6 +250,7 @@ func end_turn():
 	
 	# Reset client status to choosing
 	client_status = Status.CHOOSING
+	print(f"CLIENT: Player {client_number} status -> CHOOSING, sending end_turn request")
 	
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
@@ -284,42 +287,27 @@ func update_player_position(player_index: int, state: Dictionary):
 		player_node.position = hex_node_pos
 
 func update_turn_marker_position(state: Dictionary):
-	print("[TURN MARKER DEBUG] update_turn_marker_position called")
-	print("[TURN MARKER DEBUG] initiative_tracker_node: ", initiative_tracker_node)
-	print("[TURN MARKER DEBUG] ui_turn_marker_node: ", ui_turn_marker_node)
-	print("[TURN MARKER DEBUG] playerInTurn in state: ", "playerInTurn" in state)
-	
 	if not initiative_tracker_node or not ui_turn_marker_node or not "playerInTurn" in state:
-		print("[TURN MARKER DEBUG] Early return - missing nodes or playerInTurn")
 		return
 	
 	var current_player = int(state.playerInTurn)
-	print("[TURN MARKER DEBUG] Current player: ", current_player)
 	
 	# Move the UI turn marker to the correct character panel
 	# Player indices are 0-3, corresponding to CharacterPanel1-4
 	var target_panel_name = "CharacterPanel" + str(current_player + 1)
-	print("[TURN MARKER DEBUG] Target panel name: ", target_panel_name)
 	var target_panel = initiative_tracker_node.get_node(target_panel_name)
-	print("[TURN MARKER DEBUG] Target panel: ", target_panel)
 	
 	if target_panel:
-		print("[TURN MARKER DEBUG] Current parent: ", ui_turn_marker_node.get_parent())
 		# Remove turn marker from current parent
 		if ui_turn_marker_node.get_parent():
 			ui_turn_marker_node.get_parent().remove_child(ui_turn_marker_node)
-			print("[TURN MARKER DEBUG] Removed from parent")
 		
 		# Add to new parent
 		target_panel.add_child(ui_turn_marker_node)
-		print("[TURN MARKER DEBUG] Added to new parent: ", target_panel)
 		
 		# Set local position and scale as requested
 		ui_turn_marker_node.position = Vector2(0, 0)
 		ui_turn_marker_node.scale = Vector2(1, 1)
-		print("[TURN MARKER DEBUG] Set position and scale")
-	else:
-		print("[TURN MARKER DEBUG] Target panel not found!")
 
 func hide_all_path_markers():
 	if not path_markers_node:
