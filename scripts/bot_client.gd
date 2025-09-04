@@ -135,7 +135,6 @@ func process_game_state(state: Dictionary):
 	var current_player = state.get("playerInTurn", -1)
 	if current_player == client_number - 1 and not is_animating and not pending_move_callback.is_valid():
 		if state.get("phase", "planning") == "planning" and client_status == Status.CHOOSING:
-			await get_tree().create_timer(0.5).timeout  # Small delay before moving
 			make_bot_move()
 
 func make_bot_move():
