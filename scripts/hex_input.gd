@@ -69,10 +69,23 @@ func handle_hex_click(hex_pos: Vector2i):
 		is_selecting_path = true
 		print("Started path selection from ", current_pos)
 		
-		# If clicked hex is not current position and is adjacent, add it to path
+		# If clicked hex is not current position and is adjacent, add it to path or attack
 		if hex_pos != current_pos and is_adjacent_hex_by_distance(current_pos, hex_pos):
-			if is_hex_occupied_by_player(hex_pos):
-				print("Cannot move to ", hex_pos, " - hex is occupied by another player")
+			var target_player = get_player_at_hex(hex_pos)
+			if target_player != -1:
+				# Clicking on occupied hex = set attack target and submit move immediately
+				print("Will attack player ", target_player, " at ", hex_pos, " after move")
+				client.is_attacking = true
+				client.attack_target = target_player
+				is_selecting_path = false
+				client.hide_all_path_markers()
+				if not is_move_pending:
+					is_move_pending = true
+					move_retry_count = 0
+					current_move_path = [current_pos]  # Single hex path for attack
+					print("Submitting move for attack (attempt 1/10)...")
+					move_timeout_timer.start()
+					client.make_move([current_pos], _on_move_response)
 			elif hex_pos not in current_path:
 				current_path.append(hex_pos)
 				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
@@ -90,8 +103,23 @@ func handle_hex_click(hex_pos: Vector2i):
 			print("Cancelled path selection")
 			client.hide_all_path_markers()
 		elif is_adjacent_to_last_in_path(hex_pos):
-			if is_hex_occupied_by_player(hex_pos):
-				print("Cannot move to ", hex_pos, " - hex is occupied by another player")
+			var target_player = get_player_at_hex(hex_pos)
+			if target_player != -1:
+				# Clicking on occupied hex = set attack target and submit move
+				print("Will attack player ", target_player, " at ", hex_pos, " after move")
+				client.is_attacking = true
+				client.attack_target = target_player
+				is_selecting_path = false
+				var attack_path = current_path.duplicate()
+				current_path.clear()
+				client.hide_all_path_markers()
+				if not is_move_pending:
+					is_move_pending = true
+					move_retry_count = 0
+					current_move_path = attack_path
+					print("Submitting move for attack (attempt 1/10)...")
+					move_timeout_timer.start()
+					client.make_move(attack_path, _on_move_response)
 			elif hex_pos not in current_path:
 				current_path.append(hex_pos)
 				print("Extended path to ", hex_pos, " (length: ", current_path.size(), ")")
@@ -119,6 +147,16 @@ func is_hex_occupied_by_player(hex_pos: Vector2i) -> bool:
 		if player_pos == hex_pos:
 			return true
 	return false
+
+func get_player_at_hex(hex_pos: Vector2i) -> int:
+	if not client or not client.player_positions:
+		return -1
+	
+	# Return player index (0-3) occupying this hex, or -1 if none
+	for i in range(client.player_positions.size()):
+		if client.player_positions[i] == hex_pos:
+			return i
+	return -1
 
 func is_adjacent_hex_by_distance(pos1: Vector2i, pos2: Vector2i) -> bool:
 	# Get actual 3D positions of both hex nodes

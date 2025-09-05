@@ -23,6 +23,8 @@ var client_status: Status = Status.CHOOSING
 var end_turn_retry_count: int = 0
 var end_turn_timeout_timer: Timer
 var is_end_turn_pending: bool = false
+var is_attacking: bool = false
+var attack_target: int = -1
 
 func _ready():
 	players_node = get_node("Players")
@@ -95,10 +97,22 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	
 	var response_data = json.data
 	
-	# Check if this is a move/end_turn response (has "ok" field) vs game state
+	# Check if this is a move/end_turn/attack response (has "ok" field) vs game state
 	if "ok" in response_data:
+		# Handle attack response
+		if is_attacking and not is_end_turn_pending:
+			if response_data.get("ok", false):
+				print("CLIENT: Attack confirmed by server, now sending end_turn")
+				is_attacking = false
+				attack_target = -1
+				send_end_turn_request()
+			else:
+				print("CLIENT: Attack failed: " + str(response_data.get("error", "Unknown error")))
+				# Reset attack state on failure
+				is_attacking = false
+				attack_target = -1
 		# Handle end_turn response
-		if is_end_turn_pending:
+		elif is_end_turn_pending:
 			is_end_turn_pending = false
 			end_turn_retry_count = 0
 			end_turn_timeout_timer.stop()
@@ -123,6 +137,9 @@ func process_game_state(state: Dictionary):
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
 		client_status = Status.CHOOSING
+		# Reset attack state when new turn begins
+		is_attacking = false
+		attack_target = -1
 
 	# Update turn marker position
 	update_turn_marker_position(state)
@@ -262,7 +279,28 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 func end_turn():
 	if is_end_turn_pending:
 		return  # Already have an end turn request pending
-		
+	
+	# If attacking, send attack request first
+	if is_attacking:
+		send_attack_request()
+		return
+	
+	# Otherwise send end turn directly
+	send_end_turn_request()
+
+func send_attack_request():
+	var request_body = {
+		"attacker": client_number - 1,
+		"target": attack_target
+	}
+	
+	var url = server_url + "/games/" + game_id + "/attack"
+	var headers = ["Content-Type: application/json"]
+	
+	print("CLIENT: Player " + str(client_number) + " sending attack request against player " + str(attack_target))
+	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+
+func send_end_turn_request():
 	var request_body = {
 		"player": client_number - 1
 	}
