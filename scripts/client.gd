@@ -25,6 +25,7 @@ var end_turn_timeout_timer: Timer
 var is_end_turn_pending: bool = false
 var is_attacking: bool = false
 var attack_target: int = -1
+var is_attack_request_pending: bool = false
 
 func _ready():
 	players_node = get_node("Players")
@@ -100,7 +101,8 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	# Check if this is a move/end_turn/attack response (has "ok" field) vs game state
 	if "ok" in response_data:
 		# Handle attack response
-		if is_attacking and not is_end_turn_pending:
+		if is_attack_request_pending:
+			is_attack_request_pending = false
 			if response_data.get("ok", false):
 				print("CLIENT: Attack confirmed by server, now sending end_turn")
 				is_attacking = false
@@ -297,6 +299,7 @@ func send_attack_request():
 	var url = server_url + "/games/" + game_id + "/attack"
 	var headers = ["Content-Type: application/json"]
 	
+	is_attack_request_pending = true
 	print("CLIENT: Player " + str(client_number) + " sending attack request against player " + str(attack_target))
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
