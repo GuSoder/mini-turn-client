@@ -156,6 +156,9 @@ func process_game_state(state: Dictionary):
 
 	# Update turn marker position
 	update_turn_marker_position(state)
+	
+	# Update health displays
+	update_health_displays(state)
 
 	# Check for path changes and animate
 	if "lastPaths" in state:
@@ -432,6 +435,29 @@ func update_turn_marker_position(state: Dictionary):
 		# Set local position and scale as requested
 		ui_turn_marker_node.position = Vector2(0, 0)
 		ui_turn_marker_node.scale = Vector2(1, 1)
+
+func update_health_displays(state: Dictionary):
+	if not initiative_tracker_node or not "stats" in state:
+		return
+	
+	# Update health display for each player
+	for player_index in range(4):
+		if player_index < state.stats.size():
+			var player_health = int(state.stats[player_index].get("health", 10))
+			var panel_name = "CharacterPanel" + str(player_index + 1)
+			var character_panel = initiative_tracker_node.get_node(panel_name)
+			
+			if character_panel:
+				var health_node = character_panel.get_node("Health")
+				if health_node:
+					# Update each health pip (1-10)
+					for pip_index in range(1, 11):
+						var pip_node = health_node.get_node(str(pip_index))
+						if pip_node:
+							var filled_node = pip_node.get_node("filled")
+							if filled_node:
+								# Show filled if pip_index <= player_health, hide otherwise
+								filled_node.visible = (pip_index <= player_health)
 
 func hide_all_path_markers():
 	if not path_markers_node:
