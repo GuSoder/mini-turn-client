@@ -26,6 +26,8 @@ var is_end_turn_pending: bool = false
 var is_attacking: bool = false
 var attack_target: int = -1
 var is_attack_request_pending: bool = false
+var attack_retry_count: int = 0
+var attack_timeout_timer: Timer
 
 func _ready():
 	players_node = get_node("Players")
@@ -47,6 +49,13 @@ func _ready():
 	end_turn_timeout_timer.wait_time = 0.25  # 250ms timeout
 	end_turn_timeout_timer.one_shot = true
 	end_turn_timeout_timer.timeout.connect(_on_end_turn_timeout)
+	
+	# Setup attack timeout timer
+	attack_timeout_timer = Timer.new()
+	add_child(attack_timeout_timer)
+	attack_timeout_timer.wait_time = 0.25  # 250ms timeout
+	attack_timeout_timer.one_shot = true
+	attack_timeout_timer.timeout.connect(_on_attack_timeout)
 	
 	# Get game ID from lobby
 	game_id = get_tree().get_meta("game_id", "")
@@ -103,6 +112,8 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		# Handle attack response
 		if is_attack_request_pending:
 			is_attack_request_pending = false
+			attack_retry_count = 0
+			attack_timeout_timer.stop()
 			if response_data.get("ok", false):
 				print("CLIENT: Attack confirmed by server, now sending end_turn")
 				is_attacking = false
@@ -300,7 +311,9 @@ func send_attack_request():
 	var headers = ["Content-Type: application/json"]
 	
 	is_attack_request_pending = true
-	print("CLIENT: Player " + str(client_number) + " sending attack request against player " + str(attack_target))
+	attack_retry_count = 0
+	attack_timeout_timer.start()
+	print("CLIENT: Player " + str(client_number) + " sending attack request against player " + str(attack_target) + " (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func send_end_turn_request():
@@ -340,6 +353,30 @@ func _on_end_turn_timeout():
 		print("CLIENT: End turn request failed after 10 attempts - giving up")
 		is_end_turn_pending = false
 		end_turn_retry_count = 0
+
+func _on_attack_timeout():
+	attack_retry_count += 1
+	
+	if attack_retry_count < 10:
+		print("CLIENT: Attack request timed out - retrying (attempt " + str(attack_retry_count + 1) + "/10)...")
+		attack_timeout_timer.start()  # Start timer for next attempt
+		
+		var request_body = {
+			"attacker": client_number - 1,
+			"target": attack_target
+		}
+		var url = server_url + "/games/" + game_id + "/attack"
+		var headers = ["Content-Type: application/json"]
+		
+		http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
+	else:
+		print("CLIENT: Attack request failed after 10 attempts - giving up")
+		is_attack_request_pending = false
+		attack_retry_count = 0
+		# Reset attack state and continue to end turn
+		is_attacking = false
+		attack_target = -1
+		send_end_turn_request()
 
 func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	# Find the actual hex node in the grid and return its position
