@@ -67,6 +67,10 @@ func get_hex_neighbors(hex_pos: Vector2i) -> Array[Vector2i]:
 func is_hex_blocked(hex_pos: Vector2i) -> bool:
 	return hex_pos in blocked_hexes
 
+# Get full path from start to goal (may be very long)
+func get_full_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
+	return find_path(start, goal)
+
 # A* pathfinding algorithm
 func find_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
 	if start == goal:

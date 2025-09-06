@@ -21,6 +21,7 @@ var pending_move_callback: Callable
 var move_direction: int = 0  # 0 = left, 1 = right
 var has_made_move: bool = false
 var current_patrol_target: int = 0  # 0 = patrol_point_1, 1 = patrol_point_2
+var target_patrol_point: Vector2i  # Current target point we're heading to
 var client_status: Status = Status.CHOOSING
 var end_turn_retry_count: int = 0
 var end_turn_timeout_timer: Timer
@@ -32,6 +33,9 @@ func _ready():
 	
 	# Initialize positions array (same as main client)
 	player_positions = [Vector2i(0, 0), Vector2i(2, -1), Vector2i(-1, 1), Vector2i(3, 0)]
+	
+	# Initialize patrol target
+	target_patrol_point = patrol_point_1
 	
 	# Setup HTTP request
 	http_request = HTTPRequest.new()
@@ -204,14 +208,14 @@ func make_pong_move(current_pos: Vector2i) -> Array[Vector2i]:
 	return [current_pos, target_pos]
 
 func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
-	# Determine target patrol point
-	var target_point = patrol_point_1 if current_patrol_target == 0 else patrol_point_2
-	
-	# Check if we've reached the current target
-	if current_pos == target_point:
-		# Switch to the other patrol point
-		current_patrol_target = 1 - current_patrol_target
-		target_point = patrol_point_1 if current_patrol_target == 0 else patrol_point_2
+	# Check if we've reached the current target patrol point
+	if current_pos == target_patrol_point:
+		# Toggle to the other patrol point
+		if target_patrol_point == patrol_point_1:
+			target_patrol_point = patrol_point_2
+		else:
+			target_patrol_point = patrol_point_1
+		print("BOT: Player " + str(client_number) + " reached patrol point, switching target to " + str(target_patrol_point))
 	
 	# Get PathFinder from main client (assuming it exists)
 	var main_client = get_parent().get_parent()  # Bots -> Client
@@ -226,18 +230,25 @@ func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
 		
 		path_finder.set_blocked_hexes(blocked_hexes)
 		
-		# Find path using A*
-		var full_path = path_finder.find_path(current_pos, target_point)
+		# Get full path from current position to target patrol point
+		var full_path = path_finder.get_full_path(current_pos, target_patrol_point)
 		
 		if full_path.size() > 1:
-			# Return just the next step (current position + next step)
-			return [current_pos, full_path[1]]
+			# Take up to 5 steps from the full path (including current position)
+			var steps_to_take = min(5, full_path.size() - 1)  # -1 because we don't count current pos twice
+			var move_path: Array[Vector2i] = []
+			
+			for i in range(steps_to_take + 1):  # +1 to include current position
+				move_path.append(full_path[i])
+			
+			print("BOT: Player " + str(client_number) + " taking " + str(steps_to_take) + " steps toward " + str(target_patrol_point))
+			return move_path
 		else:
 			# If no path found or already at target, stay in place
 			return [current_pos]
 	else:
 		# Fallback: simple move towards target
-		return make_simple_move_towards(current_pos, target_point)
+		return make_simple_move_towards(current_pos, target_patrol_point)
 
 func make_simple_move_towards(current_pos: Vector2i, target_pos: Vector2i) -> Array[Vector2i]:
 	# Simple movement towards target (one step at a time)
