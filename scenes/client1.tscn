@@ -19,6 +19,8 @@
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_2oaby")
+patrol_point_1 = Vector2i(1, 3)
+patrol_point_2 = Vector2i(7, 4)
 
 [node name="PathFinder" type="Node" parent="."]
 script = ExtResource("2_b2bku")
