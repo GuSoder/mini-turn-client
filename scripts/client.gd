@@ -170,8 +170,10 @@ func process_game_state(state: Dictionary):
 				# Don't update position immediately - let animation handle it
 				animate_player_move(i, new_path, state)
 			else:
-				# No animation needed, update position directly
-				update_player_position(i, state)
+				# No animation needed, but only update position if not in moving phase
+				# to avoid interfering with ongoing animations
+				if state.get("phase", "planning") != "moving" or not is_animating:
+					update_player_position(i, state)
 			
 			cached_last_paths[i] = new_path.duplicate()
 
