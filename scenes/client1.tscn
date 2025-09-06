@@ -31,6 +31,7 @@ script = ExtResource("2_b2bku")
 
 [node name="BotClient2" type="Node3D" parent="Bots"]
 script = ExtResource("4_xrimb")
+path_strategy = 1
 patrol_point_1 = Vector2i(1, 3)
 patrol_point_2 = Vector2i(9, 9)
 
