@@ -2,11 +2,13 @@ class_name BotClient
 extends Node3D
 
 enum Status { CHOOSING, MOVING }
+enum PathStrategy { PONG, PATROL }
 
 @export var client_number: int = 2
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
 @export var poll_interval: float = 0.5
+@export var path_strategy: PathStrategy = PathStrategy.PONG
 @export var patrol_point_1: Vector2i = Vector2i(2, 2)
 @export var patrol_point_2: Vector2i = Vector2i(6, 6)
 
@@ -18,6 +20,7 @@ var is_animating: bool = false
 var pending_move_callback: Callable
 var move_direction: int = 0  # 0 = left, 1 = right
 var has_made_move: bool = false
+var current_patrol_target: int = 0  # 0 = patrol_point_1, 1 = patrol_point_2
 var client_status: Status = Status.CHOOSING
 var end_turn_retry_count: int = 0
 var end_turn_timeout_timer: Timer
@@ -141,6 +144,20 @@ func process_game_state(state: Dictionary):
 
 func make_bot_move():
 	var current_pos = player_positions[client_number - 1]
+	var path: Array[Vector2i]
+	
+	match path_strategy:
+		PathStrategy.PONG:
+			path = make_pong_move(current_pos)
+		PathStrategy.PATROL:
+			path = make_patrol_move(current_pos)
+		_:
+			path = [current_pos]  # Fallback: stay in place
+	
+	# Make the move
+	make_move(path, _on_bot_move_response)
+
+func make_pong_move(current_pos: Vector2i) -> Array[Vector2i]:
 	var target_pos: Vector2i
 	
 	# Alternate between moving left and right
@@ -181,14 +198,75 @@ func make_bot_move():
 	if is_occupied or target_pos == current_pos:
 		target_pos = current_pos
 	
-	# Create path from current to target position
-	var path: Array[Vector2i] = [current_pos, target_pos]
-	
-	# Make the move
-	make_move(path, _on_bot_move_response)
-	
 	# Toggle direction for next time
 	move_direction = 1 - move_direction
+	
+	return [current_pos, target_pos]
+
+func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
+	# Determine target patrol point
+	var target_point = patrol_point_1 if current_patrol_target == 0 else patrol_point_2
+	
+	# Check if we've reached the current target
+	if current_pos == target_point:
+		# Switch to the other patrol point
+		current_patrol_target = 1 - current_patrol_target
+		target_point = patrol_point_1 if current_patrol_target == 0 else patrol_point_2
+	
+	# Get PathFinder from main client (assuming it exists)
+	var main_client = get_parent().get_parent()  # Bots -> Client
+	var path_finder = main_client.get_node("PathFinder") as PathFinder
+	
+	if path_finder:
+		# Set blocked hexes (other player positions, excluding self)
+		var blocked_hexes: Array[Vector2i] = []
+		for i in range(4):
+			if i != client_number - 1:
+				blocked_hexes.append(player_positions[i])
+		
+		path_finder.set_blocked_hexes(blocked_hexes)
+		
+		# Find path using A*
+		var full_path = path_finder.find_path(current_pos, target_point)
+		
+		if full_path.size() > 1:
+			# Return just the next step (current position + next step)
+			return [current_pos, full_path[1]]
+		else:
+			# If no path found or already at target, stay in place
+			return [current_pos]
+	else:
+		# Fallback: simple move towards target
+		return make_simple_move_towards(current_pos, target_point)
+
+func make_simple_move_towards(current_pos: Vector2i, target_pos: Vector2i) -> Array[Vector2i]:
+	# Simple movement towards target (one step at a time)
+	var diff = target_pos - current_pos
+	var next_pos = current_pos
+	
+	# Move one step in the direction with the largest difference
+	if abs(diff.x) >= abs(diff.y):
+		if diff.x > 0:
+			next_pos.x += 1
+		elif diff.x < 0:
+			next_pos.x -= 1
+	else:
+		if diff.y > 0:
+			next_pos.y += 1
+		elif diff.y < 0:
+			next_pos.y -= 1
+	
+	# Ensure within bounds
+	next_pos.x = clamp(next_pos.x, 0, 9)
+	next_pos.y = clamp(next_pos.y, 0, 9)
+	
+	# Check if position is occupied by another player
+	for i in range(4):
+		if i != client_number - 1 and player_positions[i] == next_pos:
+			# Position occupied, stay in place
+			return [current_pos]
+	
+	return [current_pos, next_pos]
 
 func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
