@@ -93,7 +93,18 @@ func handle_hex_click(hex_pos: Vector2i):
 			else:
 				print("Hex ", hex_pos, " is already in path")
 		elif hex_pos != current_pos:
-			print("First click must be adjacent to current position. Clicked: ", hex_pos, " Current: ", current_pos)
+			# First click is not adjacent - try pathfinding
+			var pathfinding_result = try_pathfind_to_hex(current_pos, hex_pos)
+			if pathfinding_result.size() > 1:  # Need at least start + one more hex
+				# Limit to 10 steps total
+				var steps_to_add = min(10, pathfinding_result.size())
+				current_path = []
+				for i in range(steps_to_add):
+					current_path.append(pathfinding_result[i])
+				print("Used pathfinding for initial path to ", hex_pos, " (length: ", current_path.size(), ")")
+				client.show_path_markers(current_path)
+			else:
+				print("No path found from current position. Clicked: ", hex_pos, " Current: ", current_pos)
 	else:
 		# Continue or end path
 		if hex_pos == current_pos and current_path.size() > 1:
@@ -127,9 +138,20 @@ func handle_hex_click(hex_pos: Vector2i):
 			else:
 				print("Hex ", hex_pos, " is already in path")
 		else:
+			# Not adjacent - try pathfinding to fill in the gaps
 			var last_pos = current_path[-1] if current_path.size() > 0 else Vector2i(-1, -1)
-			var diff = hex_pos - last_pos
-			print("Invalid move - not adjacent. Last: ", last_pos, " Clicked: ", hex_pos, " Diff: ", diff)
+			var pathfinding_result = try_pathfind_to_hex(last_pos, hex_pos)
+			if pathfinding_result.size() > 0:
+				# Found a path - add the steps (excluding the starting position which is already in path)
+				for i in range(1, pathfinding_result.size()):
+					if current_path.size() >= 10:  # Limit to 10 total steps
+						break
+					current_path.append(pathfinding_result[i])
+				print("Used pathfinding to extend path to ", hex_pos, " (new length: ", current_path.size(), ")")
+				client.show_path_markers(current_path)
+			else:
+				var diff = hex_pos - last_pos
+				print("No path found. Last: ", last_pos, " Clicked: ", hex_pos, " Diff: ", diff)
 
 func is_adjacent_to_last_in_path(hex_pos: Vector2i) -> bool:
 	if current_path.is_empty():
@@ -288,3 +310,21 @@ func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	var z = 1.5 * r
 	
 	return Vector3(x, 0, z)
+
+func try_pathfind_to_hex(start_pos: Vector2i, target_pos: Vector2i) -> Array[Vector2i]:
+	# Get PathFinder from client
+	var path_finder = client.get_node("PathFinder") as PathFinder
+	if not path_finder:
+		return []
+	
+	# Set up blocked hexes (other players, excluding current player)
+	var blocked_hexes: Array[Vector2i] = []
+	var player_index = client.client_number - 1
+	for i in range(client.player_positions.size()):
+		if i != player_index:
+			blocked_hexes.append(client.player_positions[i])
+	
+	path_finder.set_blocked_hexes(blocked_hexes)
+	
+	# Get path using A*
+	return path_finder.get_full_path(start_pos, target_pos)
