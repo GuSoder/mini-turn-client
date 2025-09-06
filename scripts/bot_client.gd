@@ -7,6 +7,8 @@ enum Status { CHOOSING, MOVING }
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
 @export var poll_interval: float = 0.5
+@export var patrol_point_1: Vector2i = Vector2i(2, 2)
+@export var patrol_point_2: Vector2i = Vector2i(6, 6)
 
 var http_request: HTTPRequest
 var player_positions: Array[Vector2i] = []
