@@ -64,6 +64,10 @@ func handle_hex_click(hex_pos: Vector2i):
 	var current_pos = client.player_positions[player_index]
 	
 	if not is_selecting_path:
+		# Clear any previous attack state
+		client.is_attacking = false
+		client.attack_target = -1
+		
 		# Start new path - auto-add current position and then the clicked hex if valid
 		current_path = [current_pos]
 		is_selecting_path = true
@@ -94,6 +98,9 @@ func handle_hex_click(hex_pos: Vector2i):
 				print("Hex ", hex_pos, " is already in path")
 		elif hex_pos != current_pos:
 			# First click is not adjacent - try pathfinding
+			var target_player = get_player_at_hex(hex_pos)
+			var is_enemy_target = (target_player != -1 and target_player != player_index)
+			
 			var pathfinding_result = try_pathfind_to_hex(current_pos, hex_pos)
 			if pathfinding_result.size() > 1:  # Need at least start + one more hex
 				# Limit to 10 steps total
@@ -101,8 +108,21 @@ func handle_hex_click(hex_pos: Vector2i):
 				current_path = []
 				for i in range(steps_to_add):
 					current_path.append(pathfinding_result[i])
-				print("Used pathfinding for initial path to ", hex_pos, " (length: ", current_path.size(), ")")
-				client.show_path_markers(current_path)
+				
+				# Check if this path leads to attacking an enemy
+				if is_enemy_target and current_path.size() > 0:
+					var final_pos = current_path[-1]
+					if is_adjacent_hex_by_distance(final_pos, hex_pos):
+						print("Used pathfinding for attack path to player ", target_player, " at ", hex_pos, " (length: ", current_path.size(), ")")
+						client.is_attacking = true
+						client.attack_target = target_player
+						client.show_path_markers(current_path)
+					else:
+						print("Used pathfinding for initial path to ", hex_pos, " (length: ", current_path.size(), ")")
+						client.show_path_markers(current_path)
+				else:
+					print("Used pathfinding for initial path to ", hex_pos, " (length: ", current_path.size(), ")")
+					client.show_path_markers(current_path)
 			else:
 				print("No path found from current position. Clicked: ", hex_pos, " Current: ", current_pos)
 	else:
@@ -111,6 +131,8 @@ func handle_hex_click(hex_pos: Vector2i):
 			# Clicked back to start, cancel path
 			current_path.clear()
 			is_selecting_path = false
+			client.is_attacking = false
+			client.attack_target = -1
 			print("Cancelled path selection")
 			client.hide_all_path_markers()
 		elif is_adjacent_to_last_in_path(hex_pos):
@@ -140,6 +162,9 @@ func handle_hex_click(hex_pos: Vector2i):
 		else:
 			# Not adjacent - try pathfinding to fill in the gaps
 			var last_pos = current_path[-1] if current_path.size() > 0 else Vector2i(-1, -1)
+			var target_player = get_player_at_hex(hex_pos)
+			var is_enemy_target = (target_player != -1 and target_player != player_index)
+			
 			var pathfinding_result = try_pathfind_to_hex(last_pos, hex_pos)
 			if pathfinding_result.size() > 0:
 				# Found a path - add the steps (excluding the starting position which is already in path)
@@ -147,7 +172,18 @@ func handle_hex_click(hex_pos: Vector2i):
 					if current_path.size() >= 10:  # Limit to 10 total steps
 						break
 					current_path.append(pathfinding_result[i])
-				print("Used pathfinding to extend path to ", hex_pos, " (new length: ", current_path.size(), ")")
+				
+				# Check if this extended path leads to attacking an enemy
+				if is_enemy_target and current_path.size() > 0:
+					var final_pos = current_path[-1]
+					if is_adjacent_hex_by_distance(final_pos, hex_pos):
+						print("Extended path for attack on player ", target_player, " at ", hex_pos, " (new length: ", current_path.size(), ")")
+						client.is_attacking = true
+						client.attack_target = target_player
+					else:
+						print("Used pathfinding to extend path to ", hex_pos, " (new length: ", current_path.size(), ")")
+				else:
+					print("Used pathfinding to extend path to ", hex_pos, " (new length: ", current_path.size(), ")")
 				client.show_path_markers(current_path)
 			else:
 				var diff = hex_pos - last_pos
@@ -230,6 +266,8 @@ func _input(event):
 			# Cancel path selection
 			current_path.clear()
 			is_selecting_path = false
+			client.is_attacking = false
+			client.attack_target = -1
 			client.hide_all_path_markers()
 			print("Path selection cancelled")
 	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
@@ -311,6 +349,22 @@ func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	
 	return Vector3(x, 0, z)
 
+func get_adjacent_hexes(hex_pos: Vector2i) -> Array[Vector2i]:
+	# Get all adjacent hexes (6 directions for hex grid)
+	var adjacent: Array[Vector2i] = []
+	var hex_directions = [
+		Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, -1),
+		Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1)
+	]
+	
+	for direction in hex_directions:
+		var neighbor = hex_pos + direction
+		# Check grid bounds (assuming 10x10 grid)
+		if neighbor.x >= 0 and neighbor.x <= 9 and neighbor.y >= 0 and neighbor.y <= 9:
+			adjacent.append(neighbor)
+	
+	return adjacent
+
 func try_pathfind_to_hex(start_pos: Vector2i, target_pos: Vector2i) -> Array[Vector2i]:
 	# Get PathFinder from client
 	var path_finder = client.get_node("PathFinder") as PathFinder
@@ -324,7 +378,32 @@ func try_pathfind_to_hex(start_pos: Vector2i, target_pos: Vector2i) -> Array[Vec
 		if i != player_index:
 			blocked_hexes.append(client.player_positions[i])
 	
-	path_finder.set_blocked_hexes(blocked_hexes)
+	# Check if target is an enemy player
+	var target_player = get_player_at_hex(target_pos)
+	var is_enemy_target = (target_player != -1 and target_player != player_index)
 	
-	# Get path using A*
-	return path_finder.get_full_path(start_pos, target_pos)
+	if is_enemy_target:
+		# Find path to adjacent hex instead of enemy's hex
+		var adjacent_hexes = get_adjacent_hexes(target_pos)
+		var best_path: Array[Vector2i] = []
+		var shortest_distance = INF
+		
+		for adjacent_hex in adjacent_hexes:
+			# Skip if adjacent hex is also blocked
+			if adjacent_hex in blocked_hexes:
+				continue
+			
+			path_finder.set_blocked_hexes(blocked_hexes)
+			var path_to_adjacent = path_finder.get_full_path(start_pos, adjacent_hex)
+			
+			if path_to_adjacent.size() > 0:
+				var distance = path_to_adjacent.size()
+				if distance < shortest_distance:
+					shortest_distance = distance
+					best_path = path_to_adjacent
+		
+		return best_path
+	else:
+		path_finder.set_blocked_hexes(blocked_hexes)
+		# Get path using A*
+		return path_finder.get_full_path(start_pos, target_pos)
