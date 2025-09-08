@@ -66,7 +66,7 @@ func join_as_player(player_num: int):
 		return
 	
 	update_info("Joining as Player " + str(player_num))
-	var scene_path = "res://scenes/client" + str(player_num) + ".tscn"
+	var scene_path = "res://game/scenes/client" + str(player_num) + ".tscn"
 	
 	get_tree().set_meta("game_id", current_game_id)
 	get_tree().change_scene_to_file(scene_path)

@@ -64,7 +64,7 @@ func _ready():
 	player_positions = [Vector2i(0, 0), Vector2i(2, -1), Vector2i(-1, 1), Vector2i(3, 0)]
 	
 	# Add hex input handler
-	var hex_input = preload("res://scripts/hex_input.gd").new()
+	var hex_input = preload("res://framework/scripts/hex_input.gd").new()
 	add_child(hex_input)
 	
 	# Start polling

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dynpvkx1vo2hw"]
 
-[ext_resource type="PackedScene" uid="uid://dtekodshcf7ss" path="res://scenes/hex.tscn" id="1_7024n"]
+[ext_resource type="PackedScene" uid="uid://dtekodshcf7ss" path="res://framework/scenes/hex.tscn" id="1_7024n"]
 
 [node name="Row" type="Node3D"]
 

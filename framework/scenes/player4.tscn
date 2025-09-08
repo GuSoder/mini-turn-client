@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dwb8grtm4motc"]
 
-[ext_resource type="Material" uid="uid://cq1ed5l8lshj1" path="res://materials/yellow.tres" id="1_8kiq4"]
-[ext_resource type="ArrayMesh" uid="uid://bagqr18k457cd" path="res://objects/chevron.obj" id="2_iuv4h"]
+[ext_resource type="Material" uid="uid://cq1ed5l8lshj1" path="res://framework/materials/yellow.tres" id="1_8kiq4"]
+[ext_resource type="ArrayMesh" uid="uid://bagqr18k457cd" path="res://framework/objects/chevron.obj" id="2_iuv4h"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_u8vuu"]
 
