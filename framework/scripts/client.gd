@@ -251,6 +251,8 @@ func animate_along_path(player_node: Node3D, positions: Array[Vector3], player_i
 	tween.tween_callback(func(): 
 		is_animating = false
 		update_player_position(player_index, state)
+		# Deactivate animations when player finishes moving
+		deactivate_player_animations(player_index)
 		# If this is our player, send end turn request
 		if player_index == client_number - 1 and client_status == Status.MOVING:
 			print("CLIENT: Player " + str(client_number) + " animation complete, sending end_turn")

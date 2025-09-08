@@ -145,6 +145,8 @@ func process_game_state(state: Dictionary):
 					# Simulate animation time then send end turn
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
+						# Deactivate animations when bot finishes moving
+						deactivate_player_animations(i)
 						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
 						end_turn()
 	
