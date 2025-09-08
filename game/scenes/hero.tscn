@@ -1,0 +1,159 @@
+[gd_scene load_steps=11 format=3 uid="uid://fj7o6e1p650o"]
+
+[ext_resource type="Material" uid="uid://bd3i4nb7vnq11" path="res://game/materials/skin.tres" id="1_7qh3m"]
+[ext_resource type="Material" uid="uid://2ie6rchswkb3" path="res://game/materials/wool.tres" id="2_mepxg"]
+[ext_resource type="Material" uid="uid://cmwh8krat06t8" path="res://game/materials/sack.tres" id="3_kcias"]
+[ext_resource type="Script" uid="uid://ty1574q2wrjy" path="res://game/scripts/swing.gd" id="4_2xei5"]
+[ext_resource type="PackedScene" uid="uid://csmyy7ye2ceuj" path="res://items/sword/sword.tscn" id="5_qhscc"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65fms"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_g0vfh"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_jl7a3"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_koih4"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_e2bvg"]
+
+[node name="Hero" type="Node3D"]
+
+[node name="Appearance" type="Node3D" parent="."]
+transform = Transform3D(-0.2, 0, -1.74846e-08, 0, 0.2, 0, 1.74846e-08, 0, -0.2, 0, 0.30393, 0)
+
+[node name="Torso" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 4, 0)
+mesh = SubResource("CylinderMesh_65fms")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("1_7qh3m")
+
+[node name="Jeans" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(1, 0, 0, 0, 0.4, 0, 0, 0, 1, 0, 3.5, 0)
+mesh = SubResource("CylinderMesh_65fms")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_mepxg")
+
+[node name="Sweater" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(1, 0, 0, 0, 0.4, 0, 0, 0, 1, 0, 4.5, 0)
+mesh = SubResource("CylinderMesh_65fms")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("3_kcias")
+
+[node name="Head" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 6.5, 0)
+material_override = ExtResource("1_7qh3m")
+mesh = SubResource("SphereMesh_g0vfh")
+skeleton = NodePath("../Torso")
+
+[node name="Legs" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("SphereMesh_jl7a3")
+skeleton = NodePath("../Torso")
+
+[node name="Right" type="Node3D" parent="Appearance/Legs"]
+transform = Transform3D(0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("4_2xei5")
+t_off = 1.0
+
+[node name="Upper" type="MeshInstance3D" parent="Appearance/Legs/Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Knee" type="MeshInstance3D" parent="Appearance/Legs/Right/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Appearance/Legs/Right/Upper/Knee"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Appearance/Legs/Right/Upper/Knee/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_7qh3m")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Left" type="Node3D" parent="Appearance/Legs"]
+transform = Transform3D(0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("4_2xei5")
+
+[node name="Upper" type="MeshInstance3D" parent="Appearance/Legs/Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Knee" type="MeshInstance3D" parent="Appearance/Legs/Left/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Appearance/Legs/Left/Upper/Knee"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("2_mepxg")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Appearance/Legs/Left/Upper/Knee/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_7qh3m")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Arms" type="MeshInstance3D" parent="Appearance"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("SphereMesh_jl7a3")
+skeleton = NodePath("../Torso")
+
+[node name="Left" type="Node3D" parent="Appearance/Arms"]
+transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("4_2xei5")
+
+[node name="Upper" type="MeshInstance3D" parent="Appearance/Arms/Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Elbow" type="MeshInstance3D" parent="Appearance/Arms/Left/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Appearance/Arms/Left/Upper/Elbow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Appearance/Arms/Left/Upper/Elbow/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_7qh3m")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Right" type="Node3D" parent="Appearance/Arms"]
+transform = Transform3D(0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("4_2xei5")
+t_off = 1.0
+
+[node name="Upper" type="MeshInstance3D" parent="Appearance/Arms/Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Elbow" type="MeshInstance3D" parent="Appearance/Arms/Right/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Appearance/Arms/Right/Upper/Elbow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_kcias")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Appearance/Arms/Right/Upper/Elbow/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_7qh3m")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Sword" parent="Appearance/Arms/Right/Upper/Elbow/Lower/End" instance=ExtResource("5_qhscc")]
+transform = Transform3D(0.45, 0, 0, 0, -1.96701e-08, 0.45, 0, -0.45, -1.96701e-08, 0, 0, 0)

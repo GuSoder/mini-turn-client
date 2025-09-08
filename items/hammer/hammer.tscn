@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvx73wsg2u20t"]
+
+[ext_resource type="Material" uid="uid://c4aip1mmf8xft" path="res://game/materials/wood.tres" id="1_dmxb3"]
+[ext_resource type="ArrayMesh" uid="uid://dj27gn5ur4xhl" path="res://items/hammer/hammer_handle.obj" id="2_168ie"]
+[ext_resource type="Material" uid="uid://d12gaalal5xl1" path="res://game/materials/steel.tres" id="3_dmxb3"]
+[ext_resource type="ArrayMesh" uid="uid://c5nx1ikofgthh" path="res://items/hammer/hammer_head.obj" id="4_on3h7"]
+
+[node name="Hammer" type="Node3D"]
+
+[node name="HammerHandle" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_dmxb3")
+mesh = ExtResource("2_168ie")
+
+[node name="HammerHead" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3_dmxb3")
+mesh = ExtResource("4_on3h7")

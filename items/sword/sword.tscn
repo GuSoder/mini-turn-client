@@ -1,0 +1,27 @@
+[gd_scene load_steps=8 format=3 uid="uid://csmyy7ye2ceuj"]
+
+[ext_resource type="ArrayMesh" uid="uid://jangsmn17pd4" path="res://items/sword/blade.obj" id="1_5647l"]
+[ext_resource type="Material" uid="uid://d12gaalal5xl1" path="res://game/materials/steel.tres" id="1_gejlb"]
+[ext_resource type="ArrayMesh" uid="uid://bdbutkrnmtpme" path="res://items/sword/handle.obj" id="2_jhgk2"]
+[ext_resource type="Material" uid="uid://crfmhgcd54cn8" path="res://game/materials/darkwood.tres" id="3_8dpvy"]
+[ext_resource type="ArrayMesh" uid="uid://cyjhb11fduqm3" path="res://items/sword/hilt.obj" id="3_ks111"]
+[ext_resource type="ArrayMesh" uid="uid://dbl4epckpwcxk" path="res://items/sword/knob.obj" id="4_fy820"]
+[ext_resource type="Material" uid="uid://oo25ouklh54m" path="res://game/materials/brass.tres" id="5_ujow4"]
+
+[node name="Sword" type="Node3D"]
+
+[node name="Blade" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_gejlb")
+mesh = ExtResource("1_5647l")
+
+[node name="Handle" type="MeshInstance3D" parent="."]
+material_override = ExtResource("3_8dpvy")
+mesh = ExtResource("2_jhgk2")
+
+[node name="Hilt" type="MeshInstance3D" parent="."]
+material_override = ExtResource("5_ujow4")
+mesh = ExtResource("3_ks111")
+
+[node name="Knob" type="MeshInstance3D" parent="."]
+material_override = ExtResource("5_ujow4")
+mesh = ExtResource("4_fy820")
