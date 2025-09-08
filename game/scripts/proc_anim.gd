@@ -15,7 +15,7 @@ func _ready():
 func find_swing_scripts(node: Node):
 	# Recursively find all nodes with swing scripts
 	for child in node.get_children():
-		if child.has_method("set_enabled") and child.get_script() != null:
+		if child.get_script() != null:
 			var script_path = child.get_script().get_path()
 			if "swing.gd" in script_path:
 				swing_scripts.append(child)
@@ -27,11 +27,16 @@ func find_swing_scripts(node: Node):
 func activate_swings():
 	print("ProcAnim: Activating " + str(swing_scripts.size()) + " swing animations")
 	for swing_script in swing_scripts:
-		if swing_script and swing_script.has_method("set_enabled"):
-			swing_script.set_enabled(true)
+		if swing_script:
+			swing_script.process_mode = Node.PROCESS_MODE_INHERIT
 
 func deactivate_swings():
 	print("ProcAnim: Deactivating " + str(swing_scripts.size()) + " swing animations")
 	for swing_script in swing_scripts:
-		if swing_script and swing_script.has_method("set_enabled"):
-			swing_script.set_enabled(false)
+		if swing_script:
+			swing_script.process_mode = Node.PROCESS_MODE_DISABLED
+			# Reset to initial rotation when disabled
+			if swing_script.has_method("_ready"):
+				var z_off = swing_script.get("z_off")
+				if z_off != null:
+					swing_script.rotation_degrees = Vector3(0, 0, z_off)

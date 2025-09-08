@@ -8,7 +8,6 @@ extends Node3D
 var overrideAngle : Vector3 = Vector3(90, 0, 0)
 var t: float = 0.0
 var z_off: float
-var enabled: bool = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -19,18 +18,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if not enabled:
-		return
-		
 	t += delta * 10.0 * s
 	var angle = 30 * sin(t) * a
 	if doOverrideAngle:
 		rotation_degrees = overrideAngle
 	else:
 		rotation_degrees = Vector3(angle, 0, z_off)
-
-func set_enabled(value: bool):
-	enabled = value
-	if not enabled:
-		# Reset to initial rotation when disabled
-		rotation_degrees = Vector3(0, 0, z_off)
+	pass
