@@ -20,10 +20,19 @@ class AStarNode:
 		f_cost = g_cost + h_cost
 
 var blocked_hexes: Array[Vector2i] = []
+var island_map: Array = []
 var client: Client
 
 func _ready():
 	client = get_parent() as Client
+	# Connect to island loader if it exists
+	var island_loader = get_parent().get_node("IslandLoader")
+	if island_loader:
+		island_loader.map_loaded.connect(_on_island_map_loaded)
+
+func _on_island_map_loaded(map_data: Array):
+	island_map = map_data
+	print("PathFinder: Island map loaded for pathfinding")
 
 # Set blocked hexes (usually player positions)
 func set_blocked_hexes(hexes: Array[Vector2i]):
@@ -63,9 +72,24 @@ func get_hex_neighbors(hex_pos: Vector2i) -> Array[Vector2i]:
 	
 	return neighbors
 
-# Check if hex is blocked
+# Check if hex is water (0 tile)
+func is_hex_water(hex_pos: Vector2i) -> bool:
+	if island_map.size() == 0:
+		return false  # No map data, assume traversable
+	
+	if hex_pos.y < 0 or hex_pos.y >= island_map.size():
+		return true  # Out of bounds, treat as water
+	
+	var row_data = island_map[hex_pos.y]
+	if hex_pos.x < 0 or hex_pos.x >= row_data.length():
+		return true  # Out of bounds, treat as water
+	
+	var tile_value = int(str(row_data[hex_pos.x]))
+	return tile_value == 0
+
+# Check if hex is blocked (by players or water)
 func is_hex_blocked(hex_pos: Vector2i) -> bool:
-	return hex_pos in blocked_hexes
+	return hex_pos in blocked_hexes or is_hex_water(hex_pos)
 
 # Get full path from start to goal (may be very long)
 func get_full_path(start: Vector2i, goal: Vector2i) -> Array[Vector2i]:
