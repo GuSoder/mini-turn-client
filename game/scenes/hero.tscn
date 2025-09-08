@@ -4,6 +4,7 @@
 [ext_resource type="Material" uid="uid://2ie6rchswkb3" path="res://game/materials/wool.tres" id="2_mepxg"]
 [ext_resource type="Material" uid="uid://cmwh8krat06t8" path="res://game/materials/yellow_sack.tres" id="3_kcias"]
 [ext_resource type="Script" uid="uid://ty1574q2wrjy" path="res://game/scripts/swing.gd" id="4_2xei5"]
+[ext_resource type="Script" path="res://game/scripts/proc_anim.gd" id="4_proc_anim"]
 [ext_resource type="PackedScene" uid="uid://csmyy7ye2ceuj" path="res://items/sword/sword.tscn" id="5_qhscc"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_65fms"]
@@ -17,6 +18,9 @@
 [sub_resource type="SphereMesh" id="SphereMesh_e2bvg"]
 
 [node name="Hero" type="Node3D"]
+
+[node name="ProcAnim" type="Node" parent="."]
+script = ExtResource("4_proc_anim")
 
 [node name="Appearance" type="Node3D" parent="."]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.30393, 0)

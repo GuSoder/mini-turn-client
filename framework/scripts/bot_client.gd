@@ -114,6 +114,10 @@ func process_game_state(state: Dictionary):
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
 		client_status = Status.CHOOSING
+		
+		# Deactivate animations for all players when returning to planning phase
+		for i in range(4):
+			deactivate_player_animations(i)
 	
 	# Update player positions from server state
 	if "positions" in state:
@@ -134,6 +138,10 @@ func process_game_state(state: Dictionary):
 				if i == client_number - 1 and state.get("phase", "planning") == "moving":
 					client_status = Status.MOVING
 					print("BOT: Player " + str(client_number) + " animation starting, status -> MOVING")
+				
+				# Activate animations when any player starts moving
+				if state.get("phase", "planning") == "moving":
+					activate_player_animations(i)
 					# Simulate animation time then send end turn
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
@@ -370,3 +378,25 @@ func _on_bot_move_response(success: bool, response_data: Dictionary):
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout
 	poll_server()
+
+func activate_player_animations(player_index: int):
+	var players_node = get_parent().get_node("Players")
+	if not players_node:
+		return
+		
+	var player_node = players_node.get_child(player_index)
+	if player_node:
+		var proc_anim = player_node.get_node("ProcAnim")
+		if proc_anim and proc_anim.has_method("activate_swings"):
+			proc_anim.activate_swings()
+
+func deactivate_player_animations(player_index: int):
+	var players_node = get_parent().get_node("Players")
+	if not players_node:
+		return
+		
+	var player_node = players_node.get_child(player_index)
+	if player_node:
+		var proc_anim = player_node.get_node("ProcAnim")
+		if proc_anim and proc_anim.has_method("deactivate_swings"):
+			proc_anim.deactivate_swings()

@@ -153,6 +153,10 @@ func process_game_state(state: Dictionary):
 		# Reset attack state when new turn begins
 		is_attacking = false
 		attack_target = -1
+		
+		# Deactivate animations for all players when returning to planning phase
+		for i in range(4):
+			deactivate_player_animations(i)
 
 	# Update turn marker position
 	update_turn_marker_position(state)
@@ -186,6 +190,10 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	if player_index == client_number - 1 and state.get("phase", "planning") == "moving":
 		client_status = Status.MOVING
 		print("CLIENT: Player " + str(client_number) + " animation starting, status -> MOVING")
+	
+	# Activate animations when player starts moving
+	if state.get("phase", "planning") == "moving":
+		activate_player_animations(player_index)
 	
 	# Convert hex path to world positions and animate
 	var world_positions: Array[Vector3] = []
@@ -486,3 +494,17 @@ func show_path_markers(path: Array[Vector2i]):
 				var marker = path_markers_node.get_child(marker_index)
 				marker.position = hex_world_pos
 				marker.visible = true
+
+func activate_player_animations(player_index: int):
+	var player_node = players_node.get_child(player_index)
+	if player_node:
+		var proc_anim = player_node.get_node("ProcAnim")
+		if proc_anim and proc_anim.has_method("activate_swings"):
+			proc_anim.activate_swings()
+
+func deactivate_player_animations(player_index: int):
+	var player_node = players_node.get_child(player_index)
+	if player_node:
+		var proc_anim = player_node.get_node("ProcAnim")
+		if proc_anim and proc_anim.has_method("deactivate_swings"):
+			proc_anim.deactivate_swings()
