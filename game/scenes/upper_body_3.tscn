@@ -1,0 +1,82 @@
+[gd_scene load_steps=10 format=3 uid="uid://b12875bqyktoa"]
+
+[ext_resource type="Material" uid="uid://dbo4ta3ggdb2y" path="res://game/materials/green_sack.tres" id="1_dl1br"]
+[ext_resource type="Material" uid="uid://cmwh8krat06t8" path="res://game/materials/yellow_sack.tres" id="2_pjchm"]
+[ext_resource type="Script" uid="uid://ty1574q2wrjy" path="res://game/scripts/swing.gd" id="3_ecyiy"]
+[ext_resource type="Material" uid="uid://bd3i4nb7vnq11" path="res://game/materials/skin.tres" id="4_7op46"]
+[ext_resource type="PackedScene" uid="uid://csmyy7ye2ceuj" path="res://items/sword/sword.tscn" id="5_2g6ld"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65fms"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_jl7a3"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_koih4"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_e2bvg"]
+
+[node name="UpperBody" type="Node3D"]
+
+[node name="Sweater" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.4, 0, 0, 0, 1, 0, -0.500001, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("CylinderMesh_65fms")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("2_pjchm")
+
+[node name="Arms" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.76837e-07, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("SphereMesh_jl7a3")
+skeleton = NodePath("../../Torso")
+
+[node name="Left" type="Node3D" parent="Arms"]
+transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("3_ecyiy")
+
+[node name="Upper" type="MeshInstance3D" parent="Arms/Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Elbow" type="MeshInstance3D" parent="Arms/Left/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Arms/Left/Upper/Elbow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Arms/Left/Upper/Elbow/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("4_7op46")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Right" type="Node3D" parent="Arms"]
+transform = Transform3D(0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("3_ecyiy")
+t_off = 1.0
+
+[node name="Upper" type="MeshInstance3D" parent="Arms/Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Elbow" type="MeshInstance3D" parent="Arms/Right/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Arms/Right/Upper/Elbow"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_dl1br")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Arms/Right/Upper/Elbow/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("4_7op46")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Sword" parent="Arms/Right/Upper/Elbow/Lower/End" instance=ExtResource("5_2g6ld")]
+transform = Transform3D(0.45, 0, 0, 0, -1.96701e-08, 0.45, 0, -0.45, -1.96701e-08, 0, 0, 0)
