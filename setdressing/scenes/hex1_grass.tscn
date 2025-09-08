@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://bfp45jj8a6fux"]
 
-[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_ia0yv"]
-[ext_resource type="ArrayMesh" uid="uid://5t4im137kdt8" path="res://setdressing/objects/hex_grass.obj" id="1_igd4p"]
-[ext_resource type="ArrayMesh" uid="uid://coenhcjykqt50" path="res://setdressing/objects/hex_stone.obj" id="2_ia0yv"]
-[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_ivshe"]
+[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_hscmn"]
+[ext_resource type="ArrayMesh" uid="uid://5t4im137kdt8" path="res://setdressing/objects/hex_grass.obj" id="2_3wvna"]
+[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_5kfs6"]
+[ext_resource type="ArrayMesh" uid="uid://coenhcjykqt50" path="res://setdressing/objects/hex_stone.obj" id="4_uqmdo"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_b6u1t"]
 points = PackedVector3Array(0.0864668, 0.899961, 0.949814, -0.0866364, 0.899961, 0.949814, 0.0864668, -0.900157, 0.949814, 0.779389, 0.899961, 0.549951, -0.000169575, 1, 0.884348, -0.779558, 0.899961, 0.549951, -0.0866364, -0.900157, 0.949814, -0.000169575, -1, 0.884348, 0.779389, -0.900157, 0.549951, 0.765995, 1, 0.442081, 0.866025, 0.899961, 0.399863, -0.766164, 1, 0.442081, -0.866025, 0.899961, 0.399863, -0.779558, -0.900157, 0.549951, -0.766164, -1, 0.442081, 0.765995, -1, 0.442081, 0.866025, -0.900157, 0.399863, 0.765995, 1, -0.442453, 0.866025, 0.899961, -0.400049, -0.766164, 1, -0.442453, -0.866025, 0.899961, -0.400049, -0.866025, -0.900157, 0.399863, -0.766164, -1, -0.442453, 0.765995, -1, -0.442453, 0.866025, -0.900157, -0.400049, -0.000169575, 1, -0.88472, 0.779389, 0.899961, -0.550137, -0.779558, 0.899961, -0.550137, -0.866025, -0.900157, -0.400049, -0.000169575, -1, -0.88472, -0.779558, -0.900157, -0.550137, 0.779389, -0.900157, -0.550137, 0.0864668, 0.899961, -0.95, -0.0866364, 0.899961, -0.95, -0.0866364, -0.900157, -0.95, 0.0864668, -0.900157, -0.95)
@@ -16,10 +16,10 @@ shape = SubResource("ConvexPolygonShape3D_b6u1t")
 
 [node name="HexGrass" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-material_override = ExtResource("1_ia0yv")
-mesh = ExtResource("1_igd4p")
+material_override = ExtResource("1_hscmn")
+mesh = ExtResource("2_3wvna")
 
 [node name="HexStone" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-material_override = ExtResource("3_ivshe")
-mesh = ExtResource("2_ia0yv")
+material_override = ExtResource("3_5kfs6")
+mesh = ExtResource("4_uqmdo")
