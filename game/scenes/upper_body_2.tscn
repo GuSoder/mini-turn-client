@@ -32,6 +32,7 @@ skeleton = NodePath("../../Torso")
 [node name="Left" type="Node3D" parent="Arms"]
 transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("3_i8bea")
+z_off = -30.0
 
 [node name="Upper" type="MeshInstance3D" parent="Arms/Left"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)

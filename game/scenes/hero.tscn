@@ -55,6 +55,7 @@ skeleton = NodePath("../../Torso")
 [node name="Left" type="Node3D" parent="Appearance/UpperBody/Arms"]
 transform = Transform3D(0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("4_2xei5")
+z_off = -30.0
 
 [node name="Upper" type="MeshInstance3D" parent="Appearance/UpperBody/Arms/Left"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -122,6 +123,7 @@ skeleton = NodePath("../../Torso")
 transform = Transform3D(0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("4_2xei5")
 t_off = 1.0
+z_off = -20.0
 
 [node name="Upper" type="MeshInstance3D" parent="Appearance/LowerBody/Legs/Right"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -146,6 +148,7 @@ mesh = SubResource("SphereMesh_e2bvg")
 [node name="Left" type="Node3D" parent="Appearance/LowerBody/Legs"]
 transform = Transform3D(0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("4_2xei5")
+z_off = 20.0
 
 [node name="Upper" type="MeshInstance3D" parent="Appearance/LowerBody/Legs/Left"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)

@@ -5,13 +5,14 @@ extends Node3D
 @export var s : float = 1
 @export var a : float = 1
 @export var doOverrideAngle : bool = false
+@export var z_off : float = 30
 var overrideAngle : Vector3 = Vector3(90, 0, 0)
 var t: float = 0.0
-var z_off: float
+#var z_off: float
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	z_off = rotation_degrees.z
+	#z_off = rotation_degrees.z
 	t = t_off * 3.15
 	pass # Replace with function body.
 
