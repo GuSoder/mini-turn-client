@@ -67,7 +67,7 @@ script = ExtResource("6_h12ej")
 client_number = 4
 path_strategy = 1
 patrol_point_1 = Vector2i(3, 6)
-patrol_point_2 = Vector2i(7, 8)
+patrol_point_2 = Vector2i(6, 8)
 
 [node name="Rendering" parent="." instance=ExtResource("7_firu8")]
 

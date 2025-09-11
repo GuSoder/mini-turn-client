@@ -1,0 +1,73 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhthdrskmptb8"]
+
+[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="1_ygpj4"]
+[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="2_qpdls"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_bfqhd"]
+
+[node name="Stones" type="Node3D"]
+
+[node name="Stone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(5.71, 0, 0, 0, 3.67, 0, 0, 0, 3.67, 0, 1.03768, 0)
+material_override = ExtResource("1_ygpj4")
+mesh = SubResource("SphereMesh_bfqhd")
+
+[node name="Moss" type="MeshInstance3D" parent="Stone1"]
+transform = Transform3D(0.961076, 0.0635825, -0.127029, -0.0593578, 0.982723, 0.0280832, 0.132642, -0.0209236, 0.932973, -0.0340512, 0.101718, -0.0231408)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("../..")
+
+[node name="Moss2" type="MeshInstance3D" parent="Stone1"]
+transform = Transform3D(0.961076, 0.0635825, -0.127029, -0.0593578, 0.982723, 0.0280832, 0.132642, -0.0209236, 0.932973, 0.0203761, 0.101718, -0.0231408)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("../..")
+
+[node name="Moss3" type="MeshInstance3D" parent="Stone1"]
+transform = Transform3D(0.961076, 0.0635825, -0.127029, -0.0593578, 0.982723, 0.0280832, 0.132642, -0.0209236, 0.932973, -0.0335291, 0.101718, 0.00134898)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("../..")
+
+[node name="Stone2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.40973, 0, -1.5261, 0, 1.1151, 0, 1.99583, 0, -1.07794, 1.10098, 0.104324, -1.9855)
+material_override = ExtResource("1_ygpj4")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Moss" type="MeshInstance3D" parent="Stone2"]
+transform = Transform3D(0.899008, -0.0434445, -0.074693, 0.0441232, 0.913824, 0.0122105, 0.0764538, -0.0165315, 0.871257, -0.0364094, 0.101718, 0)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Moss2" type="MeshInstance3D" parent="Stone2"]
+transform = Transform3D(0.899008, -0.0434445, -0.0746931, 0.0441232, 0.913824, 0.0122105, 0.0764537, -0.0165315, 0.871257, 0.00538063, 0.101718, 0.0773755)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Moss3" type="MeshInstance3D" parent="Stone2"]
+transform = Transform3D(0.899008, -0.0434445, -0.0746931, 0.0441232, 0.913824, 0.0122105, 0.0764537, -0.0165315, 0.871257, 0.0509115, 0.101718, -0.0654053)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Stone3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-2.69937, 0, -0.494042, 0, 2.36715, 0, 0.530085, 0, -2.51583, 1.87038, 0.21328, 1.68702)
+material_override = ExtResource("1_ygpj4")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Moss" type="MeshInstance3D" parent="Stone3"]
+transform = Transform3D(0.893755, -0.0180654, -0.0500084, 0.0448815, 0.914688, 0.0128458, 0.123271, -0.0159641, 0.873012, -0.0364094, 0.101718, 0)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")
+
+[node name="Moss2" type="MeshInstance3D" parent="Stone3"]
+transform = Transform3D(0.893755, -0.0180654, -0.0500085, 0.0448815, 0.914688, 0.0128458, 0.123271, -0.0159641, 0.873012, 0.0461958, 0.101718, -0.0243765)
+material_override = ExtResource("2_qpdls")
+mesh = SubResource("SphereMesh_bfqhd")
+skeleton = NodePath("")

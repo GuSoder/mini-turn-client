@@ -1,0 +1,29 @@
+[gd_scene load_steps=7 format=3 uid="uid://bnd7qtqndt20"]
+
+[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_4tixp"]
+[ext_resource type="ArrayMesh" uid="uid://dbhggtdqsnb4a" path="res://setdressing/objects/hex_e_grass.obj" id="2_h4k7k"]
+[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_ruuh6"]
+[ext_resource type="ArrayMesh" uid="uid://l7xrodmkhf21" path="res://setdressing/objects/hex_e_stone.obj" id="4_yf4ty"]
+[ext_resource type="PackedScene" uid="uid://dhthdrskmptb8" path="res://setdressing/scenes/stones_1.tscn" id="5_4tixp"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_b6u1t"]
+points = PackedVector3Array(0.0864668, 0.899961, 0.949814, -0.0866364, 0.899961, 0.949814, 0.0864668, -0.900157, 0.949814, 0.779389, 0.899961, 0.549951, -0.000169575, 1, 0.884348, -0.779558, 0.899961, 0.549951, -0.0866364, -0.900157, 0.949814, -0.000169575, -1, 0.884348, 0.779389, -0.900157, 0.549951, 0.765995, 1, 0.442081, 0.866025, 0.899961, 0.399863, -0.766164, 1, 0.442081, -0.866025, 0.899961, 0.399863, -0.779558, -0.900157, 0.549951, -0.766164, -1, 0.442081, 0.765995, -1, 0.442081, 0.866025, -0.900157, 0.399863, 0.765995, 1, -0.442453, 0.866025, 0.899961, -0.400049, -0.766164, 1, -0.442453, -0.866025, 0.899961, -0.400049, -0.866025, -0.900157, 0.399863, -0.766164, -1, -0.442453, 0.765995, -1, -0.442453, 0.866025, -0.900157, -0.400049, -0.000169575, 1, -0.88472, 0.779389, 0.899961, -0.550137, -0.779558, 0.899961, -0.550137, -0.866025, -0.900157, -0.400049, -0.000169575, -1, -0.88472, -0.779558, -0.900157, -0.550137, 0.779389, -0.900157, -0.550137, 0.0864668, 0.899961, -0.95, -0.0866364, 0.899961, -0.95, -0.0866364, -0.900157, -0.95, 0.0864668, -0.900157, -0.95)
+
+[node name="Hex" type="StaticBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("ConvexPolygonShape3D_b6u1t")
+
+[node name="HexEGrass" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_4tixp")
+mesh = ExtResource("2_h4k7k")
+
+[node name="HexEStone" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_ruuh6")
+mesh = ExtResource("4_yf4ty")
+
+[node name="Stones" parent="." instance=ExtResource("5_4tixp")]
+transform = Transform3D(0.21, 0, 0, 0, 0.21, 0, 0, 0, 0.21, 0, 0, 0)
