@@ -1,0 +1,65 @@
+[gd_scene load_steps=16 format=3 uid="uid://bjc6csklurlhb"]
+
+[ext_resource type="Material" uid="uid://br4k420qjdk18" path="res://game/materials/wood2.tres" id="1_2o2bp"]
+[ext_resource type="ArrayMesh" uid="uid://b0vnp6jyehiie" path="res://setdressing/objects/house/woodframe.obj" id="1_16ohm"]
+[ext_resource type="Material" uid="uid://crfmhgcd54cn8" path="res://game/materials/darkwood.tres" id="1_og3gr"]
+[ext_resource type="ArrayMesh" uid="uid://c2m5tyu41l0r7" path="res://setdressing/objects/house/windows.obj" id="2_og3gr"]
+[ext_resource type="ArrayMesh" uid="uid://c88smcrr0khg8" path="res://setdressing/objects/house/windowglass.obj" id="3_b3wxj"]
+[ext_resource type="ArrayMesh" uid="uid://i774d7sn14ej" path="res://setdressing/objects/house/rooftiles4.obj" id="4_2o2bp"]
+[ext_resource type="Material" uid="uid://b3yr5ehdn3q0q" path="res://game/materials/black.tres" id="4_ejr7n"]
+[ext_resource type="ArrayMesh" uid="uid://bw1agvtwlcb0c" path="res://setdressing/objects/house/rooftiles3.obj" id="5_ejr7n"]
+[ext_resource type="ArrayMesh" uid="uid://cewpl1j45sql6" path="res://setdressing/objects/house/rooftiles2.obj" id="6_k7j0t"]
+[ext_resource type="ArrayMesh" uid="uid://ci8xcmwy6abq" path="res://setdressing/objects/house/rooftiles1.obj" id="7_22mhy"]
+[ext_resource type="ArrayMesh" uid="uid://dxllgggkycdqv" path="res://setdressing/objects/house/roof.obj" id="8_6gvov"]
+[ext_resource type="ArrayMesh" uid="uid://crdcynogg0e38" path="res://setdressing/objects/house/doorframe.obj" id="9_h8y81"]
+[ext_resource type="ArrayMesh" uid="uid://bcmroij514vpx" path="res://setdressing/objects/house/door.obj" id="10_8meuk"]
+[ext_resource type="Material" uid="uid://cl0vltwjgc485" path="res://game/materials/roofred.tres" id="10_ejr7n"]
+[ext_resource type="ArrayMesh" uid="uid://k7vw8hupydys" path="res://setdressing/objects/house/plaster.obj" id="11_ihob3"]
+
+[node name="House" type="Node3D"]
+
+[node name="Woodframe" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_2o2bp")
+mesh = ExtResource("1_16ohm")
+
+[node name="Windows" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.01, 0, 0, 0, 1.01, 0, 0, 0, 1.01, 0, 0, 0)
+material_override = ExtResource("1_2o2bp")
+mesh = ExtResource("2_og3gr")
+
+[node name="Windowglass" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 1.02, 0.0119298, 0.0206988, -0.00317311)
+material_override = ExtResource("4_ejr7n")
+mesh = ExtResource("3_b3wxj")
+
+[node name="Rooftiles4" type="MeshInstance3D" parent="."]
+material_override = ExtResource("10_ejr7n")
+mesh = ExtResource("4_2o2bp")
+
+[node name="Rooftiles3" type="MeshInstance3D" parent="."]
+material_override = ExtResource("10_ejr7n")
+mesh = ExtResource("5_ejr7n")
+
+[node name="Rooftiles2" type="MeshInstance3D" parent="."]
+material_override = ExtResource("10_ejr7n")
+mesh = ExtResource("6_k7j0t")
+
+[node name="Rooftiles1" type="MeshInstance3D" parent="."]
+material_override = ExtResource("10_ejr7n")
+mesh = ExtResource("7_22mhy")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+material_override = ExtResource("10_ejr7n")
+mesh = ExtResource("8_6gvov")
+
+[node name="Doorframe" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_2o2bp")
+mesh = ExtResource("9_h8y81")
+
+[node name="Door" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_og3gr")
+mesh = ExtResource("10_8meuk")
+
+[node name="Plaster" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.01, 0, 0, 0, 1.01, 0, 0, 0, 1.01, 0, 0, 0)
+mesh = ExtResource("11_ihob3")

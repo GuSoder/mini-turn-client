@@ -19,7 +19,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	t += delta * 10.0 * s
+	t += delta * 20.0 * s
 	var angle = 30 * sin(t) * a
 	if doOverrideAngle:
 		rotation_degrees = overrideAngle
