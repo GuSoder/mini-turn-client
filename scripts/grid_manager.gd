@@ -6,6 +6,7 @@ extends Node
 var hex_water_scene = preload("res://setdressing/scenes/hex0_water.tscn")
 var hex_grass_scene = preload("res://setdressing/scenes/hex1_grass.tscn")
 var hex_tree_scene = preload("res://setdressing/scenes/hex2_tree.tscn")
+var hex_house_scene = preload("res://setdressing/scenes/hex3_house.tscn")
 
 func _ready():
 	if island_loader:
@@ -57,6 +58,8 @@ func update_grid_tiles(map_data: Array):
 				new_hex_scene = hex_grass_scene
 			elif tile_type == 2:
 				new_hex_scene = hex_tree_scene
+			elif tile_type == 3:
+				new_hex_scene = hex_house_scene
 			else:
 				new_hex_scene = hex_grass_scene
 			
