@@ -11,7 +11,7 @@ func _ready():
 	http_request.request_completed.connect(_on_request_completed)
 	
 	# Fetch island map on startup
-	fetch_island_map(3)
+	fetch_island_map(4)
 
 func fetch_island_map(island_number: int):
 	var url = SERVER_URL + "/island/" + str(island_number)
