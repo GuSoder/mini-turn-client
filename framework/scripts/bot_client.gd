@@ -2,7 +2,7 @@ class_name BotClient
 extends Node3D
 
 enum Status { CHOOSING, MOVING }
-enum PathStrategy { PONG, PATROL }
+enum PathStrategy { PONG, PATROL, ATTACK }
 
 @export var client_number: int = 2
 @export var server_url: String = "http://207.154.222.143:5000"
@@ -11,6 +11,7 @@ enum PathStrategy { PONG, PATROL }
 @export var path_strategy: PathStrategy = PathStrategy.PONG
 @export var patrol_point_1: Vector2i = Vector2i(2, 2)
 @export var patrol_point_2: Vector2i = Vector2i(6, 6)
+@export var attack_target: int = 2
 
 var http_request: HTTPRequest
 var player_positions: Array[Vector2i] = []
@@ -165,6 +166,8 @@ func make_bot_move():
 			path = make_pong_move(current_pos)
 		PathStrategy.PATROL:
 			path = make_patrol_move(current_pos)
+		PathStrategy.ATTACK:
+			path = make_attack_move(current_pos)
 		_:
 			path = [current_pos]  # Fallback: stay in place
 	
@@ -288,6 +291,50 @@ func make_simple_move_towards(current_pos: Vector2i, target_pos: Vector2i) -> Ar
 			return [current_pos]
 	
 	return [current_pos, next_pos]
+
+func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
+	# Convert attack_target from 1-4 to 0-3 index
+	var target_player_index = attack_target - 1
+	
+	# Validate target player index
+	if target_player_index < 0 or target_player_index >= 4 or target_player_index == client_number - 1:
+		# Invalid target or trying to attack self, stay in place
+		return [current_pos]
+	
+	var target_pos = player_positions[target_player_index]
+	
+	# Get PathFinder from main client
+	var main_client = get_parent().get_parent()  # Bots -> Client
+	var path_finder = main_client.get_node("PathFinder") as PathFinder
+	
+	if path_finder:
+		# Set blocked hexes (other player positions, excluding self and target)
+		var blocked_hexes: Array[Vector2i] = []
+		for i in range(4):
+			if i != client_number - 1 and i != target_player_index:
+				blocked_hexes.append(player_positions[i])
+		
+		path_finder.set_blocked_hexes(blocked_hexes)
+		
+		# Get full path from current position to target player
+		var full_path = path_finder.get_full_path(current_pos, target_pos)
+		
+		if full_path.size() > 1:
+			# Take up to 5 steps from the full path (including current position)
+			var steps_to_take = min(5, full_path.size() - 1)  # -1 because we don't count current pos twice
+			var move_path: Array[Vector2i] = []
+			
+			for i in range(steps_to_take + 1):  # +1 to include current position
+				move_path.append(full_path[i])
+			
+			print("BOT: Player " + str(client_number) + " attacking player " + str(attack_target) + ", taking " + str(steps_to_take) + " steps")
+			return move_path
+		else:
+			# If no path found, try simple move towards target
+			return make_simple_move_towards(current_pos, target_pos)
+	else:
+		# Fallback: simple move towards target
+		return make_simple_move_towards(current_pos, target_pos)
 
 func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	if current_game_state.get("playerInTurn", -1) != client_number - 1:
