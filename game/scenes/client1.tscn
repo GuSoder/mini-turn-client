@@ -65,7 +65,7 @@ patrol_point_2 = Vector2i(8, 4)
 [node name="BotClient4" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
 client_number = 4
-path_strategy = 1
+path_strategy = 2
 patrol_point_1 = Vector2i(3, 6)
 patrol_point_2 = Vector2i(6, 8)
 
