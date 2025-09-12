@@ -169,11 +169,26 @@ func process_game_state(state: Dictionary):
 				# Activate animations when any player starts moving
 				if state.get("phase", "planning") == "moving":
 					activate_player_animations(i)
-					# Simulate animation time then send end turn
+					# Simulate animation time then check for attack
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
 						# Deactivate animations when bot finishes moving
 						deactivate_player_animations(i)
+						
+						# For attack strategy, check if we're now adjacent to target after animation
+						if path_strategy == PathStrategy.ATTACK:
+							var target_player_index = attack_target - 1
+							if target_player_index >= 0 and target_player_index < 4 and target_player_index != client_number - 1:
+								var current_pos = player_positions[client_number - 1]
+								var target_pos = player_positions[target_player_index]
+								
+								if is_adjacent_to_target(current_pos, target_pos):
+									# Set attack state and send attack immediately while in MOVING phase
+									is_attacking = true
+									print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
+									send_attack_request()
+									return  # Don't send end_turn yet, attack response will handle it
+						
 						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
 						end_turn()
 	
@@ -459,12 +474,7 @@ func end_turn():
 	if is_end_turn_pending:
 		return  # Already have an end turn request pending
 	
-	# If attacking, send attack request first
-	if is_attacking:
-		send_attack_request()
-		return
-	
-	# Otherwise send end turn directly
+	# Send end turn directly (attack is handled separately during MOVING phase)
 	send_end_turn_request()
 
 func send_attack_request():
@@ -548,18 +558,6 @@ func _on_attack_timeout():
 func _on_bot_move_response(success: bool, response_data: Dictionary):
 	if success:
 		has_made_move = true
-		
-		# For attack strategy, check if we're now adjacent to target after the move
-		if path_strategy == PathStrategy.ATTACK:
-			var target_player_index = attack_target - 1
-			if target_player_index >= 0 and target_player_index < 4 and target_player_index != client_number - 1:
-				var current_pos = player_positions[client_number - 1]
-				var target_pos = player_positions[target_player_index]
-				
-				if is_adjacent_to_target(current_pos, target_pos):
-					# Set attack state - the attack will be sent when end_turn is called
-					is_attacking = true
-					print("BOT: Player " + str(client_number) + " is now adjacent to target, will attack on end_turn")
 	else:
 		pass
 
