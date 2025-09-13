@@ -357,10 +357,16 @@ func get_adjacent_hexes(hex_pos: Vector2i) -> Array[Vector2i]:
 		Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1)
 	]
 	
+	# Get dynamic grid bounds
+	var grid_node = client.grid_node
+	var max_size = 10  # fallback
+	if grid_node and grid_node.get_child_count() > 0:
+		max_size = grid_node.get_child_count()
+	
 	for direction in hex_directions:
 		var neighbor = hex_pos + direction
-		# Check grid bounds (assuming 10x10 grid)
-		if neighbor.x >= 0 and neighbor.x <= 9 and neighbor.y >= 0 and neighbor.y <= 9:
+		# Check grid bounds using dynamic size
+		if neighbor.x >= 0 and neighbor.x < max_size and neighbor.y >= 0 and neighbor.y < max_size:
 			adjacent.append(neighbor)
 	
 	return adjacent

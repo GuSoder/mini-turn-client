@@ -395,15 +395,26 @@ func _on_attack_timeout():
 
 func get_hex_node_position(hex_pos: Vector2i) -> Vector3:
 	# Find the actual hex node in the grid and return its position
-	# Grid has 10 rows (0-9), each with 10 hexes (0-9)
+	# Grid is dynamic size based on loaded island map
 	# Direct mapping from hex coordinates to grid indices
 	
 	var row_index = hex_pos.y
 	var hex_index = hex_pos.x
 	
+	# Get dynamic grid bounds
+	if not grid_node:
+		return Vector3.UP * 1000  # Invalid position
+	
+	var max_rows = grid_node.get_child_count()
+	var max_hexes = 0
+	if max_rows > 0:
+		var first_row = grid_node.get_child(0)
+		if first_row:
+			max_hexes = first_row.get_child_count()
+	
 	# Clamp to valid grid bounds
-	row_index = clamp(row_index, 0, 9)
-	hex_index = clamp(hex_index, 0, 9)
+	row_index = clamp(row_index, 0, max_rows - 1)
+	hex_index = clamp(hex_index, 0, max_hexes - 1)
 	
 	if grid_node:
 		var row_node = grid_node.get_child(row_index)
