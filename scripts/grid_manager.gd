@@ -18,23 +18,54 @@ func _on_map_loaded(map_data: Array):
 	update_grid_tiles(map_data)
 
 func update_grid_tiles(map_data: Array):
-	if not grid_node or map_data.size() != 20:
+	if not grid_node or map_data.size() == 0:
 		print("Grid Manager: Invalid map data or grid node")
 		return
 	
-	for row_index in range(20):
+	var map_size = map_data.size()
+	print("Grid Manager: Loading ", map_size, "x", map_size, " map")
+	
+	# Ensure we have enough row nodes - create additional rows if needed
+	while grid_node.get_child_count() < map_size:
+		var new_row = Node3D.new()
+		new_row.name = "Row" + str(grid_node.get_child_count())
+		
+		# Position new row following the existing pattern
+		var row_index = grid_node.get_child_count()
+		if grid_node.get_child_count() > 0:
+			var last_row = grid_node.get_child(grid_node.get_child_count() - 1)
+			new_row.transform = last_row.transform
+			new_row.transform.origin.z += 1.5  # Continue the row spacing pattern
+		
+		grid_node.add_child(new_row)
+	
+	for row_index in range(map_size):
 		if row_index >= map_data.size():
 			continue
 			
 		var row_data = map_data[row_index]
-		if row_data.length() != 20:
+		if row_data.length() != map_size:
+			print("Grid Manager: Row ", row_index, " has wrong length: ", row_data.length())
 			continue
 			
 		var row_node = grid_node.get_child(row_index)
-		if not row_node:
-			continue
+		
+		# Extend this row if it needs more hexes - continue the 1.7 unit spacing pattern
+		while row_node.get_child_count() < map_size:
+			var hex_index = row_node.get_child_count()
+			var placeholder_hex = hex_grass_scene.instantiate()
+			placeholder_hex.name = "Hex" + str(hex_index)
 			
-		for hex_index in range(20):
+			# Position following the existing 1.7 unit spacing pattern
+			if row_node.get_child_count() > 0:
+				var last_hex = row_node.get_child(row_node.get_child_count() - 1)
+				placeholder_hex.transform = last_hex.transform
+				placeholder_hex.transform.origin.x += 1.7  # Continue the hex spacing
+			
+			row_node.add_child(placeholder_hex)
+		
+		# Now update all hexes in this row
+		for hex_index in range(map_size):
 			if hex_index >= row_data.length():
 				continue
 				
