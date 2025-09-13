@@ -64,10 +64,13 @@ func get_hex_neighbors(hex_pos: Vector2i) -> Array[Vector2i]:
 		Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1)
 	]
 	
+	# Get map size dynamically from island_map
+	var map_size = island_map.size() if island_map.size() > 0 else 10
+	
 	for direction in hex_directions:
 		var neighbor = hex_pos + direction
-		# Check grid bounds (assuming 10x10 grid)
-		if neighbor.x >= 0 and neighbor.x <= 9 and neighbor.y >= 0 and neighbor.y <= 9:
+		# Check grid bounds using dynamic map size
+		if neighbor.x >= 0 and neighbor.x < map_size and neighbor.y >= 0 and neighbor.y < map_size:
 			neighbors.append(neighbor)
 	
 	return neighbors
