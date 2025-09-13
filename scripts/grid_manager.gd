@@ -32,7 +32,8 @@ func update_grid_tiles(map_data: Array):
 		new_row.name = "Row" + str(row_index)
 		
 		# Use the exact same pattern as the original grid: 30-degree rotation, -1.7 Z spacing
-		new_row.transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, row_index * -1.7)
+		var basis = Basis(Vector3(0.866025, 0, -0.5), Vector3(0, 1, 0), Vector3(0.5, 0, 0.866025))
+		new_row.transform = Transform3D(basis, Vector3(0, 0, row_index * -1.7))
 		
 		grid_node.add_child(new_row)
 	
@@ -54,7 +55,7 @@ func update_grid_tiles(map_data: Array):
 			placeholder_hex.name = "Hex" + str(hex_index)
 			
 			# Use the exact same pattern as original: X position = hex_index * 1.7
-			placeholder_hex.transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, hex_index * 1.7, 0, 0)
+			placeholder_hex.transform = Transform3D(Basis.IDENTITY, Vector3(hex_index * 1.7, 0, 0))
 			
 			row_node.add_child(placeholder_hex)
 		
