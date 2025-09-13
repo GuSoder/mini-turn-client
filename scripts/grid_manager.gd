@@ -18,23 +18,23 @@ func _on_map_loaded(map_data: Array):
 	update_grid_tiles(map_data)
 
 func update_grid_tiles(map_data: Array):
-	if not grid_node or map_data.size() != 10:
+	if not grid_node or map_data.size() != 20:
 		print("Grid Manager: Invalid map data or grid node")
 		return
 	
-	for row_index in range(10):
+	for row_index in range(20):
 		if row_index >= map_data.size():
 			continue
 			
 		var row_data = map_data[row_index]
-		if row_data.length() != 10:
+		if row_data.length() != 20:
 			continue
 			
 		var row_node = grid_node.get_child(row_index)
 		if not row_node:
 			continue
 			
-		for hex_index in range(10):
+		for hex_index in range(20):
 			if hex_index >= row_data.length():
 				continue
 				
