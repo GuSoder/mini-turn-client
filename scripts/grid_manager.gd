@@ -28,14 +28,11 @@ func update_grid_tiles(map_data: Array):
 	# Ensure we have enough row nodes - create additional rows if needed
 	while grid_node.get_child_count() < map_size:
 		var new_row = Node3D.new()
-		new_row.name = "Row" + str(grid_node.get_child_count())
-		
-		# Position new row following the existing pattern
 		var row_index = grid_node.get_child_count()
-		if grid_node.get_child_count() > 0:
-			var last_row = grid_node.get_child(grid_node.get_child_count() - 1)
-			new_row.transform = last_row.transform
-			new_row.transform.origin.z += 1.5  # Continue the row spacing pattern
+		new_row.name = "Row" + str(row_index)
+		
+		# Use the exact same pattern as the original grid: 30-degree rotation, -1.7 Z spacing
+		new_row.transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, row_index * -1.7)
 		
 		grid_node.add_child(new_row)
 	
@@ -56,11 +53,8 @@ func update_grid_tiles(map_data: Array):
 			var placeholder_hex = hex_grass_scene.instantiate()
 			placeholder_hex.name = "Hex" + str(hex_index)
 			
-			# Position following the existing 1.7 unit spacing pattern
-			if row_node.get_child_count() > 0:
-				var last_hex = row_node.get_child(row_node.get_child_count() - 1)
-				placeholder_hex.transform = last_hex.transform
-				placeholder_hex.transform.origin.x += 1.7  # Continue the hex spacing
+			# Use the exact same pattern as original: X position = hex_index * 1.7
+			placeholder_hex.transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, hex_index * 1.7, 0, 0)
 			
 			row_node.add_child(placeholder_hex)
 		
