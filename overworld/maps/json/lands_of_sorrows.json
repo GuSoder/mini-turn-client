@@ -1,0 +1,759 @@
+{
+  "name": "Lands Of Sorrows",
+  "origin": "https://watabou.github.io/perilous-shores/?seed=1000819870&tags=woodland,land,evil,perilous&w=800&h=800",
+  "bp": {
+    "width": 800,
+    "height": 800,
+    "tags": [
+      "woodland",
+      "land",
+      "evil",
+      "perilous"
+    ]
+  },
+  "layout": "even-r",
+  "hexes": {
+    "q8_r0": {
+      "q": 8,
+      "r": 0,
+      "terrain": "forest-dark"
+    },
+    "q9_r0": {
+      "q": 9,
+      "r": 0,
+      "terrain": "forest-dark"
+    },
+    "q2_r1": {
+      "q": 2,
+      "r": 1
+    },
+    "q3_r1": {
+      "q": 3,
+      "r": 1,
+      "terrain": "mountain"
+    },
+    "q4_r1": {
+      "q": 4,
+      "r": 1,
+      "terrain": "mountain"
+    },
+    "q5_r1": {
+      "q": 5,
+      "r": 1,
+      "terrain": "forest-dark"
+    },
+    "q6_r1": {
+      "q": 6,
+      "r": 1,
+      "terrain": "forest-dark"
+    },
+    "q7_r1": {
+      "q": 7,
+      "r": 1,
+      "terrain": "forest-dark"
+    },
+    "q8_r1": {
+      "q": 8,
+      "r": 1
+    },
+    "q9_r1": {
+      "q": 9,
+      "r": 1,
+      "terrain": "forest-dark"
+    },
+    "q10_r1": {
+      "q": 10,
+      "r": 1,
+      "terrain": "mountain"
+    },
+    "q0_r2": {
+      "q": 0,
+      "r": 2
+    },
+    "q1_r2": {
+      "q": 1,
+      "r": 2,
+      "terrain": "mountain"
+    },
+    "q2_r2": {
+      "q": 2,
+      "r": 2,
+      "terrain": "mountain"
+    },
+    "q3_r2": {
+      "q": 3,
+      "r": 2,
+      "terrain": "mountain"
+    },
+    "q4_r2": {
+      "q": 4,
+      "r": 2
+    },
+    "q5_r2": {
+      "q": 5,
+      "r": 2,
+      "terrain": "forest-dark"
+    },
+    "q6_r2": {
+      "q": 6,
+      "r": 2,
+      "terrain": "forest-dark"
+    },
+    "q7_r2": {
+      "q": 7,
+      "r": 2,
+      "terrain": "forest-dark"
+    },
+    "q8_r2": {
+      "q": 8,
+      "r": 2,
+      "terrain": "mountain"
+    },
+    "q9_r2": {
+      "q": 9,
+      "r": 2,
+      "terrain": "mountain"
+    },
+    "q1_r3": {
+      "q": 1,
+      "r": 3,
+      "terrain": "forest-dark"
+    },
+    "q2_r3": {
+      "q": 2,
+      "r": 3,
+      "terrain": "mountain"
+    },
+    "q3_r3": {
+      "q": 3,
+      "r": 3,
+      "terrain": "mountain"
+    },
+    "q4_r3": {
+      "q": 4,
+      "r": 3,
+      "town": {
+        "name": "Deepforge",
+        "type": "city",
+        "info": "A riverside city of abundant privacy but scarce freedom. Touchstone: a park.",
+        "link": "https://watabou.github.io/city-generator/?size=37&seed=2067609332&name=Deepforge&citadel=1&urban_castle=0&walls=0&shantytown=1&gates=2&plaza=1&temple=1&river=1&coast=0&sea=1.180517159020769&from=perilous"
+      }
+    },
+    "q5_r3": {
+      "q": 5,
+      "r": 3
+    },
+    "q6_r3": {
+      "q": 6,
+      "r": 3,
+      "terrain": "mountain"
+    },
+    "q7_r3": {
+      "q": 7,
+      "r": 3,
+      "terrain": "forest-dark"
+    },
+    "q8_r3": {
+      "q": 8,
+      "r": 3,
+      "terrain": "forest-dark"
+    },
+    "q9_r3": {
+      "q": 9,
+      "r": 3,
+      "terrain": "mountain"
+    },
+    "q10_r3": {
+      "q": 10,
+      "r": 3,
+      "terrain": "mountain"
+    },
+    "q0_r4": {
+      "q": 0,
+      "r": 4,
+      "terrain": "forest-dark"
+    },
+    "q1_r4": {
+      "q": 1,
+      "r": 4,
+      "terrain": "mountain"
+    },
+    "q2_r4": {
+      "q": 2,
+      "r": 4,
+      "terrain": "forest-dark"
+    },
+    "q3_r4": {
+      "q": 3,
+      "r": 4
+    },
+    "q4_r4": {
+      "q": 4,
+      "r": 4
+    },
+    "q5_r4": {
+      "q": 5,
+      "r": 4,
+      "terrain": "forest-dark"
+    },
+    "q6_r4": {
+      "q": 6,
+      "r": 4,
+      "terrain": "forest-dark"
+    },
+    "q7_r4": {
+      "q": 7,
+      "r": 4,
+      "terrain": "mountain"
+    },
+    "q8_r4": {
+      "q": 8,
+      "r": 4
+    },
+    "q9_r4": {
+      "q": 9,
+      "r": 4
+    },
+    "q10_r4": {
+      "q": 10,
+      "r": 4,
+      "terrain": "mountain"
+    },
+    "q1_r5": {
+      "q": 1,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q2_r5": {
+      "q": 2,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q3_r5": {
+      "q": 3,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q4_r5": {
+      "q": 4,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q5_r5": {
+      "q": 5,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q6_r5": {
+      "q": 6,
+      "r": 5,
+      "terrain": "forest-dark"
+    },
+    "q7_r5": {
+      "q": 7,
+      "r": 5
+    },
+    "q8_r5": {
+      "q": 8,
+      "r": 5,
+      "town": {
+        "name": "Eastern Hill",
+        "type": "village",
+        "info": "A mountain village of abundant culture and scarce food. Touchstone: a circus.",
+        "link": "https://watabou.github.io/village-generator/?seed=798631013&name=Eastern%20Hill&tags=nowater&from=perilous"
+      },
+      "terrain": "mountain"
+    },
+    "q9_r5": {
+      "q": 9,
+      "r": 5
+    },
+    "q10_r5": {
+      "q": 10,
+      "r": 5,
+      "terrain": "mountain"
+    },
+    "q0_r6": {
+      "q": 0,
+      "r": 6
+    },
+    "q1_r6": {
+      "q": 1,
+      "r": 6
+    },
+    "q2_r6": {
+      "q": 2,
+      "r": 6,
+      "terrain": "forest-dark"
+    },
+    "q3_r6": {
+      "q": 3,
+      "r": 6,
+      "terrain": "forest-dark"
+    },
+    "q4_r6": {
+      "q": 4,
+      "r": 6,
+      "terrain": "forest-dark"
+    },
+    "q5_r6": {
+      "q": 5,
+      "r": 6,
+      "terrain": "forest-dark"
+    },
+    "q6_r6": {
+      "q": 6,
+      "r": 6,
+      "terrain": "mountain"
+    },
+    "q7_r6": {
+      "q": 7,
+      "r": 6
+    },
+    "q8_r6": {
+      "q": 8,
+      "r": 6
+    },
+    "q9_r6": {
+      "q": 9,
+      "r": 6
+    },
+    "q10_r6": {
+      "q": 10,
+      "r": 6
+    },
+    "q1_r7": {
+      "q": 1,
+      "r": 7
+    },
+    "q2_r7": {
+      "q": 2,
+      "r": 7
+    },
+    "q3_r7": {
+      "q": 3,
+      "r": 7,
+      "terrain": "forest-dark"
+    },
+    "q4_r7": {
+      "q": 4,
+      "r": 7,
+      "terrain": "forest-dark"
+    },
+    "q5_r7": {
+      "q": 5,
+      "r": 7,
+      "terrain": "forest-dark"
+    },
+    "q6_r7": {
+      "q": 6,
+      "r": 7,
+      "terrain": "forest-dark"
+    },
+    "q7_r7": {
+      "q": 7,
+      "r": 7,
+      "terrain": "mountain"
+    },
+    "q8_r7": {
+      "q": 8,
+      "r": 7
+    },
+    "q9_r7": {
+      "q": 9,
+      "r": 7
+    },
+    "q10_r7": {
+      "q": 10,
+      "r": 7
+    },
+    "q11_r7": {
+      "q": 11,
+      "r": 7
+    },
+    "q1_r8": {
+      "q": 1,
+      "r": 8
+    },
+    "q2_r8": {
+      "q": 2,
+      "r": 8,
+      "terrain": "forest-dark"
+    },
+    "q3_r8": {
+      "q": 3,
+      "r": 8,
+      "danger": {
+        "name": "Palace Of Darkness",
+        "link": "https://watabou.github.io/one-page-dungeon/?seed=764234197&name=Palace%20Of%20Darkness&from=perilous"
+      },
+      "terrain": "forest-dark"
+    },
+    "q4_r8": {
+      "q": 4,
+      "r": 8,
+      "terrain": "forest-dark"
+    },
+    "q5_r8": {
+      "q": 5,
+      "r": 8,
+      "terrain": "mountain"
+    },
+    "q6_r8": {
+      "q": 6,
+      "r": 8,
+      "terrain": "mountain"
+    },
+    "q7_r8": {
+      "q": 7,
+      "r": 8,
+      "terrain": "mountain"
+    },
+    "q8_r8": {
+      "q": 8,
+      "r": 8
+    },
+    "q9_r8": {
+      "q": 9,
+      "r": 8
+    },
+    "q10_r8": {
+      "q": 10,
+      "r": 8
+    },
+    "q1_r9": {
+      "q": 1,
+      "r": 9,
+      "terrain": "mountain"
+    },
+    "q2_r9": {
+      "q": 2,
+      "r": 9,
+      "terrain": "mountain"
+    },
+    "q3_r9": {
+      "q": 3,
+      "r": 9,
+      "terrain": "forest-dark"
+    },
+    "q4_r9": {
+      "q": 4,
+      "r": 9,
+      "terrain": "forest-dark"
+    },
+    "q5_r9": {
+      "q": 5,
+      "r": 9,
+      "terrain": "forest-dark"
+    },
+    "q6_r9": {
+      "q": 6,
+      "r": 9,
+      "terrain": "forest-dark"
+    },
+    "q7_r9": {
+      "q": 7,
+      "r": 9,
+      "terrain": "mountain"
+    },
+    "q8_r9": {
+      "q": 8,
+      "r": 9,
+      "terrain": "mountain"
+    },
+    "q9_r9": {
+      "q": 9,
+      "r": 9
+    },
+    "q10_r9": {
+      "q": 10,
+      "r": 9
+    },
+    "q11_r9": {
+      "q": 11,
+      "r": 9
+    },
+    "q1_r10": {
+      "q": 1,
+      "r": 10,
+      "terrain": "mountain"
+    },
+    "q2_r10": {
+      "q": 2,
+      "r": 10,
+      "terrain": "mountain"
+    },
+    "q3_r10": {
+      "q": 3,
+      "r": 10,
+      "terrain": "forest-dark"
+    },
+    "q4_r10": {
+      "q": 4,
+      "r": 10,
+      "terrain": "forest-dark"
+    },
+    "q5_r10": {
+      "q": 5,
+      "r": 10
+    },
+    "q6_r10": {
+      "q": 6,
+      "r": 10
+    },
+    "q7_r10": {
+      "q": 7,
+      "r": 10
+    },
+    "q8_r10": {
+      "q": 8,
+      "r": 10
+    },
+    "q9_r10": {
+      "q": 9,
+      "r": 10
+    },
+    "q10_r10": {
+      "q": 10,
+      "r": 10
+    },
+    "q2_r11": {
+      "q": 2,
+      "r": 11
+    },
+    "q3_r11": {
+      "q": 3,
+      "r": 11,
+      "terrain": "mountain"
+    },
+    "q4_r11": {
+      "q": 4,
+      "r": 11,
+      "terrain": "forest-dark"
+    },
+    "q5_r11": {
+      "q": 5,
+      "r": 11
+    },
+    "q6_r11": {
+      "q": 6,
+      "r": 11
+    },
+    "q7_r11": {
+      "q": 7,
+      "r": 11
+    },
+    "q8_r11": {
+      "q": 8,
+      "r": 11,
+      "terrain": "mountain"
+    },
+    "q9_r11": {
+      "q": 9,
+      "r": 11,
+      "terrain": "mountain"
+    },
+    "q10_r11": {
+      "q": 10,
+      "r": 11,
+      "terrain": "mountain"
+    },
+    "q11_r11": {
+      "q": 11,
+      "r": 11
+    },
+    "q1_r12": {
+      "q": 1,
+      "r": 12
+    },
+    "q2_r12": {
+      "q": 2,
+      "r": 12
+    },
+    "q3_r12": {
+      "q": 3,
+      "r": 12
+    },
+    "q4_r12": {
+      "q": 4,
+      "r": 12
+    },
+    "q5_r12": {
+      "q": 5,
+      "r": 12
+    },
+    "q6_r12": {
+      "q": 6,
+      "r": 12,
+      "terrain": "mountain"
+    },
+    "q7_r12": {
+      "q": 7,
+      "r": 12,
+      "terrain": "mountain"
+    },
+    "q8_r12": {
+      "q": 8,
+      "r": 12,
+      "terrain": "mountain"
+    },
+    "q9_r12": {
+      "q": 9,
+      "r": 12,
+      "terrain": "mountain"
+    },
+    "q2_r13": {
+      "q": 2,
+      "r": 13
+    },
+    "q3_r13": {
+      "q": 3,
+      "r": 13
+    }
+  },
+  "rivers": {
+    "q6_r12:q5_r12-q4_r1:q3_r1": {
+      "parent": null,
+      "channel": [
+        "q6_r12:q5_r12",
+        "q6_r12:q6_r11",
+        "q6_r12:q7_r11",
+        "q7_r12:q7_r11",
+        "q8_r11:q7_r11",
+        "q8_r11:q7_r10",
+        "q8_r10:q7_r10",
+        "q8_r9:q7_r10",
+        "q8_r9:q7_r9",
+        "q7_r8:q7_r9",
+        "q7_r8:q6_r8",
+        "q7_r7:q6_r8",
+        "q7_r7:q6_r7",
+        "q6_r6:q6_r7",
+        "q6_r6:q5_r6",
+        "q6_r6:q6_r5",
+        "q7_r5:q6_r5",
+        "q7_r5:q6_r4",
+        "q7_r4:q6_r4",
+        "q7_r3:q6_r4",
+        "q7_r3:q6_r3",
+        "q6_r2:q6_r3",
+        "q5_r2:q6_r3",
+        "q5_r2:q5_r3",
+        "q4_r2:q5_r3",
+        "q4_r2:q4_r3",
+        "q4_r2:q3_r2",
+        "q4_r1:q3_r2",
+        "q4_r1:q3_r1"
+      ]
+    }
+  },
+  "roads": {
+    "q8_r5-q4_r3": [
+      "q8_r5",
+      "q7_r5",
+      "q6_r4",
+      "q5_r4",
+      "q5_r3",
+      "q4_r3"
+    ],
+    "q5_r12-q4_r3": [
+      "q5_r12",
+      "q5_r11",
+      "q4_r10",
+      "q5_r9",
+      "q4_r8",
+      "q4_r7",
+      "q3_r6",
+      "q4_r5",
+      "q4_r4",
+      "q4_r3"
+    ],
+    "q5_r12-q8_r5": [
+      "q5_r12",
+      "q6_r11",
+      "q6_r10",
+      "q7_r10",
+      "q8_r10",
+      "q9_r9",
+      "q8_r8",
+      "q8_r7",
+      "q7_r6",
+      "q8_r5"
+    ]
+  },
+  "searoutes": {},
+  "features": [
+    {
+      "name": "Deepforge",
+      "hexes": [
+        "q4_r3"
+      ]
+    },
+    {
+      "name": "Eastern Hill",
+      "hexes": [
+        "q8_r5"
+      ]
+    },
+    {
+      "name": "Palace Of Darkness",
+      "hexes": [
+        "q3_r8"
+      ]
+    },
+    {
+      "name": "Blackfell Forest",
+      "hexes": [
+        "q6_r5",
+        "q5_r5",
+        "q4_r5",
+        "q3_r5",
+        "q2_r5",
+        "q1_r5",
+        "q0_r4",
+        "q1_r3",
+        "q2_r6",
+        "q3_r7",
+        "q2_r8",
+        "q3_r9",
+        "q3_r10",
+        "q4_r11",
+        "q4_r10",
+        "q5_r9",
+        "q6_r9",
+        "q4_r8",
+        "q5_r7",
+        "q6_r7",
+        "q4_r9",
+        "q3_r8",
+        "q4_r7",
+        "q2_r4",
+        "q3_r6",
+        "q4_r6",
+        "q5_r6",
+        "q6_r4",
+        "q7_r3",
+        "q8_r3",
+        "q7_r2",
+        "q7_r1",
+        "q6_r1",
+        "q5_r1",
+        "q5_r2",
+        "q6_r2",
+        "q5_r4"
+      ]
+    },
+    {
+      "name": "Dark Heights",
+      "hexes": [
+        "q7_r7",
+        "q6_r8",
+        "q5_r8",
+        "q7_r9",
+        "q8_r9",
+        "q7_r8",
+        "q6_r6"
+      ]
+    }
+  ]
+}

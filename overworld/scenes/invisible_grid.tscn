@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://v22dvkih4hgn"]
+
+[ext_resource type="PackedScene" uid="uid://bey5jtx05pgkk" path="res://overworld/scenes/invisible_row.tscn" id="1_6miui"]
+
+[node name="InvisibleGrid" type="Node3D"]
+
+[node name="Row0" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, 0)
+
+[node name="Row1" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -1.7)
+
+[node name="Row2" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -3.4)
+
+[node name="Row3" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -5.1)
+
+[node name="Row4" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -6.8)
+
+[node name="Row5" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -8.5)
+
+[node name="Row6" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -10.2)
+
+[node name="Row7" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -11.9)
+
+[node name="Row8" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 0, 0, -13.6)
+
+[node name="Row9" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -5.96046e-07, 0, -15.3)
+
+[node name="Row10" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -1.13249e-06, 0, -17)
+
+[node name="Row11" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -1.66893e-06, 0, -18.7)
+
+[node name="Row12" parent="." instance=ExtResource("1_6miui")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -2.20537e-06, 0, -20.4)
