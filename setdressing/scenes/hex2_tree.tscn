@@ -1,15 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://7eix5657ae6y"]
+[gd_scene load_steps=7 format=3 uid="uid://7eix5657ae6y"]
 
 [ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_ls78s"]
 [ext_resource type="ArrayMesh" uid="uid://dbhggtdqsnb4a" path="res://setdressing/objects/hex_e_grass.obj" id="2_kp1mu"]
 [ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_1gmcp"]
 [ext_resource type="ArrayMesh" uid="uid://l7xrodmkhf21" path="res://setdressing/objects/hex_e_stone.obj" id="4_wj22y"]
-[ext_resource type="Material" uid="uid://crfmhgcd54cn8" path="res://game/materials/darkwood.tres" id="5_cum65"]
-[ext_resource type="ArrayMesh" uid="uid://d0ddntbkqwlws" path="res://setdressing/objects/tree_trunk.obj" id="6_ncw01"]
-[ext_resource type="Material" uid="uid://b4jmn0fh3veim" path="res://setdressing/materials/tree1.tres" id="7_gojbt"]
-[ext_resource type="ArrayMesh" uid="uid://djvga24o3bbxx" path="res://setdressing/objects/tree_cap.obj" id="8_o43fg"]
-[ext_resource type="Material" uid="uid://c7ab3j41vw634" path="res://setdressing/materials/tree2.tres" id="9_8ys4k"]
-[ext_resource type="Material" uid="uid://c3aerfstpcvai" path="res://setdressing/materials/tree3.tres" id="10_5k4qp"]
+[ext_resource type="PackedScene" uid="uid://bpffbij6w2dy5" path="res://setdressing/scenes/tree.tscn" id="5_xsdl8"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_b6u1t"]
 points = PackedVector3Array(0.0864668, 0.899961, 0.949814, -0.0866364, 0.899961, 0.949814, 0.0864668, -0.900157, 0.949814, 0.779389, 0.899961, 0.549951, -0.000169575, 1, 0.884348, -0.779558, 0.899961, 0.549951, -0.0866364, -0.900157, 0.949814, -0.000169575, -1, 0.884348, 0.779389, -0.900157, 0.549951, 0.765995, 1, 0.442081, 0.866025, 0.899961, 0.399863, -0.766164, 1, 0.442081, -0.866025, 0.899961, 0.399863, -0.779558, -0.900157, 0.549951, -0.766164, -1, 0.442081, 0.765995, -1, 0.442081, 0.866025, -0.900157, 0.399863, 0.765995, 1, -0.442453, 0.866025, 0.899961, -0.400049, -0.766164, 1, -0.442453, -0.866025, 0.899961, -0.400049, -0.866025, -0.900157, 0.399863, -0.766164, -1, -0.442453, 0.765995, -1, -0.442453, 0.866025, -0.900157, -0.400049, -0.000169575, 1, -0.88472, 0.779389, 0.899961, -0.550137, -0.779558, 0.899961, -0.550137, -0.866025, -0.900157, -0.400049, -0.000169575, -1, -0.88472, -0.779558, -0.900157, -0.550137, 0.779389, -0.900157, -0.550137, 0.0864668, 0.899961, -0.95, -0.0866364, 0.899961, -0.95, -0.0866364, -0.900157, -0.95, 0.0864668, -0.900157, -0.95)
@@ -30,22 +25,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 material_override = ExtResource("3_1gmcp")
 mesh = ExtResource("4_wj22y")
 
-[node name="TreeTrunk" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.275, 0, 0, 0, 0.275, 0, 0, 0, 0.275, 0, 0.235, 0)
-material_override = ExtResource("5_cum65")
-mesh = ExtResource("6_ncw01")
-
-[node name="TreeCap" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.72, 0, 0, 0, 0.72, 0, 0, 0, 0.72, 0, 0.844204, 0)
-material_override = ExtResource("7_gojbt")
-mesh = ExtResource("8_o43fg")
-
-[node name="TreeCap" type="MeshInstance3D" parent="TreeCap"]
-transform = Transform3D(0.72, 0, 0, 0, 0.72, 0, 0, 0, 0.72, 0, 0.844204, 0)
-material_override = ExtResource("9_8ys4k")
-mesh = ExtResource("8_o43fg")
-
-[node name="TreeCap" type="MeshInstance3D" parent="TreeCap/TreeCap"]
-transform = Transform3D(0.72, 0, 0, 0, 0.72, 0, 0, 0, 0.72, 0, 0.844204, 0)
-material_override = ExtResource("10_5k4qp")
-mesh = ExtResource("8_o43fg")
+[node name="Tree" parent="." instance=ExtResource("5_xsdl8")]
