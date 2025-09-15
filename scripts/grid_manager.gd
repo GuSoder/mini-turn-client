@@ -8,6 +8,9 @@ var hex_grass_scene = preload("res://setdressing/scenes/hex1_grass.tscn")
 var hex_tree_scene = preload("res://setdressing/scenes/hex2_tree.tscn")
 var hex_house_scene = preload("res://setdressing/scenes/hex3_house.tscn")
 var hex_stone_scene = preload("res://setdressing/scenes/hex4_stone.tscn")
+var hex_plain_scene = preload("res://overworld/scenes/hex5_plain.tscn")
+var hex_forrest_scene = preload("res://overworld/scenes/hex6_forrest.tscn")
+var hex_village_scene = preload("res://overworld/scenes/hex7_village.tscn")
 
 func _ready():
 	if island_loader:
@@ -89,6 +92,12 @@ func update_grid_tiles(map_data: Array):
 				new_hex_scene = hex_house_scene
 			elif tile_type == 4:
 				new_hex_scene = hex_stone_scene
+			elif tile_type == 5:
+				new_hex_scene = hex_plain_scene
+			elif tile_type == 6:
+				new_hex_scene = hex_forrest_scene
+			elif tile_type == 7:
+				new_hex_scene = hex_village_scene
 			else:
 				new_hex_scene = hex_grass_scene
 			
