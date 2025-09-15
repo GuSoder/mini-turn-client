@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://dwy0vy2who1a5"]
 
-[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_i8jmt"]
-[ext_resource type="ArrayMesh" uid="uid://dbhggtdqsnb4a" path="res://setdressing/objects/hex_e_grass.obj" id="2_ohhlt"]
-[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_hmdii"]
-[ext_resource type="ArrayMesh" uid="uid://l7xrodmkhf21" path="res://setdressing/objects/hex_e_stone.obj" id="4_di3gh"]
-[ext_resource type="PackedScene" uid="uid://bpffbij6w2dy5" path="res://setdressing/scenes/tree.tscn" id="5_mdnpm"]
+[ext_resource type="Material" uid="uid://bpkrpee2fea6s" path="res://setdressing/materials/grass.tres" id="1_nfjrh"]
+[ext_resource type="ArrayMesh" uid="uid://dbhggtdqsnb4a" path="res://setdressing/objects/hex_e_grass.obj" id="2_0o7hh"]
+[ext_resource type="Material" uid="uid://c4dj4f5b75vte" path="res://setdressing/materials/stone.tres" id="3_fqaof"]
+[ext_resource type="ArrayMesh" uid="uid://l7xrodmkhf21" path="res://setdressing/objects/hex_e_stone.obj" id="4_f3ndi"]
+[ext_resource type="PackedScene" uid="uid://bpffbij6w2dy5" path="res://setdressing/scenes/tree.tscn" id="5_xsfa2"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_b6u1t"]
 points = PackedVector3Array(0.0864668, 0.899961, 0.949814, -0.0866364, 0.899961, 0.949814, 0.0864668, -0.900157, 0.949814, 0.779389, 0.899961, 0.549951, -0.000169575, 1, 0.884348, -0.779558, 0.899961, 0.549951, -0.0866364, -0.900157, 0.949814, -0.000169575, -1, 0.884348, 0.779389, -0.900157, 0.549951, 0.765995, 1, 0.442081, 0.866025, 0.899961, 0.399863, -0.766164, 1, 0.442081, -0.866025, 0.899961, 0.399863, -0.779558, -0.900157, 0.549951, -0.766164, -1, 0.442081, 0.765995, -1, 0.442081, 0.866025, -0.900157, 0.399863, 0.765995, 1, -0.442453, 0.866025, 0.899961, -0.400049, -0.766164, 1, -0.442453, -0.866025, 0.899961, -0.400049, -0.866025, -0.900157, 0.399863, -0.766164, -1, -0.442453, 0.765995, -1, -0.442453, 0.866025, -0.900157, -0.400049, -0.000169575, 1, -0.88472, 0.779389, 0.899961, -0.550137, -0.779558, 0.899961, -0.550137, -0.866025, -0.900157, -0.400049, -0.000169575, -1, -0.88472, -0.779558, -0.900157, -0.550137, 0.779389, -0.900157, -0.550137, 0.0864668, 0.899961, -0.95, -0.0866364, 0.899961, -0.95, -0.0866364, -0.900157, -0.95, 0.0864668, -0.900157, -0.95)
@@ -17,31 +17,31 @@ shape = SubResource("ConvexPolygonShape3D_b6u1t")
 
 [node name="HexEGrass" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-material_override = ExtResource("1_i8jmt")
-mesh = ExtResource("2_ohhlt")
+material_override = ExtResource("1_nfjrh")
+mesh = ExtResource("2_0o7hh")
 
 [node name="HexEStone" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-material_override = ExtResource("3_hmdii")
-mesh = ExtResource("4_di3gh")
+material_override = ExtResource("3_fqaof")
+mesh = ExtResource("4_f3ndi")
 
-[node name="Tree0" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree0" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(0.34641, 0, 0.2, 0, 0.4, 0, -0.2, 0, 0.34641, 0, 0, 0)
 
-[node name="Tree1" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree1" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(0.34641, 0, 0.2, 0, 0.4, 0, -0.2, 0, 0.34641, 0.493635, 0, -0.285001)
 
-[node name="Tree2" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree2" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(0.346411, 0, -0.2, 0, 0.4, 0, 0.2, 0, 0.346411, 0.493635, 0, 0.285)
 
-[node name="Tree3" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree3" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(1.49012e-07, 0, -0.4, 0, 0.4, 0, 0.4, 0, 1.49012e-07, 2.08616e-07, 0, 0.57)
 
-[node name="Tree4" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree4" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(-0.34641, 0, -0.2, 0, 0.4, 0, 0.2, 0, -0.34641, -0.493635, 0, 0.285)
 
-[node name="Tree5" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree5" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(-0.34641, 0, 0.2, 0, 0.4, 0, -0.2, 0, -0.34641, -0.493635, 0, -0.285)
 
-[node name="Tree6" parent="." instance=ExtResource("5_mdnpm")]
+[node name="Tree6" parent="." instance=ExtResource("5_xsfa2")]
 transform = Transform3D(-4.47035e-08, 0, 0.4, 0, 0.4, 0, -0.4, 0, -4.47035e-08, -5.96046e-08, 0, -0.57)
