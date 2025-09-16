@@ -25,10 +25,10 @@ var client: Client
 
 func _ready():
 	client = get_parent() as Client
-	# Connect to island loader if it exists
-	var island_loader = get_parent().get_node("IslandLoader")
-	if island_loader:
-		island_loader.map_loaded.connect(_on_island_map_loaded)
+	# Connect to map loader if it exists
+	var map_loader = get_parent().get_node_or_null("MapLoader")
+	if map_loader:
+		map_loader.map_loaded.connect(_on_island_map_loaded)
 
 func _on_island_map_loaded(map_data: Array):
 	island_map = map_data

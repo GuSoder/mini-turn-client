@@ -1,7 +1,7 @@
 extends Node
 
 @onready var grid_node: Node3D = get_parent().get_node("Grid")
-@onready var island_loader: Node = get_parent().get_node("IslandLoader")
+@onready var map_loader: Node = get_parent().get_node("MapLoader")
 
 var hex_water_scene = preload("res://setdressing/scenes/hex0_water.tscn")
 var hex_grass_scene = preload("res://setdressing/scenes/hex1_grass.tscn")
@@ -13,8 +13,8 @@ var hex_forrest_scene = preload("res://overworld/scenes/hex6_forrest.tscn")
 var hex_village_scene = preload("res://overworld/scenes/hex7_village.tscn")
 
 func _ready():
-	if island_loader:
-		island_loader.map_loaded.connect(_on_map_loaded)
+	if map_loader:
+		map_loader.map_loaded.connect(_on_map_loaded)
 
 func _on_map_loaded(map_data: Array):
 	print("Grid Manager: Updating grid with island map data")
