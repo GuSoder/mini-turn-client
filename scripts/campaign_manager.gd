@@ -13,8 +13,11 @@ var game_id: String
 func _ready():
 	# Get references to other nodes
 	client = get_parent()
-	map_loader = client.get_node("MapLoader")
-	game_id = client.game_id
+	map_loader = client.get_node_or_null("MapLoader")
+	if client.has_property("game_id"):
+		game_id = client.game_id
+	else:
+		game_id = ""
 
 	# Setup HTTP request for set_map calls
 	http_request = HTTPRequest.new()

@@ -166,10 +166,14 @@ func process_game_state(state: Dictionary):
 	if "map" in state:
 		var new_map = state["map"]
 		var map_loader = get_node_or_null("MapLoader")
-		if map_loader and map_loader.map_name != new_map:
-			print("CLIENT: Map changed to ", new_map)
-			map_loader.map_name = new_map
-			map_loader.fetch_map(new_map)
+		if map_loader and map_loader.has_method("fetch_map"):
+			if map_loader.has_property("map_name") and map_loader.map_name != new_map:
+				print("CLIENT: Map changed to ", new_map)
+				map_loader.map_name = new_map
+				map_loader.fetch_map(new_map)
+			elif not map_loader.has_property("map_name"):
+				print("CLIENT: Map changed to ", new_map, " (no map_name property)")
+				map_loader.fetch_map(new_map)
 
 	# Update turn marker position
 	update_turn_marker_position(state)

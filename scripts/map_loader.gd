@@ -1,3 +1,4 @@
+class_name MapLoader
 extends Node
 
 signal map_loaded(map_data: Array)
