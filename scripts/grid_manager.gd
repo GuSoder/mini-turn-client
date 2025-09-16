@@ -13,8 +13,18 @@ var hex_forrest_scene = preload("res://overworld/scenes/hex6_forrest.tscn")
 var hex_village_scene = preload("res://overworld/scenes/hex7_village.tscn")
 
 func _ready():
-	if map_loader:
-		map_loader.map_loaded.connect(_on_map_loaded)
+	# Try to connect immediately
+	_try_connect_to_map_loader()
+	# Also try again with a delay in case the script isn't loaded yet
+	call_deferred("_try_connect_to_map_loader")
+
+func _try_connect_to_map_loader():
+	if map_loader and map_loader.has_signal("map_loaded"):
+		if not map_loader.map_loaded.is_connected(_on_map_loaded):
+			map_loader.map_loaded.connect(_on_map_loaded)
+			print("Grid Manager: Connected to MapLoader.map_loaded signal")
+	else:
+		print("Grid Manager: MapLoader not found or missing map_loaded signal")
 
 func _on_map_loaded(map_data: Array):
 	print("Grid Manager: Updating grid with island map data")

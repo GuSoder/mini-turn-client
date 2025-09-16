@@ -25,10 +25,19 @@ var client: Client
 
 func _ready():
 	client = get_parent() as Client
-	# Connect to map loader if it exists
+	# Try to connect immediately
+	_try_connect_to_map_loader()
+	# Also try again with a delay in case the script isn't loaded yet
+	call_deferred("_try_connect_to_map_loader")
+
+func _try_connect_to_map_loader():
 	var map_loader = get_parent().get_node_or_null("MapLoader")
-	if map_loader:
-		map_loader.map_loaded.connect(_on_island_map_loaded)
+	if map_loader and map_loader.has_signal("map_loaded"):
+		if not map_loader.map_loaded.is_connected(_on_island_map_loaded):
+			map_loader.map_loaded.connect(_on_island_map_loaded)
+			print("PathFinder: Connected to MapLoader.map_loaded signal")
+	else:
+		print("PathFinder: MapLoader not found or missing map_loaded signal")
 
 func _on_island_map_loaded(map_data: Array):
 	island_map = map_data
