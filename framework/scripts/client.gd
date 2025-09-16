@@ -167,11 +167,11 @@ func process_game_state(state: Dictionary):
 		var new_map = state["map"]
 		var map_loader = get_node_or_null("MapLoader")
 		if map_loader and map_loader.has_method("fetch_map"):
-			if map_loader.has_property("map_name") and map_loader.map_name != new_map:
+			if "map_name" in map_loader and map_loader.map_name != new_map:
 				print("CLIENT: Map changed to ", new_map)
 				map_loader.map_name = new_map
 				map_loader.fetch_map(new_map)
-			elif not map_loader.has_property("map_name"):
+			elif not ("map_name" in map_loader):
 				print("CLIENT: Map changed to ", new_map, " (no map_name property)")
 				map_loader.fetch_map(new_map)
 

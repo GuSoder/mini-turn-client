@@ -14,7 +14,7 @@ func _ready():
 	# Get references to other nodes
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
-	if client.has_property("game_id"):
+	if "game_id" in client:
 		game_id = client.game_id
 	else:
 		game_id = ""
@@ -85,7 +85,7 @@ func all_enemies_defeated() -> bool:
 
 	var enemy_count = 0
 	for bot in bots_node.get_children():
-		if bot.has_property("alignment") and bot.alignment == "enemy":
+		if "alignment" in bot and bot.alignment == "enemy":
 			enemy_count += 1
 
 	print("Campaign Manager: Enemy count: ", enemy_count)
