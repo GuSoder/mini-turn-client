@@ -14,10 +14,13 @@ func _ready():
 	# Get references to other nodes
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
-	if "game_id" in client:
+
+	# Get game_id from tree meta or client property
+	game_id = get_tree().get_meta("game_id", "")
+	if game_id == "" and "game_id" in client:
 		game_id = client.game_id
-	else:
-		game_id = ""
+
+	print("Campaign Manager: Using game_id: ", game_id)
 
 	# Setup HTTP request for set_map calls
 	http_request = HTTPRequest.new()
@@ -39,6 +42,10 @@ func set_server_map(map_name: String):
 	if client.client_number != 1:
 		return
 
+	if game_id == "":
+		print("Campaign Manager: No game_id available, cannot set server map")
+		return
+
 	var request_body = {
 		"map": map_name
 	}
@@ -46,7 +53,7 @@ func set_server_map(map_name: String):
 	var url = SERVER_URL + "/games/" + game_id + "/set_map"
 	var headers = ["Content-Type: application/json"]
 
-	print("Campaign Manager: Setting server map to ", map_name)
+	print("Campaign Manager: Setting server map to ", map_name, " for game ", game_id)
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_set_map_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
