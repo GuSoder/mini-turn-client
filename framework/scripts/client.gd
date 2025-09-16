@@ -131,6 +131,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 			end_turn_timeout_timer.stop()
 			if response_data.get("ok", false):
 				print("CLIENT: End turn confirmed by server")
+				# Notify campaign manager of move completion
+				var campaign_manager = get_node_or_null("CampaignManager")
+				if campaign_manager and campaign_manager.has_method("on_move_completed"):
+					campaign_manager.on_move_completed()
 			else:
 				print("CLIENT: End turn failed: " + str(response_data.get("error", "Unknown error")))
 		# Call pending move callback if exists
@@ -153,14 +157,23 @@ func process_game_state(state: Dictionary):
 		# Reset attack state when new turn begins
 		is_attacking = false
 		attack_target = -1
-		
+
 		# Deactivate animations for all players when returning to planning phase
 		for i in range(4):
 			deactivate_player_animations(i)
 
+	# Check for map changes
+	if "map" in state:
+		var new_map = state["map"]
+		var map_loader = get_node_or_null("MapLoader")
+		if map_loader and map_loader.map_name != new_map:
+			print("CLIENT: Map changed to ", new_map)
+			map_loader.map_name = new_map
+			map_loader.fetch_map(new_map)
+
 	# Update turn marker position
 	update_turn_marker_position(state)
-	
+
 	# Update health displays
 	update_health_displays(state)
 

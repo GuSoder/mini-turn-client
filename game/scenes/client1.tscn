@@ -5,8 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://framework/scenes/grid.tscn" id="2_pvy0j"]
 [ext_resource type="Script" uid="uid://dplcrxlx2jsrj" path="res://scripts/character_loader.gd" id="4_char_loader"]
 [ext_resource type="Script" uid="uid://b56vnr643be7l" path="res://scripts/grid_manager.gd" id="4_grid_mgr"]
-[ext_resource type="Script" uid="uid://bkcnl2bl3w8vl" path="res://scripts/island_loader.gd" id="4_island"]
+[ext_resource type="Script" uid="uid://bkcnl2bl3w8vl" path="res://scripts/map_loader.gd" id="4_island"]
 [ext_resource type="Script" uid="uid://bqfbm5nqh6roy" path="res://framework/scripts/path_finder.gd" id="4_t5mpf"]
+[ext_resource type="Script" uid="uid://c4h8x5k2m9vr" path="res://scripts/campaign_manager.gd" id="5_campaign"]
 [ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://framework/scenes/players.tscn" id="5_dm3lv"]
 [ext_resource type="Script" uid="uid://dtd1cqujf1qjr" path="res://framework/scripts/bot_client.gd" id="6_h12ej"]
 [ext_resource type="PackedScene" uid="uid://ck4q5unpj0kjx" path="res://framework/scenes/rendering.tscn" id="7_firu8"]
@@ -36,7 +37,7 @@ mesh = SubResource("PlaneMesh_ubhkw")
 [node name="PathFinder" type="Node" parent="."]
 script = ExtResource("4_t5mpf")
 
-[node name="IslandLoader" type="Node" parent="."]
+[node name="MapLoader" type="Node" parent="."]
 script = ExtResource("4_island")
 
 [node name="GridManager" type="Node" parent="."]
@@ -44,6 +45,9 @@ script = ExtResource("4_grid_mgr")
 
 [node name="CharacterLoader" type="Node" parent="."]
 script = ExtResource("4_char_loader")
+
+[node name="CampaignManager" type="Node" parent="."]
+script = ExtResource("5_campaign")
 
 [node name="Players" parent="." instance=ExtResource("5_dm3lv")]
 
@@ -54,6 +58,7 @@ script = ExtResource("6_h12ej")
 path_strategy = 1
 patrol_point_1 = Vector2i(0, 3)
 patrol_point_2 = Vector2i(8, 8)
+alignment = "enemy"
 
 [node name="BotClient3" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
@@ -61,6 +66,7 @@ client_number = 3
 path_strategy = 1
 patrol_point_1 = Vector2i(5, 2)
 patrol_point_2 = Vector2i(8, 4)
+alignment = "enemy"
 
 [node name="BotClient4" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
@@ -68,6 +74,7 @@ client_number = 4
 path_strategy = 2
 patrol_point_1 = Vector2i(3, 6)
 patrol_point_2 = Vector2i(6, 8)
+alignment = "friend"
 
 [node name="Rendering" parent="." instance=ExtResource("7_firu8")]
 

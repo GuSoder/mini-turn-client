@@ -12,6 +12,7 @@ enum PathStrategy { PONG, PATROL, ATTACK }
 @export var patrol_point_1: Vector2i = Vector2i(2, 2)
 @export var patrol_point_2: Vector2i = Vector2i(6, 6)
 @export var attack_target: int = 2
+@export var alignment: String = "friend"
 
 var http_request: HTTPRequest
 var player_positions: Array[Vector2i] = []

@@ -5,13 +5,20 @@ signal map_loaded(map_data: Array)
 const SERVER_URL = "http://207.154.222.143:5000"
 var http_request: HTTPRequest
 
+@export var map_name: String = "overworld"
+
 func _ready():
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
-	
-	# Fetch island map on startup
-	fetch_island_map(6)
+
+	# Fetch map on startup
+	fetch_map(map_name)
+
+func fetch_map(map_name_param: String):
+	var url = SERVER_URL + "/map/" + map_name_param
+	print("Fetching map from: ", url)
+	http_request.request(url)
 
 func fetch_island_map(island_number: int):
 	var url = SERVER_URL + "/island/" + str(island_number)
