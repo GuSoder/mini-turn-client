@@ -7,6 +7,7 @@ enum Status { CHOOSING, MOVING }
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
 @export var poll_interval: float = 0.5
+@export var current_game_state: Dictionary = {}
 
 var http_request: HTTPRequest
 var players_node: Node3D
@@ -16,7 +17,6 @@ var ui_turn_marker_node: Node2D
 var path_markers_node: Node3D
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
-var current_game_state: Dictionary = {}
 var current_map_name: String = "unset"
 var is_animating: bool = false
 var pending_move_callback: Callable

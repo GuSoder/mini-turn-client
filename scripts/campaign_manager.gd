@@ -136,15 +136,25 @@ func on_move_completed():
 			print("Campaign Manager: Still enemies remaining in plains")
 
 func all_enemies_defeated() -> bool:
-	# Check all bot clients for enemies
-	var bots_node = client.get_node("Bots")
-	if not bots_node:
-		return true
+	# Check health of players 2, 3, and 4 (hardcoded as enemies)
+	# Access the current game state from the client
+	if not client or not client.current_game_state.has("stats"):
+		print("Campaign Manager: No game state available")
+		return false
 
-	var enemy_count = 0
-	for bot in bots_node.get_children():
-		if "alignment" in bot and bot.alignment == "enemy":
-			enemy_count += 1
+	var stats = client.current_game_state["stats"]
+	if stats.size() < 4:
+		print("Campaign Manager: Not enough player stats")
+		return false
 
-	print("Campaign Manager: Enemy count: ", enemy_count)
-	return enemy_count == 0
+	# Check if players 2, 3, and 4 (indices 1, 2, 3) are all dead
+	var enemy_players = [1, 2, 3]  # Players 2, 3, 4 (0-indexed)
+	var alive_enemies = 0
+
+	for enemy_index in enemy_players:
+		var enemy_health = stats[enemy_index].get("health", 0)
+		if enemy_health > 0:
+			alive_enemies += 1
+
+	print("Campaign Manager: Alive enemies (players 2,3,4): ", alive_enemies)
+	return alive_enemies == 0
