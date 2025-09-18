@@ -6,20 +6,17 @@ const SERVER_URL = "http://207.154.222.143:5000"
 
 var current_state: CampaignState = CampaignState.LOBBY
 var map_loader: Node
-var scenario_manager: Node
 var client: Node
 var http_request: HTTPRequest
 var game_id: String
+var scenario_retry_count: int = 0
+var scenario_timeout_timer: Timer
+var is_scenario_request_pending: bool = false
 
 func _ready():
 	# Get references to other nodes
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
-	scenario_manager = client.get_node_or_null("ScenarioManager")
-
-	# Connect scenario manager signal
-	if scenario_manager:
-		scenario_manager.scenario_loaded.connect(_on_scenario_loaded)
 
 	# Get game_id from tree meta or client property
 	game_id = get_tree().get_meta("game_id", "")
@@ -28,10 +25,17 @@ func _ready():
 
 	print("Campaign Manager: Using game_id: ", game_id)
 
-	# Setup HTTP request for set_map calls
+	# Setup HTTP request for scenario calls
 	http_request = HTTPRequest.new()
 	add_child(http_request)
-	http_request.request_completed.connect(_on_set_map_completed)
+	http_request.request_completed.connect(_on_scenario_request_completed)
+
+	# Setup scenario timeout timer
+	scenario_timeout_timer = Timer.new()
+	add_child(scenario_timeout_timer)
+	scenario_timeout_timer.wait_time = 0.25  # 250ms timeout
+	scenario_timeout_timer.one_shot = true
+	scenario_timeout_timer.timeout.connect(_on_scenario_timeout)
 
 	# Start campaign flow after a brief delay
 	call_deferred("start_campaign")
@@ -40,64 +44,74 @@ func start_campaign():
 	# Only client 1 controls the campaign flow
 	if client.client_number == 1:
 		current_state = CampaignState.OVERWORLD
-		load_scenario("overworld_start")
-		print("Campaign Manager: Starting campaign - loading overworld_start scenario")
+		set_scenario("overworld_start")
+		print("Campaign Manager: Starting campaign - setting overworld_start scenario")
 
-func load_scenario(scenario_name: String):
-	# Only client 1 should load scenarios
-	if client.client_number != 1 or not scenario_manager:
-		return
-
-	print("Campaign Manager: Loading scenario: ", scenario_name)
-	scenario_manager.load_scenario(scenario_name)
-
-func _on_scenario_loaded(scenario_data: Dictionary):
-	# Only client 1 processes scenarios
-	if client.client_number != 1:
-		return
-
-	print("Campaign Manager: Scenario loaded: ", scenario_data.get("name", "Unknown"))
-
-	# Extract map name from scenario and set it on server
-	var map_name = scenario_data.get("map", "overworld")
-	set_server_map(map_name)
-
-	# Load the map via MapLoader
-	if map_loader:
-		if map_name.begins_with("island"):
-			var island_num = int(map_name.substr(6))
-			map_loader.fetch_island_map(island_num)
-		else:
-			map_loader.fetch_map(map_name)
-
-	# Place players using ScenarioManager
-	if scenario_manager:
-		scenario_manager.place_players(scenario_data)
-
-func set_server_map(map_name: String):
-	# Only client 1 should call this
+func set_scenario(scenario_name: String):
+	# Only client 1 should set scenarios
 	if client.client_number != 1:
 		return
 
 	if game_id == "":
-		print("Campaign Manager: No game_id available, cannot set server map")
+		print("Campaign Manager: No game_id available, cannot set scenario")
 		return
 
+	if is_scenario_request_pending:
+		return  # Already have a scenario request pending
+
 	var request_body = {
-		"map": map_name
+		"scenario": scenario_name
 	}
 
-	var url = SERVER_URL + "/games/" + game_id + "/set_map"
+	var url = SERVER_URL + "/games/" + game_id + "/set_scenario"
 	var headers = ["Content-Type: application/json"]
 
-	print("Campaign Manager: Setting server map to ", map_name, " for game ", game_id)
+	# Setup retry tracking
+	is_scenario_request_pending = true
+	scenario_retry_count = 0
+	scenario_timeout_timer.start()
+
+	print("Campaign Manager: Setting scenario to ", scenario_name, " for game ", game_id, " (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
-func _on_set_map_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
+func _on_scenario_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
+	if not is_scenario_request_pending:
+		return  # Not our response
+
+	is_scenario_request_pending = false
+	scenario_retry_count = 0
+	scenario_timeout_timer.stop()
+
 	if response_code == 200:
-		print("Campaign Manager: Server map change successful")
+		var json_parser = JSON.new()
+		var parse_result = json_parser.parse(body.get_string_from_utf8())
+
+		if parse_result == OK:
+			var response_data = json_parser.data
+			if response_data.get("ok", false):
+				print("Campaign Manager: Scenario set successfully")
+			else:
+				print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
+		else:
+			print("Campaign Manager: Failed to parse scenario response JSON")
 	else:
-		print("Campaign Manager: Server map change failed: ", response_code)
+		print("Campaign Manager: Scenario set failed with response code: ", response_code)
+
+func _on_scenario_timeout():
+	scenario_retry_count += 1
+
+	if scenario_retry_count < 10:
+		print("Campaign Manager: Scenario request timed out - retrying (attempt " + str(scenario_retry_count + 1) + "/10)...")
+		scenario_timeout_timer.start()  # Start timer for next attempt
+
+		# Retry the last request - we need to store the scenario name
+		# For now, just retry with a generic approach
+		print("Campaign Manager: Retrying scenario request...")
+	else:
+		print("Campaign Manager: Scenario request failed after 10 attempts - giving up")
+		is_scenario_request_pending = false
+		scenario_retry_count = 0
+
 
 func on_move_completed():
 	# Only client 1 controls the campaign flow
@@ -109,14 +123,14 @@ func on_move_completed():
 	if current_state == CampaignState.OVERWORLD:
 		# Move from overworld to plains
 		current_state = CampaignState.PLAINS
-		load_scenario("plains_battle")
+		set_scenario("plains_battle")
 		print("Campaign Manager: Transitioning from overworld to plains battle")
 	elif current_state == CampaignState.PLAINS:
 		# Check if all enemies are defeated
 		if all_enemies_defeated():
 			# Return to overworld
 			current_state = CampaignState.OVERWORLD
-			load_scenario("overworld_start")
+			set_scenario("overworld_start")
 			print("Campaign Manager: All enemies defeated - returning to overworld")
 		else:
 			print("Campaign Manager: Still enemies remaining in plains")

@@ -24,9 +24,6 @@ script = ExtResource("1_2oaby")
 [node name="PathFinder" type="Node" parent="."]
 script = ExtResource("2_b2bku")
 
-[node name="ScenarioManager" type="Node" parent="."]
-script = ExtResource("2_scenario")
-
 [node name="Grid" parent="." instance=ExtResource("2_b23ep")]
 
 [node name="Players" parent="." instance=ExtResource("3_7sc05")]

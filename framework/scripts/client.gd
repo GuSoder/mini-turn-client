@@ -17,6 +17,7 @@ var path_markers_node: Node3D
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
+var current_map_name: String = "unset"
 var is_animating: bool = false
 var pending_move_callback: Callable
 var client_status: Status = Status.CHOOSING
@@ -162,18 +163,28 @@ func process_game_state(state: Dictionary):
 		for i in range(4):
 			deactivate_player_animations(i)
 
-	# Check for map changes
+	# Check for map changes - all clients should detect and load new maps
 	if "map" in state:
 		var new_map = state["map"]
-		var map_loader = get_node_or_null("MapLoader")
-		if map_loader and map_loader.has_method("fetch_map"):
-			if "map_name" in map_loader and map_loader.map_name != new_map:
-				print("CLIENT: Map changed to ", new_map)
-				map_loader.map_name = new_map
-				map_loader.fetch_map(new_map)
-			elif not ("map_name" in map_loader):
-				print("CLIENT: Map changed to ", new_map, " (no map_name property)")
-				map_loader.fetch_map(new_map)
+		if current_map_name != new_map:
+			print("CLIENT: Map changed from ", current_map_name, " to ", new_map)
+			current_map_name = new_map
+
+			var map_loader = get_node_or_null("MapLoader")
+			if map_loader and map_loader.has_method("fetch_map"):
+				# Update map_loader's map_name if it has one
+				if "map_name" in map_loader:
+					map_loader.map_name = new_map
+
+				# Load the appropriate map
+				if new_map.begins_with("island"):
+					var island_num = int(new_map.substr(6))
+					if map_loader.has_method("fetch_island_map"):
+						map_loader.fetch_island_map(island_num)
+					else:
+						map_loader.fetch_map(new_map)
+				else:
+					map_loader.fetch_map(new_map)
 
 	# Update turn marker position
 	update_turn_marker_position(state)
