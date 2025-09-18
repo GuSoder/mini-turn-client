@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://buh4l2auwixpa"]
+[gd_scene load_steps=23 format=3 uid="uid://buh4l2auwixpa"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://framework/scripts/client.gd" id="1_pvy0j"]
 [ext_resource type="Material" uid="uid://cvs6curvca17p" path="res://setdressing/materials/water.tres" id="2_oajjd"]
