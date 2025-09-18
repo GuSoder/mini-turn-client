@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://framework/scripts/client.gd" id="1_2oaby"]
 [ext_resource type="Script" uid="uid://bqfbm5nqh6roy" path="res://framework/scripts/path_finder.gd" id="2_b2bku"]
+[ext_resource type="Script" path="res://scripts/scenario_manager.gd" id="2_scenario"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://framework/scenes/grid.tscn" id="2_b23ep"]
 [ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://framework/scenes/players.tscn" id="3_7sc05"]
 [ext_resource type="PackedScene" uid="uid://ck4q5unpj0kjx" path="res://framework/scenes/rendering.tscn" id="4_7sc05"]
@@ -22,6 +23,9 @@ script = ExtResource("1_2oaby")
 
 [node name="PathFinder" type="Node" parent="."]
 script = ExtResource("2_b2bku")
+
+[node name="ScenarioManager" type="Node" parent="."]
+script = ExtResource("2_scenario")
 
 [node name="Grid" parent="." instance=ExtResource("2_b23ep")]
 

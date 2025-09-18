@@ -6,6 +6,7 @@ const SERVER_URL = "http://207.154.222.143:5000"
 
 var current_state: CampaignState = CampaignState.LOBBY
 var map_loader: Node
+var scenario_manager: Node
 var client: Node
 var http_request: HTTPRequest
 var game_id: String
@@ -14,6 +15,11 @@ func _ready():
 	# Get references to other nodes
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
+	scenario_manager = client.get_node_or_null("ScenarioManager")
+
+	# Connect scenario manager signal
+	if scenario_manager:
+		scenario_manager.scenario_loaded.connect(_on_scenario_loaded)
 
 	# Get game_id from tree meta or client property
 	game_id = get_tree().get_meta("game_id", "")
@@ -34,8 +40,39 @@ func start_campaign():
 	# Only client 1 controls the campaign flow
 	if client.client_number == 1:
 		current_state = CampaignState.OVERWORLD
-		set_server_map("overworld")
-		print("Campaign Manager: Starting campaign - setting server map to overworld")
+		load_scenario("overworld_start")
+		print("Campaign Manager: Starting campaign - loading overworld_start scenario")
+
+func load_scenario(scenario_name: String):
+	# Only client 1 should load scenarios
+	if client.client_number != 1 or not scenario_manager:
+		return
+
+	print("Campaign Manager: Loading scenario: ", scenario_name)
+	scenario_manager.load_scenario(scenario_name)
+
+func _on_scenario_loaded(scenario_data: Dictionary):
+	# Only client 1 processes scenarios
+	if client.client_number != 1:
+		return
+
+	print("Campaign Manager: Scenario loaded: ", scenario_data.get("name", "Unknown"))
+
+	# Extract map name from scenario and set it on server
+	var map_name = scenario_data.get("map", "overworld")
+	set_server_map(map_name)
+
+	# Load the map via MapLoader
+	if map_loader:
+		if map_name.begins_with("island"):
+			var island_num = int(map_name.substr(6))
+			map_loader.fetch_island_map(island_num)
+		else:
+			map_loader.fetch_map(map_name)
+
+	# Place players using ScenarioManager
+	if scenario_manager:
+		scenario_manager.place_players(scenario_data)
 
 func set_server_map(map_name: String):
 	# Only client 1 should call this
@@ -72,14 +109,14 @@ func on_move_completed():
 	if current_state == CampaignState.OVERWORLD:
 		# Move from overworld to plains
 		current_state = CampaignState.PLAINS
-		set_server_map("plains")
-		print("Campaign Manager: Transitioning from overworld to plains")
+		load_scenario("plains_battle")
+		print("Campaign Manager: Transitioning from overworld to plains battle")
 	elif current_state == CampaignState.PLAINS:
 		# Check if all enemies are defeated
 		if all_enemies_defeated():
 			# Return to overworld
 			current_state = CampaignState.OVERWORLD
-			set_server_map("overworld")
+			load_scenario("overworld_start")
 			print("Campaign Manager: All enemies defeated - returning to overworld")
 		else:
 			print("Campaign Manager: Still enemies remaining in plains")
