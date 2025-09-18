@@ -84,20 +84,22 @@ func get_hex_neighbors(hex_pos: Vector2i) -> Array[Vector2i]:
 	
 	return neighbors
 
-# Check if hex is non-traversable (water or trees)
+# Check if hex is non-traversable (water, single trees, houses, stone)
 func is_hex_blocked_by_terrain(hex_pos: Vector2i) -> bool:
 	if island_map.size() == 0:
 		return false  # No map data, assume traversable
-	
+
 	if hex_pos.y < 0 or hex_pos.y >= island_map.size():
 		return true  # Out of bounds, treat as water
-	
+
 	var row_data = island_map[hex_pos.y]
 	if hex_pos.x < 0 or hex_pos.x >= row_data.length():
 		return true  # Out of bounds, treat as water
-	
+
 	var tile_value = int(str(row_data[hex_pos.x]))
-	return tile_value != 1  # Only grass (1) is walkable
+	# Walkable: grass (1), plains (5), forests (6), villages (7)
+	# Non-walkable: water (0), single trees (2), houses (3), stone (4)
+	return tile_value == 0 or tile_value == 2 or tile_value == 3 or tile_value == 4
 
 # Check if hex is blocked (by players or terrain)
 func is_hex_blocked(hex_pos: Vector2i) -> bool:
