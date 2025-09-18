@@ -1,8 +1,8 @@
-[gd_scene load_steps=22 format=3 uid="uid://dcrmahnq42wdt"]
+[gd_scene load_steps=22 format=3 uid="uid://bmqycau8l5pgx"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://framework/scripts/client.gd" id="1_cgjnv"]
 [ext_resource type="Script" uid="uid://bqfbm5nqh6roy" path="res://framework/scripts/path_finder.gd" id="3_u3l1t"]
-[ext_resource type="Script" uid="uid://bkcnl2bl3w8vl" path="res://scripts/island_loader.gd" id="4_idy4h"]
+[ext_resource type="Script" uid="uid://c0m5sfpprgo7f" path="res://scripts/map_loader.gd" id="4_idy4h"]
 [ext_resource type="Script" uid="uid://b56vnr643be7l" path="res://scripts/grid_manager.gd" id="5_xae88"]
 [ext_resource type="Script" uid="uid://dplcrxlx2jsrj" path="res://scripts/character_loader.gd" id="6_topd7"]
 [ext_resource type="PackedScene" uid="uid://cusvek01dh7yc" path="res://framework/scenes/players.tscn" id="7_sw8w1"]
