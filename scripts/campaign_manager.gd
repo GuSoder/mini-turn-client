@@ -6,6 +6,7 @@ const SERVER_URL = "http://207.154.222.143:5000"
 
 var current_state: CampaignState = CampaignState.LOBBY
 var map_loader: Node
+var character_loader: Node
 var client: Node
 var http_request: HTTPRequest
 var game_id: String
@@ -17,6 +18,7 @@ func _ready():
 	# Get references to other nodes
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
+	character_loader = client.get_node_or_null("CharacterLoader")
 
 	# Get game_id from tree meta or client property
 	game_id = get_tree().get_meta("game_id", "")
@@ -90,6 +92,8 @@ func _on_scenario_request_completed(result: int, response_code: int, headers: Pa
 			var response_data = json_parser.data
 			if response_data.get("ok", false):
 				print("Campaign Manager: Scenario set successfully")
+				# Trigger character loading based on current state
+				_load_characters_for_current_state()
 			else:
 				print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
 		else:
@@ -158,3 +162,20 @@ func all_enemies_defeated() -> bool:
 
 	print("Campaign Manager: Alive enemies (players 2,3,4): ", alive_enemies)
 	return alive_enemies == 0
+
+func _load_characters_for_current_state():
+	if not character_loader:
+		print("Campaign Manager: CharacterLoader not found")
+		return
+
+	var state_string = ""
+	match current_state:
+		CampaignState.OVERWORLD:
+			state_string = "overworld"
+		CampaignState.PLAINS:
+			state_string = "plains"
+		_:
+			state_string = "default"
+
+	print("Campaign Manager: Loading characters for state: ", state_string)
+	character_loader.load_characters(state_string)
