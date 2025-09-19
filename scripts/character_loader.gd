@@ -84,13 +84,6 @@ func replace_players_with_heroes():
 		var player_node = players_node.get_node_or_null(player_name)
 		if player_node:
 			player_node.visible = true
-			# Also make sure Capsule and Chevron are visible again
-			var capsule = player_node.get_node_or_null("Capsule")
-			if capsule:
-				capsule.visible = true
-			var chevron = player_node.get_node_or_null("Chevron")
-			if chevron:
-				chevron.visible = true
 
 	# Replace each Player1, Player2, Player3, Player4 with hero scenes
 	for i in range(4):
