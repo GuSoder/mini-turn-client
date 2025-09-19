@@ -62,7 +62,7 @@ func load_characters_party():
 		var hero_instance = create_hero_for_player(i + 1)
 		if hero_instance:
 			hero_instance.name = "PartyHero" + str(i + 1)
-			hero_instance.scale = Vector3(0.2, 0.2, 0.2)
+			hero_instance.scale = Vector3(0.5, 0.5, 0.5)
 			hero_instance.position = party_positions[i]
 			player1.add_child(hero_instance)
 			print("Character Loader: Added party hero ", i + 1, " at position ", party_positions[i])
