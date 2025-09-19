@@ -41,6 +41,14 @@ func load_characters_party():
 		print("Character Loader: Player1 not found for party mode")
 		return
 
+	# Hide Player1's default Capsule and Chevron
+	var capsule = player1.get_node_or_null("Capsule")
+	if capsule:
+		capsule.visible = false
+	var chevron = player1.get_node_or_null("Chevron")
+	if chevron:
+		chevron.visible = false
+
 	# Position offsets for party members
 	var party_positions = [
 		Vector3(0.3, 0, 0),    # Hero 1
@@ -76,6 +84,13 @@ func replace_players_with_heroes():
 		var player_node = players_node.get_node_or_null(player_name)
 		if player_node:
 			player_node.visible = true
+			# Also make sure Capsule and Chevron are visible again
+			var capsule = player_node.get_node_or_null("Capsule")
+			if capsule:
+				capsule.visible = true
+			var chevron = player_node.get_node_or_null("Chevron")
+			if chevron:
+				chevron.visible = true
 
 	# Replace each Player1, Player2, Player3, Player4 with hero scenes
 	for i in range(4):
