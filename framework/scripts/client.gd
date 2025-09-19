@@ -556,8 +556,8 @@ func _get_player_node_for_animations(player_index: int) -> Node3D:
 	if campaign_manager and campaign_manager.current_state == campaign_manager.CampaignState.OVERWORLD:
 		# In overworld mode, all party heroes are children of Player1
 		var player1 = players_node.get_child(0)  # Player1
-		if player1 and player1.get_child_count() > player_index:
-			return player1.get_child(player_index)  # PartyHero1, PartyHero2, etc.
+		if player1 and player1.get_child_count() > (player_index + 2):
+			return player1.get_child(player_index + 2)  # PartyHero1, PartyHero2, etc. (skip Capsule and Chevron)
 	else:
 		# In regular mode, get the player directly
 		if player_index < players_node.get_child_count():
