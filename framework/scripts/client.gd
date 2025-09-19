@@ -537,15 +537,30 @@ func show_path_markers(path: Array[Vector2i]):
 				marker.visible = true
 
 func activate_player_animations(player_index: int):
-	var player_node = players_node.get_child(player_index)
+	var player_node = _get_player_node_for_animations(player_index)
 	if player_node:
 		var proc_anim = player_node.get_node("ProcAnim")
 		if proc_anim and proc_anim.has_method("activate_swings"):
 			proc_anim.activate_swings()
 
 func deactivate_player_animations(player_index: int):
-	var player_node = players_node.get_child(player_index)
+	var player_node = _get_player_node_for_animations(player_index)
 	if player_node:
 		var proc_anim = player_node.get_node("ProcAnim")
 		if proc_anim and proc_anim.has_method("deactivate_swings"):
 			proc_anim.deactivate_swings()
+
+func _get_player_node_for_animations(player_index: int) -> Node3D:
+	# Check if we're in campaign overworld mode
+	var campaign_manager = get_node_or_null("CampaignManager")
+	if campaign_manager and campaign_manager.current_state == campaign_manager.CampaignState.OVERWORLD:
+		# In overworld mode, all party heroes are children of Player1
+		var player1 = players_node.get_child(0)  # Player1
+		if player1 and player1.get_child_count() > player_index:
+			return player1.get_child(player_index)  # PartyHero1, PartyHero2, etc.
+	else:
+		# In regular mode, get the player directly
+		if player_index < players_node.get_child_count():
+			return players_node.get_child(player_index)
+
+	return null
