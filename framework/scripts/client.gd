@@ -537,30 +537,36 @@ func show_path_markers(path: Array[Vector2i]):
 				marker.visible = true
 
 func activate_player_animations(player_index: int):
-	var player_node = _get_player_node_for_animations(player_index)
-	if player_node:
-		var proc_anim = player_node.get_node("ProcAnim")
-		if proc_anim and proc_anim.has_method("activate_swings"):
-			proc_anim.activate_swings()
+	var player_nodes = _get_player_nodes_for_animations(player_index)
+	for player_node in player_nodes:
+		if player_node:
+			var proc_anim = player_node.get_node("ProcAnim")
+			if proc_anim and proc_anim.has_method("activate_swings"):
+				proc_anim.activate_swings()
 
 func deactivate_player_animations(player_index: int):
-	var player_node = _get_player_node_for_animations(player_index)
-	if player_node:
-		var proc_anim = player_node.get_node("ProcAnim")
-		if proc_anim and proc_anim.has_method("deactivate_swings"):
-			proc_anim.deactivate_swings()
+	var player_nodes = _get_player_nodes_for_animations(player_index)
+	for player_node in player_nodes:
+		if player_node:
+			var proc_anim = player_node.get_node("ProcAnim")
+			if proc_anim and proc_anim.has_method("deactivate_swings"):
+				proc_anim.deactivate_swings()
 
-func _get_player_node_for_animations(player_index: int) -> Node3D:
+func _get_player_nodes_for_animations(player_index: int) -> Array[Node3D]:
 	# Check if we're in campaign overworld mode
 	var campaign_manager = get_node_or_null("CampaignManager")
 	if campaign_manager and campaign_manager.current_state == campaign_manager.CampaignState.OVERWORLD:
-		# In overworld mode, all party heroes are children of Player1
+		# In overworld mode, return all four party heroes (they move together)
+		var party_nodes: Array[Node3D] = []
 		var player1 = players_node.get_child(0)  # Player1
-		if player1 and player1.get_child_count() > (player_index + 2):
-			return player1.get_child(player_index + 2)  # PartyHero1, PartyHero2, etc. (skip Capsule and Chevron)
+		if player1:
+			for i in range(4):
+				if player1.get_child_count() > (i + 2):
+					party_nodes.append(player1.get_child(i + 2))  # PartyHero1-4 (skip Capsule and Chevron)
+		return party_nodes
 	else:
-		# In regular mode, get the player directly
+		# In regular mode, return just the specific player
+		var single_player: Array[Node3D] = []
 		if player_index < players_node.get_child_count():
-			return players_node.get_child(player_index)
-
-	return null
+			single_player.append(players_node.get_child(player_index))
+		return single_player
