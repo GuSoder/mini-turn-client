@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://cr53x8ednx8nw"]
+
+[ext_resource type="PackedScene" uid="uid://q86cfrpekal8" path="res://framework/scenes/player1.tscn" id="1_5geg6"]
+[ext_resource type="PackedScene" uid="uid://bs53eynrbpu4n" path="res://framework/scenes/player2.tscn" id="2_nr7ej"]
+[ext_resource type="PackedScene" uid="uid://c645s76njr5yb" path="res://framework/scenes/player3.tscn" id="3_1ja20"]
+[ext_resource type="PackedScene" uid="uid://dwb8grtm4motc" path="res://framework/scenes/player4.tscn" id="4_1dmat"]
+
+[node name="Enemies" type="Node3D"]
+
+[node name="Enemy1" parent="." instance=ExtResource("1_5geg6")]
+
+[node name="Enemy2" parent="." instance=ExtResource("2_nr7ej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="Enemy3" parent="." instance=ExtResource("3_1ja20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="Enemy4" parent="." instance=ExtResource("4_1dmat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)

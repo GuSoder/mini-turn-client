@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://d0idytmo2v6js"]
+
+[ext_resource type="Material" uid="uid://2ie6rchswkb3" path="res://game/materials/wool.tres" id="1_4pltl"]
+[ext_resource type="Material" uid="uid://catni5ufjmww4" path="res://game/materials/dark_greybrown_sack.tres" id="1_pxfrk"]
+[ext_resource type="Script" uid="uid://ty1574q2wrjy" path="res://game/scripts/swing.gd" id="2_pxfrk"]
+[ext_resource type="Material" uid="uid://bd3i4nb7vnq11" path="res://game/materials/skin.tres" id="3_hcjwn"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_65fms"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_jl7a3"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_koih4"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_e2bvg"]
+
+[node name="LowerBody" type="Node3D"]
+
+[node name="Pants" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.4, 0, 0, 0, 1, 0, 0.5, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("CylinderMesh_65fms")
+skeleton = NodePath("")
+surface_material_override/0 = ExtResource("1_4pltl")
+
+[node name="Legs" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("SphereMesh_jl7a3")
+skeleton = NodePath("../../Torso")
+
+[node name="Right" type="Node3D" parent="Legs"]
+transform = Transform3D(0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("2_pxfrk")
+t_off = 1.0
+z_off = -20.0
+
+[node name="Upper" type="MeshInstance3D" parent="Legs/Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Knee" type="MeshInstance3D" parent="Legs/Right/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Legs/Right/Upper/Knee"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Legs/Right/Upper/Knee/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_hcjwn")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Left" type="Node3D" parent="Legs"]
+transform = Transform3D(0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("2_pxfrk")
+z_off = 20.0
+
+[node name="Upper" type="MeshInstance3D" parent="Legs/Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="Knee" type="MeshInstance3D" parent="Legs/Left/Upper"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("SphereMesh_e2bvg")
+
+[node name="Lower" type="MeshInstance3D" parent="Legs/Left/Upper/Knee"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("1_pxfrk")
+mesh = SubResource("CylinderMesh_koih4")
+
+[node name="End" type="MeshInstance3D" parent="Legs/Left/Upper/Knee/Lower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+material_override = ExtResource("3_hcjwn")
+mesh = SubResource("SphereMesh_e2bvg")
