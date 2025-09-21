@@ -8,6 +8,7 @@ enum Status { CHOOSING, MOVING }
 @export var game_id: String = ""
 @export var poll_interval: float = 0.5
 @export var current_game_state: Dictionary = {}
+@export var current_state_hash: int = 0
 
 var http_request: HTTPRequest
 var players_node: Node3D
@@ -151,6 +152,9 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
+	# Update hash only if this is client 1 (to avoid unnecessary calculations on other clients)
+	if client_number == 1:
+		current_state_hash = state.hash()
 
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:

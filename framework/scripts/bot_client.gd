@@ -15,9 +15,11 @@ enum PathStrategy { PONG, PATROL, ATTACK }
 @export var alignment: String = "friend"
 
 var http_request: HTTPRequest
+var main_client: Node3D  # Reference to the main client
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], []]
 var current_game_state: Dictionary = {}
+var last_processed_state_hash: int = 0  # To detect state changes
 var is_animating: bool = false
 var pending_move_callback: Callable
 var move_direction: int = 0  # 0 = left, 1 = right
@@ -36,14 +38,17 @@ var attack_timeout_timer: Timer
 func _ready():
 	# Get game ID from lobby
 	game_id = get_tree().get_meta("game_id", "")
-	
+
+	# Get reference to main client (we are Bots/BotClientX, main client is ../../Client)
+	main_client = get_parent().get_parent()
+
 	# Initialize positions array (same as main client)
 	player_positions = [Vector2i(0, 0), Vector2i(2, -1), Vector2i(-1, 1), Vector2i(3, 0)]
-	
+
 	# Initialize patrol target
 	target_patrol_point = patrol_point_1
-	
-	# Setup HTTP request
+
+	# Setup HTTP request (still needed for move/attack requests)
 	http_request = HTTPRequest.new()
 	add_child(http_request)
 	http_request.request_completed.connect(_on_request_completed)
@@ -62,77 +67,73 @@ func _ready():
 	attack_timeout_timer.one_shot = true
 	attack_timeout_timer.timeout.connect(_on_attack_timeout)
 	
-	# Start polling
-	poll_server()
+	# Start polling (now reads from main client instead of HTTP)
+	poll_main_client()
 
-func poll_server():
-	if game_id == "":
+func poll_main_client():
+	if not main_client:
+		call_deferred("schedule_next_poll")
 		return
-	
-	var url = server_url + "/games/" + game_id + "/state"
-	http_request.request(url)
+
+	# Check if main client's state has changed by comparing hashes
+	if main_client.current_state_hash != last_processed_state_hash:
+		last_processed_state_hash = main_client.current_state_hash
+		# Process the main client's current game state
+		process_game_state(main_client.current_game_state)
+
+	call_deferred("schedule_next_poll")
 
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
+	# This method now only handles move/attack/end_turn responses, not game state polling
 	if response_code != 200:
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Server request failed: " + str(response_code)})
 			pending_move_callback = Callable()
-		call_deferred("schedule_next_poll")
 		return
-	
+
 	if result != HTTPRequest.RESULT_SUCCESS:
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "HTTP request failed: " + str(result)})
 			pending_move_callback = Callable()
-		call_deferred("schedule_next_poll")
 		return
-	
+
 	var json = JSON.new()
 	var parse_result = json.parse(body.get_string_from_utf8())
-	
+
 	if parse_result != OK:
 		if pending_move_callback.is_valid():
 			pending_move_callback.call(false, {"error": "Failed to parse JSON response"})
 			pending_move_callback = Callable()
-		call_deferred("schedule_next_poll")
 		return
-	
+
 	var response_data = json.data
-	
-	# Check if this is a move/end_turn/attack response (has "ok" field) vs game state
-	if "ok" in response_data:
-		# Handle attack response
-		if is_attack_request_pending:
-			is_attack_request_pending = false
-			attack_retry_count = 0
-			attack_timeout_timer.stop()
-			if response_data.get("ok", false):
-				print("BOT: Attack confirmed by server, now sending end_turn")
-				is_attacking = false
-				send_end_turn_request()
-			else:
-				print("BOT: Attack failed: " + str(response_data.get("error", "Unknown error")))
-				# Reset attack state on failure
-				is_attacking = false
-		# Handle end_turn response
-		elif is_end_turn_pending:
-			is_end_turn_pending = false
-			end_turn_retry_count = 0
-			end_turn_timeout_timer.stop()
-			if response_data.get("ok", false):
-				pass  # Success
-			else:
-				pass  # Failed but bot doesn't need to report it
-		# Call pending move callback if exists
-		elif pending_move_callback.is_valid():
-			pending_move_callback.call(response_data.get("ok", false), response_data)
-			pending_move_callback = Callable()
-		# Don't process as game state, just continue polling
-	else:
-		# This is game state data
-		process_game_state(response_data)
-	
-	call_deferred("schedule_next_poll")
+
+	# Handle attack response
+	if is_attack_request_pending:
+		is_attack_request_pending = false
+		attack_retry_count = 0
+		attack_timeout_timer.stop()
+		if response_data.get("ok", false):
+			print("BOT: Attack confirmed by server, now sending end_turn")
+			is_attacking = false
+			send_end_turn_request()
+		else:
+			print("BOT: Attack failed: " + str(response_data.get("error", "Unknown error")))
+			# Reset attack state on failure
+			is_attacking = false
+	# Handle end_turn response
+	elif is_end_turn_pending:
+		is_end_turn_pending = false
+		end_turn_retry_count = 0
+		end_turn_timeout_timer.stop()
+		if response_data.get("ok", false):
+			pass  # Success
+		else:
+			pass  # Failed but bot doesn't need to report it
+	# Call pending move callback if exists
+	elif pending_move_callback.is_valid():
+		pending_move_callback.call(response_data.get("ok", false), response_data)
+		pending_move_callback = Callable()
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
@@ -564,7 +565,7 @@ func _on_bot_move_response(success: bool, response_data: Dictionary):
 
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout
-	poll_server()
+	poll_main_client()
 
 func activate_player_animations(player_index: int):
 	var players_node = get_parent().get_node("Players")
