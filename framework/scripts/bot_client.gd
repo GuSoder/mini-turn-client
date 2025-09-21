@@ -108,32 +108,34 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 	var response_data = json.data
 
-	# Handle attack response
-	if is_attack_request_pending:
-		is_attack_request_pending = false
-		attack_retry_count = 0
-		attack_timeout_timer.stop()
-		if response_data.get("ok", false):
-			print("BOT: Attack confirmed by server, now sending end_turn")
-			is_attacking = false
-			send_end_turn_request()
-		else:
-			print("BOT: Attack failed: " + str(response_data.get("error", "Unknown error")))
-			# Reset attack state on failure
-			is_attacking = false
-	# Handle end_turn response
-	elif is_end_turn_pending:
-		is_end_turn_pending = false
-		end_turn_retry_count = 0
-		end_turn_timeout_timer.stop()
-		if response_data.get("ok", false):
-			pass  # Success
-		else:
-			pass  # Failed but bot doesn't need to report it
-	# Call pending move callback if exists
-	elif pending_move_callback.is_valid():
-		pending_move_callback.call(response_data.get("ok", false), response_data)
-		pending_move_callback = Callable()
+	# Check if this response has "ok" field (move/attack/end_turn responses)
+	if "ok" in response_data:
+		# Handle attack response
+		if is_attack_request_pending:
+			is_attack_request_pending = false
+			attack_retry_count = 0
+			attack_timeout_timer.stop()
+			if response_data.get("ok", false):
+				print("BOT: Attack confirmed by server, now sending end_turn")
+				is_attacking = false
+				send_end_turn_request()
+			else:
+				print("BOT: Attack failed: " + str(response_data.get("error", "Unknown error")))
+				# Reset attack state on failure
+				is_attacking = false
+		# Handle end_turn response
+		elif is_end_turn_pending:
+			is_end_turn_pending = false
+			end_turn_retry_count = 0
+			end_turn_timeout_timer.stop()
+			if response_data.get("ok", false):
+				pass  # Success
+			else:
+				pass  # Failed but bot doesn't need to report it
+		# Call pending move callback if exists
+		elif pending_move_callback.is_valid():
+			pending_move_callback.call(response_data.get("ok", false), response_data)
+			pending_move_callback = Callable()
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
