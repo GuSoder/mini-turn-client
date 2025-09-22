@@ -64,8 +64,8 @@ func load_characters_party():
 		Vector3(0, 0, -0.3)    # Hero 4
 	]
 
-	# Create all heroes as children of Player1
-	for i in range(MAX_ENTITIES):
+	# Create 4 party heroes as children of Player1
+	for i in range(4):  # Party always has exactly 4 heroes
 		var hero_instance = create_hero_for_player(i + 1)
 		if hero_instance:
 			hero_instance.name = "PartyHero" + str(i + 1)
