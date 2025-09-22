@@ -6,6 +6,7 @@ signal characters_loaded
 const MAX_ENTITIES = 8
 
 @onready var players_node: Node3D = get_parent().get_node("Players")
+@onready var enemies_node: Node3D = get_parent().get_node("Enemies")
 var hero_scene = preload("res://game/scenes/hero.tscn")
 var upper_body_scenes = [
 	preload("res://game/scenes/upper_body_1.tscn"),
@@ -84,6 +85,9 @@ func replace_players_with_heroes():
 	if not players_node:
 		print("Character Loader: Players node not found")
 		return
+	if not enemies_node:
+		print("Character Loader: Enemies node not found")
+		return
 
 	# Always make all players visible first (in case coming from overworld mode)
 	for i in range(4):
@@ -94,30 +98,42 @@ func replace_players_with_heroes():
 
 	# Replace each entity with hero scenes
 	for i in range(MAX_ENTITIES):
-		var player_name = "Player" + str(i + 1)
-		var player_node = players_node.get_node(player_name)
+		var parent_node: Node3D
+		var entity_name: String
+		var entity_node: Node3D
 
-		if not player_node:
-			print("Character Loader: Player node " + player_name + " not found")
+		if i < 4:
+			# Entities 1-4: Players
+			parent_node = players_node
+			entity_name = "Player" + str(i + 1)
+			entity_node = players_node.get_node_or_null(entity_name)
+		else:
+			# Entities 5-8: Enemies
+			parent_node = enemies_node
+			entity_name = "Enemy" + str(i - 3)  # Enemy1, Enemy2, Enemy3, Enemy4
+			entity_node = enemies_node.get_node_or_null(entity_name)
+
+		if not entity_node:
+			print("Character Loader: Entity node " + entity_name + " not found")
 			continue
 
 		# Get current transform to preserve position
-		var current_transform = player_node.transform
-		var current_name = player_node.name
+		var current_transform = entity_node.transform
+		var current_name = entity_node.name
 
-		# Remove old player node
-		players_node.remove_child(player_node)
-		player_node.queue_free()
+		# Remove old entity node
+		parent_node.remove_child(entity_node)
+		entity_node.queue_free()
 
 		# Create new hero scene using the refactored function
 		var hero_instance = create_hero_for_player(i + 1)
 		hero_instance.name = current_name
 		hero_instance.transform = current_transform
 
-		# Add to players node
-		players_node.add_child(hero_instance)
+		# Add to appropriate parent node
+		parent_node.add_child(hero_instance)
 
-		print("Character Loader: Replaced " + player_name + " with hero scene")
+		print("Character Loader: Replaced " + entity_name + " with hero scene")
 
 func replace_upper_body(hero_instance: Node3D, player_number: int):
 	# Find the UpperBody node in the hero's Appearance
