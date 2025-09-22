@@ -3,8 +3,8 @@ extends Node3D
 
 enum Status { CHOOSING, MOVING }
 
-# Configuration - set to 4 to maintain current functionality
-const MAX_ENTITIES = 4
+# Configuration - set to 8 to support players + enemies
+const MAX_ENTITIES = 8
 
 @export var client_number: int = 1
 @export var server_url: String = "http://207.154.222.143:5000"

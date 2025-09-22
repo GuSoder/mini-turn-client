@@ -2,8 +2,8 @@ extends Node
 
 signal characters_loaded
 
-# Configuration - set to 4 to maintain current functionality
-const MAX_ENTITIES = 4
+# Configuration - set to 8 to support players + enemies
+const MAX_ENTITIES = 8
 
 @onready var players_node: Node3D = get_parent().get_node("Players")
 var hero_scene = preload("res://game/scenes/hero.tscn")

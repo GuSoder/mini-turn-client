@@ -4,8 +4,8 @@ extends Node3D
 enum Status { CHOOSING, MOVING }
 enum PathStrategy { PONG, PATROL, ATTACK }
 
-# Configuration - set to 4 to maintain current functionality
-const MAX_ENTITIES = 4
+# Configuration - set to 8 to support players + enemies
+const MAX_ENTITIES = 8
 
 @export var client_number: int = 2
 @export var server_url: String = "http://207.154.222.143:5000"
