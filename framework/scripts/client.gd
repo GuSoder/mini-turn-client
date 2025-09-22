@@ -226,8 +226,17 @@ func process_game_state(state: Dictionary):
 			cached_last_paths[i] = new_path.duplicate()
 
 func animate_player_move(player_index: int, path: Array, state: Dictionary):
-	var player_node = players_node.get_child(player_index)
-	if not player_node:
+	var entity_node: Node3D
+	if player_index < 4:
+		# Entities 0-3: Players
+		entity_node = players_node.get_child(player_index)
+	else:
+		# Entities 4-7: Enemies
+		var enemies_node = get_node("Enemies")
+		if enemies_node:
+			entity_node = enemies_node.get_child(player_index - 4)
+
+	if not entity_node:
 		return
 	
 	# If this is our player and we're in moving phase, switch to moving
@@ -244,9 +253,9 @@ func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	for hex_pos in path:
 		var node_pos = get_hex_node_position(Vector2i(hex_pos.q, hex_pos.r))
 		world_positions.append(node_pos)
-	
+
 	if world_positions.size() > 1:
-		animate_along_path(player_node, world_positions, player_index, state)
+		animate_along_path(entity_node, world_positions, player_index, state)
 
 func hex_to_world(hex_pos: Vector2i) -> Vector3:
 	# Convert hex coordinates (q, r) to world position
@@ -473,12 +482,21 @@ func update_player_position(player_index: int, state: Dictionary):
 	var pos = state.positions[player_index]
 	var new_hex_pos = Vector2i(pos.q, pos.r)
 	player_positions[player_index] = new_hex_pos
-	
-	# Move player to correct world position
-	var player_node = players_node.get_child(player_index)
-	if player_node:
+
+	# Move entity to correct world position
+	var entity_node: Node3D
+	if player_index < 4:
+		# Entities 0-3: Players
+		entity_node = players_node.get_child(player_index)
+	else:
+		# Entities 4-7: Enemies
+		var enemies_node = get_node("Enemies")
+		if enemies_node:
+			entity_node = enemies_node.get_child(player_index - 4)
+
+	if entity_node:
 		var hex_node_pos = get_hex_node_position(new_hex_pos)
-		player_node.position = hex_node_pos
+		entity_node.position = hex_node_pos
 
 func update_turn_marker_position(state: Dictionary):
 	if not initiative_tracker_node or not ui_turn_marker_node or not "playerInTurn" in state:
