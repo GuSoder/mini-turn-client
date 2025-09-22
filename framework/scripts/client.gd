@@ -3,6 +3,9 @@ extends Node3D
 
 enum Status { CHOOSING, MOVING }
 
+# Configuration - set to 4 to maintain current functionality
+const MAX_ENTITIES = 4
+
 @export var client_number: int = 1
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
@@ -17,7 +20,7 @@ var initiative_tracker_node: Node2D
 var ui_turn_marker_node: Node2D
 var path_markers_node: Node3D
 var player_positions: Array[Vector2i] = []
-var cached_last_paths: Array[Array] = [[], [], [], []]
+var cached_last_paths: Array[Array] = [[], [], [], [], [], [], [], []]
 var current_map_name: String = "unset"
 var is_animating: bool = false
 var pending_move_callback: Callable
@@ -62,8 +65,17 @@ func _ready():
 	# Get game ID from lobby
 	game_id = get_tree().get_meta("game_id", "")
 	
-	# Initialize positions array
-	player_positions = [Vector2i(0, 0), Vector2i(2, -1), Vector2i(-1, 1), Vector2i(3, 0)]
+	# Initialize positions array for all 8 possible entities (first 4 are original players)
+	player_positions = [
+		Vector2i(0, 0),   # Player 1 (original)
+		Vector2i(2, -1),  # Player 2 (original)
+		Vector2i(-1, 1),  # Player 3 (original)
+		Vector2i(3, 0),   # Player 4 (original)
+		Vector2i(-2, 2),  # Enemy 1 (new)
+		Vector2i(4, -2),  # Enemy 2 (new)
+		Vector2i(-3, 3),  # Enemy 3 (new)
+		Vector2i(5, -1)   # Enemy 4 (new)
+	]
 	
 	# Add hex input handler
 	var hex_input = preload("res://framework/scripts/hex_input.gd").new()
@@ -163,8 +175,8 @@ func process_game_state(state: Dictionary):
 		is_attacking = false
 		attack_target = -1
 
-		# Deactivate animations for all players when returning to planning phase
-		for i in range(4):
+		# Deactivate animations for all entities when returning to planning phase
+		for i in range(MAX_ENTITIES):
 			deactivate_player_animations(i)
 
 	# Check for map changes - all clients should detect and load new maps
@@ -198,7 +210,7 @@ func process_game_state(state: Dictionary):
 
 	# Check for path changes and animate
 	if "lastPaths" in state:
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
 			
@@ -495,8 +507,8 @@ func update_health_displays(state: Dictionary):
 	if not initiative_tracker_node or not "stats" in state:
 		return
 	
-	# Update health display for each player
-	for player_index in range(4):
+	# Update health display for each entity
+	for player_index in range(MAX_ENTITIES):
 		if player_index < state.stats.size():
 			var player_health = int(state.stats[player_index].get("health", 10))
 			var panel_name = "CharacterPanel" + str(player_index + 1)
@@ -564,9 +576,9 @@ func _get_player_nodes_for_animations(player_index: int) -> Array[Node3D]:
 		var party_nodes: Array[Node3D] = []
 		var player1 = players_node.get_child(0)  # Player1
 		if player1:
-			for i in range(4):
+			for i in range(MAX_ENTITIES):
 				if player1.get_child_count() > (i + 2):
-					party_nodes.append(player1.get_child(i + 2))  # PartyHero1-4 (skip Capsule and Chevron)
+					party_nodes.append(player1.get_child(i + 2))  # PartyHero1-8 (skip Capsule and Chevron)
 		return party_nodes
 	else:
 		# In regular mode, return just the specific player

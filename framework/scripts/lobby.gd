@@ -1,5 +1,8 @@
 extends Node3D
 
+# Configuration - set to 4 to maintain current functionality
+const MAX_ENTITIES = 4
+
 var http_request: HTTPRequest
 var server_url: String = "http://207.154.222.143:5000"
 var current_game_id: String = ""

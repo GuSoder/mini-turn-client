@@ -2,13 +2,20 @@ extends Node
 
 signal characters_loaded
 
+# Configuration - set to 4 to maintain current functionality
+const MAX_ENTITIES = 4
+
 @onready var players_node: Node3D = get_parent().get_node("Players")
 var hero_scene = preload("res://game/scenes/hero.tscn")
 var upper_body_scenes = [
 	preload("res://game/scenes/upper_body_1.tscn"),
 	preload("res://game/scenes/upper_body_2.tscn"),
 	preload("res://game/scenes/upper_body_3.tscn"),
-	preload("res://game/scenes/upper_body_4.tscn")
+	preload("res://game/scenes/upper_body_4.tscn"),
+	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 1
+	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 2
+	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 3
+	preload("res://game/scenes/bandit_upper.tscn")   # Enemy 4
 ]
 
 func _ready():
@@ -28,8 +35,8 @@ func load_characters(campaign_state = null):
 func load_characters_party():
 	print("Character Loader: Loading characters in party mode")
 
-	# Make players 2-4 invisible
-	for i in range(1, 4):
+	# Make entities 2-8 invisible
+	for i in range(1, MAX_ENTITIES):
 		var player_name = "Player" + str(i + 1)
 		var player_node = players_node.get_node_or_null(player_name)
 		if player_node:
@@ -57,8 +64,8 @@ func load_characters_party():
 		Vector3(0, 0, -0.3)    # Hero 4
 	]
 
-	# Create all 4 heroes as children of Player1
-	for i in range(4):
+	# Create all heroes as children of Player1
+	for i in range(MAX_ENTITIES):
 		var hero_instance = create_hero_for_player(i + 1)
 		if hero_instance:
 			hero_instance.name = "PartyHero" + str(i + 1)
@@ -85,8 +92,8 @@ func replace_players_with_heroes():
 		if player_node:
 			player_node.visible = true
 
-	# Replace each Player1, Player2, Player3, Player4 with hero scenes
-	for i in range(4):
+	# Replace each entity with hero scenes
+	for i in range(MAX_ENTITIES):
 		var player_name = "Player" + str(i + 1)
 		var player_node = players_node.get_node(player_name)
 

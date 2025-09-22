@@ -4,6 +4,9 @@ extends Node3D
 enum Status { CHOOSING, MOVING }
 enum PathStrategy { PONG, PATROL, ATTACK }
 
+# Configuration - set to 4 to maintain current functionality
+const MAX_ENTITIES = 4
+
 @export var client_number: int = 2
 @export var server_url: String = "http://207.154.222.143:5000"
 @export var game_id: String = ""
@@ -17,7 +20,7 @@ enum PathStrategy { PONG, PATROL, ATTACK }
 var http_request: HTTPRequest
 var main_client: Node3D  # Reference to the main client
 var player_positions: Array[Vector2i] = []
-var cached_last_paths: Array[Array] = [[], [], [], []]
+var cached_last_paths: Array[Array] = [[], [], [], [], [], [], [], []]
 var current_game_state: Dictionary = {}
 var last_processed_state_hash: int = 0  # To detect state changes
 var is_animating: bool = false
@@ -42,8 +45,17 @@ func _ready():
 	# Get reference to main client (we are Bots/BotClientX, main client is ../../Client)
 	main_client = get_parent().get_parent()
 
-	# Initialize positions array (same as main client)
-	player_positions = [Vector2i(0, 0), Vector2i(2, -1), Vector2i(-1, 1), Vector2i(3, 0)]
+	# Initialize positions array for all 8 possible entities (same as main client)
+	player_positions = [
+		Vector2i(0, 0),   # Player 1 (original)
+		Vector2i(2, -1),  # Player 2 (original)
+		Vector2i(-1, 1),  # Player 3 (original)
+		Vector2i(3, 0),   # Player 4 (original)
+		Vector2i(-2, 2),  # Enemy 1 (new)
+		Vector2i(4, -2),  # Enemy 2 (new)
+		Vector2i(-3, 3),  # Enemy 3 (new)
+		Vector2i(5, -1)   # Enemy 4 (new)
+	]
 
 	# Initialize patrol target
 	target_patrol_point = patrol_point_1
@@ -146,20 +158,20 @@ func process_game_state(state: Dictionary):
 		# Reset attack state when new turn begins
 		is_attacking = false
 		
-		# Deactivate animations for all players when returning to planning phase
-		for i in range(4):
+		# Deactivate animations for all entities when returning to planning phase
+		for i in range(MAX_ENTITIES):
 			deactivate_player_animations(i)
 	
-	# Update player positions from server state
+	# Update entity positions from server state
 	if "positions" in state:
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			if i < state.positions.size():
 				var pos = state.positions[i]
 				player_positions[i] = Vector2i(pos.q, pos.r)
 	
 	# Check for path changes and handle animation timing
 	if "lastPaths" in state:
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
 			
@@ -182,7 +194,7 @@ func process_game_state(state: Dictionary):
 						# For attack strategy, check if we're now adjacent to target after animation
 						if path_strategy == PathStrategy.ATTACK:
 							var target_player_index = attack_target - 1
-							if target_player_index >= 0 and target_player_index < 4 and target_player_index != client_number - 1:
+							if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
 								var current_pos = player_positions[client_number - 1]
 								var target_pos = player_positions[target_player_index]
 								
@@ -232,9 +244,9 @@ func make_pong_move(current_pos: Vector2i) -> Array[Vector2i]:
 	target_pos.x = clamp(target_pos.x, 0, 9)
 	target_pos.y = clamp(target_pos.y, 0, 9)
 	
-	# Check if target position is occupied by another player
+	# Check if target position is occupied by another entity
 	var is_occupied = false
-	for i in range(4):
+	for i in range(MAX_ENTITIES):
 		if i != client_number - 1 and player_positions[i] == target_pos:
 			is_occupied = true
 			break
@@ -251,7 +263,7 @@ func make_pong_move(current_pos: Vector2i) -> Array[Vector2i]:
 		
 		# Check again if new target is occupied
 		is_occupied = false
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			if i != client_number - 1 and player_positions[i] == target_pos:
 				is_occupied = true
 				break
@@ -280,9 +292,9 @@ func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
 	var path_finder = main_client.get_node("PathFinder") as PathFinder
 	
 	if path_finder:
-		# Set blocked hexes (other player positions, excluding self)
+		# Set blocked hexes (other entity positions, excluding self)
 		var blocked_hexes: Array[Vector2i] = []
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			if i != client_number - 1:
 				blocked_hexes.append(player_positions[i])
 		
@@ -329,8 +341,8 @@ func make_simple_move_towards(current_pos: Vector2i, target_pos: Vector2i) -> Ar
 	next_pos.x = clamp(next_pos.x, 0, 9)
 	next_pos.y = clamp(next_pos.y, 0, 9)
 	
-	# Check if position is occupied by another player
-	for i in range(4):
+	# Check if position is occupied by another entity
+	for i in range(MAX_ENTITIES):
 		if i != client_number - 1 and player_positions[i] == next_pos:
 			# Position occupied, stay in place
 			return [current_pos]
@@ -367,8 +379,8 @@ func make_simple_move_towards_adjacent(current_pos: Vector2i, target_pos: Vector
 	next_pos.x = clamp(next_pos.x, 0, 9)
 	next_pos.y = clamp(next_pos.y, 0, 9)
 	
-	# Check if position is occupied by another player
-	for i in range(4):
+	# Check if position is occupied by another entity
+	for i in range(MAX_ENTITIES):
 		if i != client_number - 1 and player_positions[i] == next_pos:
 			# Position occupied, stay in place
 			return [current_pos]
@@ -384,7 +396,7 @@ func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
 	var target_player_index = attack_target - 1
 	
 	# Validate target player index
-	if target_player_index < 0 or target_player_index >= 4 or target_player_index == client_number - 1:
+	if target_player_index < 0 or target_player_index >= MAX_ENTITIES or target_player_index == client_number - 1:
 		# Invalid target or trying to attack self, stay in place
 		return [current_pos]
 	
@@ -401,9 +413,9 @@ func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
 	var path_finder = main_client.get_node("PathFinder") as PathFinder
 	
 	if path_finder:
-		# Set blocked hexes (all other player positions, including target)
+		# Set blocked hexes (all other entity positions, including target)
 		var blocked_hexes: Array[Vector2i] = []
-		for i in range(4):
+		for i in range(MAX_ENTITIES):
 			if i != client_number - 1:
 				blocked_hexes.append(player_positions[i])
 		
@@ -601,9 +613,9 @@ func _get_player_nodes_for_animations(player_index: int, players_node: Node3D) -
 		var party_nodes: Array[Node3D] = []
 		var player1 = players_node.get_child(0)  # Player1
 		if player1:
-			for i in range(4):
+			for i in range(MAX_ENTITIES):
 				if player1.get_child_count() > (i + 2):
-					party_nodes.append(player1.get_child(i + 2))  # PartyHero1-4 (skip Capsule and Chevron)
+					party_nodes.append(player1.get_child(i + 2))  # PartyHero1-8 (skip Capsule and Chevron)
 		return party_nodes
 	else:
 		# In regular mode, return just the specific player
