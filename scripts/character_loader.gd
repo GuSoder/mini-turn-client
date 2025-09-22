@@ -12,10 +12,10 @@ var upper_body_scenes = [
 	preload("res://game/scenes/upper_body_2.tscn"),
 	preload("res://game/scenes/upper_body_3.tscn"),
 	preload("res://game/scenes/upper_body_4.tscn"),
-	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 1
-	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 2
-	preload("res://game/scenes/bandit_upper.tscn"),  # Enemy 3
-	preload("res://game/scenes/bandit_upper.tscn")   # Enemy 4
+	preload("res://game/scenes/upper_body_bandit.tscn"),  # Enemy 1
+	preload("res://game/scenes/upper_body_bandit.tscn"),  # Enemy 2
+	preload("res://game/scenes/upper_body_bandit.tscn"),  # Enemy 3
+	preload("res://game/scenes/upper_body_bandit.tscn")   # Enemy 4
 ]
 
 func _ready():
