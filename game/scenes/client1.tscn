@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://buh4l2auwixpa"]
+[gd_scene load_steps=23 format=3 uid="uid://buh4l2auwixpa"]
 
 [ext_resource type="Script" uid="uid://c0qnnn2aga361" path="res://framework/scripts/client.gd" id="1_pvy0j"]
 [ext_resource type="PackedScene" uid="uid://bve05q6f20fac" path="res://framework/scenes/grid.tscn" id="2_pvy0j"]
@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://ndert5mhobi6" path="res://framework/misc/icon2.svg" id="15_alo6r"]
 [ext_resource type="Texture2D" uid="uid://c2knufc8cgbuf" path="res://framework/misc/icon3.svg" id="16_ikjqq"]
 [ext_resource type="Texture2D" uid="uid://t7gb3iijwqsv" path="res://framework/misc/icon4.svg" id="17_5elir"]
+[ext_resource type="Texture2D" uid="uid://duol2hfaewynl" path="res://framework/misc/icon5.svg" id="22_h12ej"]
 
 [node name="Client" type="Node3D"]
 script = ExtResource("1_pvy0j")
@@ -126,3 +127,39 @@ scale = Vector2(1, 1)
 position = Vector2(40, 40)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("17_5elir")
+
+[node name="CharacterPanel5" parent="InitiativeTracker" instance=ExtResource("13_biain")]
+position = Vector2(0, 315)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel5"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("22_h12ej")
+
+[node name="CharacterPanel6" parent="InitiativeTracker" instance=ExtResource("13_biain")]
+position = Vector2(0, 390)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel6"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("22_h12ej")
+
+[node name="CharacterPanel7" parent="InitiativeTracker" instance=ExtResource("13_biain")]
+position = Vector2(0, 465)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel7"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("22_h12ej")
+
+[node name="CharacterPanel8" parent="InitiativeTracker" instance=ExtResource("13_biain")]
+position = Vector2(0, 540)
+scale = Vector2(1, 1)
+
+[node name="Portrait" type="Sprite2D" parent="InitiativeTracker/CharacterPanel8"]
+position = Vector2(40, 40)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("22_h12ej")
