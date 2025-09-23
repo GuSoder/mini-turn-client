@@ -178,7 +178,7 @@ func process_game_state(state: Dictionary):
 		for i in range(MAX_ENTITIES):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
-			
+
 			if new_path != cached_path:
 				cached_last_paths[i] = new_path.duplicate()
 				if i == client_number - 1:
@@ -187,30 +187,41 @@ func process_game_state(state: Dictionary):
 				if i == client_number - 1 and state.get("phase", "planning") == "moving":
 					client_status = Status.MOVING
 					print("BOT: Player " + str(client_number) + " animation starting, status -> MOVING")
-				
+
 				# Activate animations when any player starts moving
 				if state.get("phase", "planning") == "moving":
 					activate_player_animations(i)
 					# Simulate animation time then check for attack
 					await get_tree().create_timer(0.5 * new_path.size()).timeout
+			else:
+				# Handle case where path didn't change but we're in moving phase for our turn
+				if i == client_number - 1 and state.get("phase", "planning") == "moving" and client_status == Status.CHOOSING:
+					print("BOT: Player " + str(client_number) + " no path change detected, but in moving phase - forcing animation logic")
+					client_status = Status.MOVING
+					print("BOT: Player " + str(client_number) + " animation starting, status -> MOVING")
+
+					activate_player_animations(i)
+					# Use cached path size for animation timing
+					var path_size = cached_path.size() if cached_path.size() > 0 else 1
+					await get_tree().create_timer(0.5 * path_size).timeout
 					if client_status == Status.MOVING:  # Make sure we're still moving
 						# Deactivate animations when bot finishes moving
 						deactivate_player_animations(i)
-						
+
 						# For attack strategy, check if we're now adjacent to target after animation
 						if path_strategy == PathStrategy.ATTACK:
 							var target_player_index = attack_target - 1
 							if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
 								var current_pos = player_positions[client_number - 1]
 								var target_pos = player_positions[target_player_index]
-								
+
 								if is_adjacent_to_target(current_pos, target_pos):
 									# Set attack state and send attack immediately while in MOVING phase
 									is_attacking = true
 									print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
 									send_attack_request()
 									return  # Don't send end_turn yet, attack response will handle it
-						
+
 						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
 						end_turn()
 	
