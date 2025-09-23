@@ -214,9 +214,18 @@ func process_game_state(state: Dictionary):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
 			
-			if new_path != cached_path and len(new_path) > 1:
-				# Don't update position immediately - let animation handle it
-				animate_player_move(i, new_path, state)
+			if new_path != cached_path:
+				if len(new_path) > 1:
+					# Don't update position immediately - let animation handle it
+					animate_player_move(i, new_path, state)
+				else:
+					# Single-element path (staying in place) - trigger completion logic immediately
+					if state.get("phase", "planning") == "moving" and i == client_number - 1:
+						# For our own player, trigger the end_turn logic as if animation completed
+						call_deferred("_handle_single_element_path_completion", i, state)
+					else:
+						# For other players, just update position
+						update_player_position(i, state)
 			else:
 				# No animation needed, but only update position if not in moving phase
 				# to avoid interfering with ongoing animations
@@ -224,6 +233,16 @@ func process_game_state(state: Dictionary):
 					update_player_position(i, state)
 			
 			cached_last_paths[i] = new_path.duplicate()
+
+func _handle_single_element_path_completion(player_index: int, state: Dictionary):
+	# Simulate the animation completion logic for single-element paths
+	is_animating = false
+	update_player_position(player_index, state)
+	deactivate_player_animations(player_index)
+	# If this is our player, send end turn request
+	if player_index == client_number - 1 and client_status == Status.MOVING:
+		print("CLIENT: Player " + str(client_number) + " single-element path complete, sending end_turn")
+		end_turn()
 
 func animate_player_move(player_index: int, path: Array, state: Dictionary):
 	var entity_node: Node3D
