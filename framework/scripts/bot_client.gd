@@ -37,7 +37,6 @@ var is_attacking: bool = false
 var is_attack_request_pending: bool = false
 var attack_retry_count: int = 0
 var attack_timeout_timer: Timer
-var doing_direct_attack: bool = false
 
 func _ready():
 	# Get game ID from lobby
@@ -162,22 +161,10 @@ func process_game_state(state: Dictionary):
 		client_status = Status.CHOOSING
 		# Reset attack state when new turn begins
 		is_attacking = false
-		doing_direct_attack = false
-
+		
 		# Deactivate animations for all entities when returning to planning phase
 		for i in range(MAX_ENTITIES):
 			deactivate_player_animations(i)
-
-	# Handle direct attack case - when already adjacent and now in moving phase
-	if doing_direct_attack and player_in_turn == client_number - 1 and phase == "moving" and client_status == Status.CHOOSING:
-		print("BOT: Player " + str(client_number) + " direct attack mode - entering moving phase")
-		client_status = Status.MOVING
-		doing_direct_attack = false
-
-		# Immediately send attack since we're already adjacent
-		is_attacking = true
-		print("BOT: Player " + str(client_number) + " direct attack - sending attack immediately")
-		send_attack_request()
 	
 	# Update entity positions from server state
 	if "positions" in state:
@@ -423,9 +410,8 @@ func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
 	
 	# Check if we're already adjacent to the target
 	if is_adjacent_to_target(current_pos, target_pos):
-		# Already adjacent, stay in place (attack will happen when we detect moving phase)
+		# Already adjacent, stay in place (attack will happen in end_turn)
 		print("BOT: Player " + str(client_number) + " already adjacent to target player " + str(attack_target) + ", staying in place")
-		doing_direct_attack = true
 		return [current_pos]
 	
 	# Get PathFinder from main client
