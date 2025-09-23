@@ -151,6 +151,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
+	var current_player = state.get("playerInTurn", -1)
+	var phase = state.get("phase", "planning")
+	if current_player == client_number - 1:
+		print("BOT: Player " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(current_player + 1))
 	
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
@@ -177,6 +181,8 @@ func process_game_state(state: Dictionary):
 			
 			if new_path != cached_path:
 				cached_last_paths[i] = new_path.duplicate()
+				if i == client_number - 1:
+					print("BOT: Player " + str(client_number) + " detected path change - new size: " + str(new_path.size()) + ", phase: " + str(state.get("phase", "planning")))
 				# If this is our player and we're in moving phase, simulate animation
 				if i == client_number - 1 and state.get("phase", "planning") == "moving":
 					client_status = Status.MOVING
