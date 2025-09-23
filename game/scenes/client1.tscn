@@ -49,18 +49,18 @@ script = ExtResource("5_campaign")
 
 [node name="BotClient2" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
-path_strategy = 1
+path_strategy = 2
 patrol_point_1 = Vector2i(0, 3)
 patrol_point_2 = Vector2i(8, 8)
-alignment = "enemy"
+attack_target = 5
 
 [node name="BotClient3" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
 client_number = 3
-path_strategy = 1
+path_strategy = 2
 patrol_point_1 = Vector2i(5, 2)
 patrol_point_2 = Vector2i(8, 4)
-alignment = "enemy"
+attack_target = 6
 
 [node name="BotClient4" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
@@ -68,19 +68,20 @@ client_number = 4
 path_strategy = 2
 patrol_point_1 = Vector2i(3, 6)
 patrol_point_2 = Vector2i(6, 8)
+attack_target = 7
 
 [node name="BotClient5" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
 client_number = 5
-path_strategy = 1
+path_strategy = 2
 patrol_point_1 = Vector2i(1, 1)
 patrol_point_2 = Vector2i(9, 1)
-alignment = "enemy"
+attack_target = 1
 
 [node name="BotClient6" type="Node3D" parent="Bots"]
 script = ExtResource("6_h12ej")
 client_number = 6
-path_strategy = 1
+path_strategy = 2
 patrol_point_1 = Vector2i(0, 8)
 patrol_point_2 = Vector2i(8, 8)
 alignment = "enemy"
@@ -91,6 +92,7 @@ client_number = 7
 path_strategy = 2
 patrol_point_1 = Vector2i(0, 0)
 patrol_point_2 = Vector2i(4, 4)
+attack_target = 3
 alignment = "enemy"
 
 [node name="BotClient8" type="Node3D" parent="Bots"]
@@ -99,6 +101,7 @@ client_number = 8
 path_strategy = 2
 patrol_point_1 = Vector2i(5, 5)
 patrol_point_2 = Vector2i(9, 9)
+attack_target = 4
 alignment = "enemy"
 
 [node name="Grid" parent="." instance=ExtResource("2_pvy0j")]
