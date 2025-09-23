@@ -33,6 +33,8 @@ func handle_movement(delta):
 		input_vector.y -= 1
 	if Input.is_action_pressed("ui_down") or Input.is_key_pressed(KEY_S):
 		input_vector.y += 1
+	if Input.is_key_pressed(KEY_C):
+		print(position)
 	
 	if input_vector != Vector2.ZERO:
 		input_vector = input_vector.normalized()

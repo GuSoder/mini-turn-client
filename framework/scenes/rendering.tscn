@@ -26,6 +26,7 @@ shadow_enabled = true
 shadow_bias = 0.296
 
 [node name="Dolly" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -17)
 script = ExtResource("1_q8j5v")
 
 [node name="Arm" type="Node3D" parent="Dolly"]
