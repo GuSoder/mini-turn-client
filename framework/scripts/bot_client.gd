@@ -483,7 +483,8 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]
-	
+
+	print("BOT: Player " + str(client_number) + " sending move request with path size " + str(path.size()))
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func end_turn():
@@ -574,8 +575,9 @@ func _on_attack_timeout():
 func _on_bot_move_response(success: bool, response_data: Dictionary):
 	if success:
 		has_made_move = true
+		print("BOT: Player " + str(client_number) + " move request succeeded")
 	else:
-		pass
+		print("BOT: Player " + str(client_number) + " move request failed: " + str(response_data.get("error", "Unknown error")))
 
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout
