@@ -151,10 +151,10 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
-	var current_player = state.get("playerInTurn", -1)
+	var player_in_turn = state.get("playerInTurn", -1)
 	var phase = state.get("phase", "planning")
-	if current_player == client_number - 1:
-		print("BOT: Player " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(current_player + 1))
+	if player_in_turn == client_number - 1:
+		print("BOT: Player " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(player_in_turn + 1))
 	
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
