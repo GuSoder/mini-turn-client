@@ -179,9 +179,7 @@ func process_game_state(state: Dictionary):
 			var new_path = state.lastPaths[i]
 			var cached_path = cached_last_paths[i]
 			
-			# Trigger animation logic if path changed OR if we're in moving phase for our turn (handles adjacent case)
-			var should_animate = (new_path != cached_path) or (i == client_number - 1 and state.get("phase", "planning") == "moving" and client_status == Status.CHOOSING)
-			if should_animate:
+			if new_path != cached_path:
 				cached_last_paths[i] = new_path.duplicate()
 				if i == client_number - 1:
 					print("BOT: Player " + str(client_number) + " detected path change - new size: " + str(new_path.size()) + ", phase: " + str(state.get("phase", "planning")))
