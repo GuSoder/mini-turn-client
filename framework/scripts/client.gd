@@ -524,14 +524,14 @@ func update_turn_marker_position(state: Dictionary):
 func update_health_displays(state: Dictionary):
 	if not initiative_tracker_node or not "stats" in state:
 		return
-	
+
 	# Update health display for each entity
 	for player_index in range(MAX_ENTITIES):
 		if player_index < state.stats.size():
 			var player_health = int(state.stats[player_index].get("health", 10))
 			var panel_name = "CharacterPanel" + str(player_index + 1)
 			var character_panel = initiative_tracker_node.get_node(panel_name)
-			
+
 			if character_panel:
 				var health_node = character_panel.get_node("Health")
 				if health_node:
@@ -543,6 +543,23 @@ func update_health_displays(state: Dictionary):
 							if filled_node:
 								# Show filled if pip_index <= player_health, hide otherwise
 								filled_node.visible = (pip_index <= player_health)
+
+			# Check if player is dead and make them invisible
+			if player_health < 1:
+				var entity_node: Node3D
+				if player_index < 4:
+					# Entities 0-3: Players
+					entity_node = players_node.get_child(player_index)
+				else:
+					# Entities 4-7: Enemies
+					var enemies_node = get_node("Enemies")
+					if enemies_node:
+						entity_node = enemies_node.get_child(player_index - 4)
+
+				if entity_node:
+					var proc_anim = entity_node.get_node("ProcAnim")
+					if proc_anim and proc_anim.has_method("set_dead"):
+						proc_anim.set_dead()
 
 func hide_all_path_markers():
 	if not path_markers_node:

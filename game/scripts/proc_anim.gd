@@ -40,3 +40,9 @@ func deactivate_swings():
 				var z_off = swing_script.get("z_off")
 				if z_off != null:
 					swing_script.rotation_degrees = Vector3(0, 0, z_off)
+
+func set_dead():
+	# Make the entire player node invisible when dead
+	var parent_node = get_parent()
+	if parent_node:
+		parent_node.visible = false
