@@ -128,11 +128,11 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 			attack_retry_count = 0
 			attack_timeout_timer.stop()
 			if response_data.get("ok", false):
-				print("BOT: Attack confirmed by server, now sending end_turn")
+				print("BOT Nr " + str(client_number) + " Attack confirmed by server, now sending end_turn")
 				is_attacking = false
 				send_end_turn_request()
 			else:
-				print("BOT: Attack failed: " + str(response_data.get("error", "Unknown error")))
+				print("BOT Nr " + str(client_number) + " Attack failed: " + str(response_data.get("error", "Unknown error")))
 				# Reset attack state on failure
 				is_attacking = false
 		# Handle end_turn response
@@ -154,7 +154,9 @@ func process_game_state(state: Dictionary):
 	var player_in_turn = state.get("playerInTurn", -1)
 	var phase = state.get("phase", "planning")
 	if player_in_turn == client_number - 1:
-		print("BOT: Player " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(player_in_turn + 1))
+		print("BOT Nr " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(player_in_turn + 1))
+	else:
+		return;
 	
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
@@ -175,63 +177,62 @@ func process_game_state(state: Dictionary):
 	
 	# Check for path changes and handle animation timing
 	if "lastPaths" in state:
-		for i in range(MAX_ENTITIES):
-			var new_path = state.lastPaths[i]
-			var cached_path = cached_last_paths[i]
+		var me = client_number - 1
+		var new_path = state.lastPaths[me]
+		var cached_path = cached_last_paths[me]
+		
+		if new_path != cached_path:
+			cached_last_paths[me] = new_path.duplicate()
+			print("BOT Nr " + str(client_number) + " detected path change - new size: " + str(new_path.size()) + ", phase: " + str(state.get("phase", "planning")))
+			# If this is our player and we're in moving phase, simulate animation
+			if state.get("phase", "planning") == "moving":
+				client_status = Status.MOVING
+				print("BOT Nr " + str(client_number) + " animation starting, status -> MOVING")
 			
-			if new_path != cached_path:
-				cached_last_paths[i] = new_path.duplicate()
-				if i == client_number - 1:
-					print("BOT: Player " + str(client_number) + " detected path change - new size: " + str(new_path.size()) + ", phase: " + str(state.get("phase", "planning")))
-				# If this is our player and we're in moving phase, simulate animation
-				if i == client_number - 1 and state.get("phase", "planning") == "moving":
-					client_status = Status.MOVING
-					print("BOT: Player " + str(client_number) + " animation starting, status -> MOVING")
-				
-				# Activate animations when any player starts moving
-				if state.get("phase", "planning") == "moving":
-					activate_player_animations(i)
-					# Simulate animation time then check for attack
-					await get_tree().create_timer(0.5 * new_path.size()).timeout
-					if client_status == Status.MOVING:  # Make sure we're still moving
-						# Deactivate animations when bot finishes moving
-						deactivate_player_animations(i)
-						
-						# For attack strategy, check if we're now adjacent to target after animation
-						if path_strategy == PathStrategy.ATTACK:
-							var target_player_index = attack_target - 1
-							if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
-								var current_pos = player_positions[client_number - 1]
-								var target_pos = player_positions[target_player_index]
-								
-								if is_adjacent_to_target(current_pos, target_pos):
-									# Set attack state and send attack immediately while in MOVING phase
-									is_attacking = true
-									print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
-									send_attack_request()
-									return  # Don't send end_turn yet, attack response will handle it
-						
-						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
-						end_turn()
-			else:
-				# Handle adjacent case - no path change but in moving phase
-				if i == client_number - 1 and state.get("phase", "planning") == "moving":
-					client_status = Status.MOVING
-					print("BOT: Player " + str(client_number) + " direct attack case - no animation needed")
-
+			# Activate animations when any player starts moving
+			if state.get("phase", "planning") == "moving":
+				activate_player_animations(me)
+				# Simulate animation time then check for attack
+				await get_tree().create_timer(0.5 * new_path.size()).timeout
+				if client_status == Status.MOVING:  # Make sure we're still moving
+					# Deactivate animations when bot finishes moving
+					deactivate_player_animations(me)
+					
 					# For attack strategy, check if we're now adjacent to target after animation
 					if path_strategy == PathStrategy.ATTACK:
 						var target_player_index = attack_target - 1
 						if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
 							var current_pos = player_positions[client_number - 1]
 							var target_pos = player_positions[target_player_index]
-
+							
 							if is_adjacent_to_target(current_pos, target_pos):
 								# Set attack state and send attack immediately while in MOVING phase
 								is_attacking = true
-								print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
+								print("BOT Nr " + str(client_number) + " animation complete, adjacent to target, sending attack")
 								send_attack_request()
 								return  # Don't send end_turn yet, attack response will handle it
+					
+					print("BOT Nr " + str(client_number) + " animation complete, sending end_turn")
+					end_turn()
+		else:
+			# Handle adjacent case - no path change but in moving phase
+			if state.get("phase", "planning") == "moving":
+				client_status = Status.MOVING
+				print("BOT Nr " + str(client_number) + " direct attack case - no animation needed")
+
+				# For attack strategy, check if we're now adjacent to target after animation
+				if path_strategy == PathStrategy.ATTACK:
+					var target_player_index = attack_target - 1
+					if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
+						var current_pos = player_positions[client_number - 1]
+						var target_pos = player_positions[target_player_index]
+
+						if is_adjacent_to_target(current_pos, target_pos):
+							# Set attack state and send attack immediately while in MOVING phase
+							is_attacking = true
+							print("BOT Nr " + str(client_number) + " animation complete, adjacent to target, sending attack")
+							send_attack_request()
+							return  # Don't send end_turn yet, attack response will handle it
 	
 	# Check if it's our turn and make a move (only in planning phase and choosing status)
 	var current_player = state.get("playerInTurn", -1)
@@ -310,7 +311,7 @@ func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
 			target_patrol_point = patrol_point_2
 		else:
 			target_patrol_point = patrol_point_1
-		print("BOT: Player " + str(client_number) + " reached patrol point, switching target to " + str(target_patrol_point))
+		print("BOT Nr " + str(client_number) + " reached patrol point, switching target to " + str(target_patrol_point))
 	
 	# Get PathFinder from main client (assuming it exists)
 	var main_client = get_parent().get_parent()  # Bots -> Client
@@ -336,7 +337,7 @@ func make_patrol_move(current_pos: Vector2i) -> Array[Vector2i]:
 			for i in range(steps_to_take + 1):  # +1 to include current position
 				move_path.append(full_path[i])
 			
-			print("BOT: Player " + str(client_number) + " taking " + str(steps_to_take) + " steps toward " + str(target_patrol_point))
+			print("BOT Nr " + str(client_number) + " taking " + str(steps_to_take) + " steps toward " + str(target_patrol_point))
 			return move_path
 		else:
 			# If no path found or already at target, stay in place
@@ -430,7 +431,7 @@ func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
 	# Check if we're already adjacent to the target
 	if is_adjacent_to_target(current_pos, target_pos):
 		# Already adjacent, stay in place (attack will happen in end_turn)
-		print("BOT: Player " + str(client_number) + " already adjacent to target player " + str(attack_target) + ", staying in place")
+		print("BOT Nr " + str(client_number) + " already adjacent to target player " + str(attack_target) + ", staying in place")
 		return [current_pos]
 	
 	# Get PathFinder from main client
@@ -461,7 +462,7 @@ func make_attack_move(current_pos: Vector2i) -> Array[Vector2i]:
 			for i in range(steps_to_take + 1):  # +1 to include current position
 				move_path.append(attack_path[i])
 			
-			print("BOT: Player " + str(client_number) + " moving toward player " + str(attack_target) + ", taking " + str(steps_to_take) + " steps")
+			print("BOT Nr " + str(client_number) + " moving toward player " + str(attack_target) + ", taking " + str(steps_to_take) + " steps")
 			return move_path
 		else:
 			# If no valid path found, try simple move towards target (but not onto target)
@@ -509,7 +510,7 @@ func make_move(path: Array[Vector2i], callback: Callable = Callable()):
 	var url = server_url + "/games/" + game_id + "/move"
 	var headers = ["Content-Type: application/json"]
 
-	print("BOT: Player " + str(client_number) + " sending move request with path size " + str(path.size()))
+	print("BOT Nr " + str(client_number) + " sending move request with path size " + str(path.size()))
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func end_turn():
@@ -532,7 +533,7 @@ func send_attack_request():
 	is_attack_request_pending = true
 	attack_retry_count = 0
 	attack_timeout_timer.start()
-	print("BOT: Player " + str(client_number) + " sending attack request against player " + str(attack_target) + " (attempt 1/10)")
+	print("BOT Nr " + str(client_number) + " sending attack request against player " + str(attack_target) + " (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func send_end_turn_request():
@@ -551,7 +552,7 @@ func send_end_turn_request():
 	end_turn_retry_count = 0
 	end_turn_timeout_timer.start()
 	
-	print("BOT: Player " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/10)")
+	print("BOT Nr " + str(client_number) + " status -> CHOOSING, sending end_turn request (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_end_turn_timeout():
@@ -577,7 +578,7 @@ func _on_attack_timeout():
 	attack_retry_count += 1
 	
 	if attack_retry_count < 10:
-		print("BOT: Attack request timed out - retrying (attempt " + str(attack_retry_count + 1) + "/10)...")
+		print("BOT Nr " + str(client_number) + " Attack request timed out - retrying (attempt " + str(attack_retry_count + 1) + "/10)...")
 		attack_timeout_timer.start()  # Start timer for next attempt
 		
 		var target_player_index = attack_target - 1
@@ -590,7 +591,7 @@ func _on_attack_timeout():
 		
 		http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 	else:
-		print("BOT: Attack request failed after 10 attempts - giving up")
+		print("BOT Nr " + str(client_number) + " Attack request failed after 10 attempts - giving up")
 		is_attack_request_pending = false
 		attack_retry_count = 0
 		# Reset attack state and continue to end turn
@@ -600,9 +601,9 @@ func _on_attack_timeout():
 func _on_bot_move_response(success: bool, response_data: Dictionary):
 	if success:
 		has_made_move = true
-		print("BOT: Player " + str(client_number) + " move request succeeded")
+		print("BOT Nr " + str(client_number) + " move request succeeded")
 	else:
-		print("BOT: Player " + str(client_number) + " move request failed: " + str(response_data.get("error", "Unknown error")))
+		print("BOT Nr " + str(client_number) + " move request failed: " + str(response_data.get("error", "Unknown error")))
 
 func schedule_next_poll():
 	await get_tree().create_timer(poll_interval).timeout

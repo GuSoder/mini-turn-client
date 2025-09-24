@@ -10,7 +10,7 @@ func _ready():
 	find_swing_scripts(get_parent())
 	# Deactivate all swings by default
 	deactivate_swings()
-	print("ProcAnim: Found " + str(swing_scripts.size()) + " swing scripts")
+	#print("ProcAnim: Found " + str(swing_scripts.size()) + " swing scripts")
 
 func find_swing_scripts(node: Node):
 	# Recursively find all nodes with swing scripts
@@ -19,19 +19,19 @@ func find_swing_scripts(node: Node):
 			var script_path = child.get_script().get_path()
 			if "swing.gd" in script_path:
 				swing_scripts.append(child)
-				print("ProcAnim: Found swing script on " + child.name)
+				#print("ProcAnim: Found swing script on " + child.name)
 		
 		# Recursively check children
 		find_swing_scripts(child)
 
 func activate_swings():
-	print("ProcAnim: Activating " + str(swing_scripts.size()) + " swing animations")
+	#print("ProcAnim: Activating " + str(swing_scripts.size()) + " swing animations")
 	for swing_script in swing_scripts:
 		if swing_script:
 			swing_script.process_mode = Node.PROCESS_MODE_INHERIT
 
 func deactivate_swings():
-	print("ProcAnim: Deactivating " + str(swing_scripts.size()) + " swing animations")
+	#print("ProcAnim: Deactivating " + str(swing_scripts.size()) + " swing animations")
 	for swing_script in swing_scripts:
 		if swing_script:
 			swing_script.process_mode = Node.PROCESS_MODE_DISABLED
