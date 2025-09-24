@@ -157,6 +157,8 @@ func process_game_state(state: Dictionary):
 		print("BOT Nr " + str(client_number) + " processing game state - phase: " + phase + ", playerInTurn: " + str(player_in_turn + 1))
 	else:
 		return;
+
+	check_target()
 	
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
@@ -651,3 +653,32 @@ func _get_player_nodes_for_animations(player_index: int, players_node: Node3D) -
 		if player_index < players_node.get_child_count():
 			single_player.append(players_node.get_child(player_index))
 		return single_player
+
+func check_target():
+	if path_strategy == PathStrategy.ATTACK:
+		if "stats" in current_game_state:
+			var target_player_index = attack_target - 1
+			if target_player_index >= 0 and target_player_index < current_game_state.stats.size():
+				var target_health = int(current_game_state.stats[target_player_index].get("health", 10))
+				if target_health < 1:
+					select_new_target()
+
+func select_new_target():
+	for entity_index in range(1, MAX_ENTITIES + 1):
+		var stats_index = entity_index - 1
+		if stats_index < current_game_state.stats.size():
+			var entity_health = int(current_game_state.stats[stats_index].get("health", 10))
+			if entity_health >= 1:
+				# Check team logic
+				if client_number < 5:
+					# Bot client 1-4: skip entities 1-4 (players)
+					if entity_index >= 5:
+						attack_target = entity_index
+						print("BOT Nr " + str(client_number) + " selected new target: " + str(attack_target))
+						return
+				else:
+					# Bot client 5-8: skip entities 5-8 (enemies)
+					if entity_index <= 4:
+						attack_target = entity_index
+						print("BOT Nr " + str(client_number) + " selected new target: " + str(attack_target))
+						return
