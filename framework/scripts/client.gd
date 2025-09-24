@@ -164,8 +164,9 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 
 func process_game_state(state: Dictionary):
 	current_game_state = state
-	# Update hash to detect state changes for bot clients
-	current_state_hash = state.hash()
+	# Update hash only on player 1's machine (to control bot clients)
+	if client_number == 1:
+		current_state_hash = state.hash()
 
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
