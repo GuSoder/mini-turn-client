@@ -232,9 +232,6 @@ func process_game_state(state: Dictionary):
 								print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
 								send_attack_request()
 								return  # Don't send end_turn yet, attack response will handle it
-
-					print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
-					end_turn()
 	
 	# Check if it's our turn and make a move (only in planning phase and choosing status)
 	var current_player = state.get("playerInTurn", -1)
