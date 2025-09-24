@@ -213,6 +213,28 @@ func process_game_state(state: Dictionary):
 						
 						print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
 						end_turn()
+			else:
+				# Handle adjacent case - no path change but in moving phase
+				if i == client_number - 1 and state.get("phase", "planning") == "moving":
+					client_status = Status.MOVING
+					print("BOT: Player " + str(client_number) + " direct attack case - no animation needed")
+
+					# For attack strategy, check if we're now adjacent to target after animation
+					if path_strategy == PathStrategy.ATTACK:
+						var target_player_index = attack_target - 1
+						if target_player_index >= 0 and target_player_index < MAX_ENTITIES and target_player_index != client_number - 1:
+							var current_pos = player_positions[client_number - 1]
+							var target_pos = player_positions[target_player_index]
+
+							if is_adjacent_to_target(current_pos, target_pos):
+								# Set attack state and send attack immediately while in MOVING phase
+								is_attacking = true
+								print("BOT: Player " + str(client_number) + " animation complete, adjacent to target, sending attack")
+								send_attack_request()
+								return  # Don't send end_turn yet, attack response will handle it
+
+					print("BOT: Player " + str(client_number) + " animation complete, sending end_turn")
+					end_turn()
 	
 	# Check if it's our turn and make a move (only in planning phase and choosing status)
 	var current_player = state.get("playerInTurn", -1)
