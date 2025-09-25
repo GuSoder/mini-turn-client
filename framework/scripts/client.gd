@@ -145,10 +145,6 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 			end_turn_timeout_timer.stop()
 			if response_data.get("ok", false):
 				print("CLIENT: End turn confirmed by server")
-				# Notify campaign manager of move completion
-				var campaign_manager = get_node_or_null("CampaignManager")
-				if campaign_manager and campaign_manager.has_method("on_move_completed"):
-					campaign_manager.on_move_completed()
 			else:
 				print("CLIENT: End turn failed: " + str(response_data.get("error", "Unknown error")))
 		# Call pending move callback if exists
@@ -167,6 +163,10 @@ func process_game_state(state: Dictionary):
 	# Update hash only on player 1's machine (to control bot clients)
 	if client_number == 1:
 		current_state_hash = state.hash()
+		# Notify campaign manager of game state change
+		var campaign_manager = get_node_or_null("CampaignManager")
+		if campaign_manager and campaign_manager.has_method("game_state_changed"):
+			campaign_manager.game_state_changed()
 
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:

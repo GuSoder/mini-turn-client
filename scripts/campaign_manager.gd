@@ -117,12 +117,12 @@ func _on_scenario_timeout():
 		scenario_retry_count = 0
 
 
-func on_move_completed():
+func game_state_changed():
 	# Only client 1 controls the campaign flow
 	if client.client_number != 1:
 		return
 
-	print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
+	print("Campaign Manager: Game state changed, current state: ", CampaignState.keys()[current_state])
 
 	if current_state == CampaignState.OVERWORLD:
 		# Move from overworld to plains
@@ -140,27 +140,27 @@ func on_move_completed():
 			print("Campaign Manager: Still enemies remaining in plains")
 
 func all_enemies_defeated() -> bool:
-	# Check health of players 2, 3, and 4 (hardcoded as enemies)
+	# Check health of entities 5, 6, 7, and 8 (enemies)
 	# Access the current game state from the client
 	if not client or not client.current_game_state.has("stats"):
 		print("Campaign Manager: No game state available")
 		return false
 
 	var stats = client.current_game_state["stats"]
-	if stats.size() < 4:
-		print("Campaign Manager: Not enough player stats")
+	if stats.size() < 8:
+		print("Campaign Manager: Not enough entity stats")
 		return false
 
-	# Check if players 2, 3, and 4 (indices 1, 2, 3) are all dead
-	var enemy_players = [1, 2, 3]  # Players 2, 3, 4 (0-indexed)
+	# Check if entities 5, 6, 7, and 8 (indices 4, 5, 6, 7) are all dead
+	var enemy_entities = [4, 5, 6, 7]  # Entities 5, 6, 7, 8 (0-indexed)
 	var alive_enemies = 0
 
-	for enemy_index in enemy_players:
+	for enemy_index in enemy_entities:
 		var enemy_health = stats[enemy_index].get("health", 0)
 		if enemy_health > 0:
 			alive_enemies += 1
 
-	print("Campaign Manager: Alive enemies (players 2,3,4): ", alive_enemies)
+	print("Campaign Manager: Alive enemies (entities 5,6,7,8): ", alive_enemies)
 	return alive_enemies == 0
 
 func _load_characters_for_current_state():
