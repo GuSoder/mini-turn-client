@@ -25,7 +25,7 @@ func _ready():
 	if game_id == "" and "game_id" in client:
 		game_id = client.game_id
 
-	print("Campaign Manager: Using game_id: ", game_id)
+	#print("Campaign Manager: Using game_id: ", game_id)
 
 	# Setup HTTP request for scenario calls
 	http_request = HTTPRequest.new()
@@ -47,7 +47,7 @@ func start_campaign():
 	if client.client_number == 1:
 		current_state = CampaignState.OVERWORLD
 		set_scenario("overworld_start")
-		print("Campaign Manager: Starting campaign - setting overworld_start scenario")
+		#print("Campaign Manager: Starting campaign - setting overworld_start scenario")
 
 func set_scenario(scenario_name: String):
 	# Only client 1 should set scenarios
@@ -55,7 +55,7 @@ func set_scenario(scenario_name: String):
 		return
 
 	if game_id == "":
-		print("Campaign Manager: No game_id available, cannot set scenario")
+		#print("Campaign Manager: No game_id available, cannot set scenario")
 		return
 
 	if is_scenario_request_pending:
@@ -73,7 +73,7 @@ func set_scenario(scenario_name: String):
 	scenario_retry_count = 0
 	scenario_timeout_timer.start()
 
-	print("Campaign Manager: Setting scenario to ", scenario_name, " for game ", game_id, " (attempt 1/10)")
+	#print("Campaign Manager: Setting scenario to ", scenario_name, " for game ", game_id, " (attempt 1/10)")
 	http_request.request(url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_body))
 
 func _on_scenario_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
@@ -91,28 +91,28 @@ func _on_scenario_request_completed(result: int, response_code: int, headers: Pa
 		if parse_result == OK:
 			var response_data = json_parser.data
 			if response_data.get("ok", false):
-				print("Campaign Manager: Scenario set successfully")
+				#print("Campaign Manager: Scenario set successfully")
 				# Trigger character loading based on current state
 				_load_characters_for_current_state()
 			else:
-				print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
+				#print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
 		else:
-			print("Campaign Manager: Failed to parse scenario response JSON")
+			#print("Campaign Manager: Failed to parse scenario response JSON")
 	else:
-		print("Campaign Manager: Scenario set failed with response code: ", response_code)
+		#print("Campaign Manager: Scenario set failed with response code: ", response_code)
 
 func _on_scenario_timeout():
 	scenario_retry_count += 1
 
 	if scenario_retry_count < 10:
-		print("Campaign Manager: Scenario request timed out - retrying (attempt " + str(scenario_retry_count + 1) + "/10)...")
+		#print("Campaign Manager: Scenario request timed out - retrying (attempt " + str(scenario_retry_count + 1) + "/10)...")
 		scenario_timeout_timer.start()  # Start timer for next attempt
 
 		# Retry the last request - we need to store the scenario name
 		# For now, just retry with a generic approach
-		print("Campaign Manager: Retrying scenario request...")
+		#print("Campaign Manager: Retrying scenario request...")
 	else:
-		print("Campaign Manager: Scenario request failed after 10 attempts - giving up")
+		#print("Campaign Manager: Scenario request failed after 10 attempts - giving up")
 		is_scenario_request_pending = false
 		scenario_retry_count = 0
 
@@ -122,39 +122,39 @@ func game_state_changed():
 	if client.client_number != 1:
 		return
 
-	print("Campaign Manager: Game state changed, current state: ", CampaignState.keys()[current_state])
+	#print("Campaign Manager: Game state changed, current state: ", CampaignState.keys()[current_state])
 
 	if current_state == CampaignState.PLAINS:
 		# Check if all enemies are defeated
 		if all_enemies_defeated():
 			# Return to overworld
 			current_state = CampaignState.OVERWORLD
-			set_scenario("overworld_start")
-			print("Campaign Manager: All enemies defeated - returning to overworld")
+			set_scenario("overworld_return")
+			#print("Campaign Manager: All enemies defeated - returning to overworld")
 
 func on_move_completed():
 	# Only client 1 controls the campaign flow
 	if client.client_number != 1:
 		return
 
-	print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
+	#print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
 
 	if current_state == CampaignState.OVERWORLD:
 		# Move from overworld to plains
 		current_state = CampaignState.PLAINS
 		set_scenario("plains_battle")
-		print("Campaign Manager: Transitioning from overworld to plains battle")
+		#print("Campaign Manager: Transitioning from overworld to plains battle")
 
 func all_enemies_defeated() -> bool:
 	# Check health of entities 5, 6, 7, and 8 (enemies)
 	# Access the current game state from the client
 	if not client or not client.current_game_state.has("stats"):
-		print("Campaign Manager: No game state available")
+		#print("Campaign Manager: No game state available")
 		return false
 
 	var stats = client.current_game_state["stats"]
 	if stats.size() < 8:
-		print("Campaign Manager: Not enough entity stats")
+		#print("Campaign Manager: Not enough entity stats")
 		return false
 
 	# Check if entities 5, 6, 7, and 8 (indices 4, 5, 6, 7) are all dead
@@ -166,12 +166,12 @@ func all_enemies_defeated() -> bool:
 		if enemy_health > 0:
 			alive_enemies += 1
 
-	print("Campaign Manager: Alive enemies (entities 5,6,7,8): ", alive_enemies)
+	#print("Campaign Manager: Alive enemies (entities 5,6,7,8): ", alive_enemies)
 	return alive_enemies == 0
 
 func _load_characters_for_current_state():
 	if not character_loader:
-		print("Campaign Manager: CharacterLoader not found")
+		#print("Campaign Manager: CharacterLoader not found")
 		return
 
 	var state_string = ""
@@ -183,5 +183,24 @@ func _load_characters_for_current_state():
 		_:
 			state_string = "default"
 
-	print("Campaign Manager: Loading characters for state: ", state_string)
+	#print("Campaign Manager: Loading characters for state: ", state_string)
 	character_loader.load_characters(state_string)
+
+func go_to_overworld():
+	# Only client 1 should call go_to_overworld
+	if client.client_number != 1:
+		return
+
+	if game_id == "":
+		#print("Campaign Manager: No game_id available, cannot go to overworld")
+		return
+
+	var url = SERVER_URL + "/games/" + game_id + "/go_to_overworld"
+	var headers = ["Content-Type: application/json"]
+
+	#print("Campaign Manager: Calling go_to_overworld for game ", game_id)
+	# Use a simple fire-and-forget request since we don't need to track the response
+	var temp_http = HTTPRequest.new()
+	add_child(temp_http)
+	temp_http.request_completed.connect(func(result, code, h, body): temp_http.queue_free())
+	temp_http.request(url, headers, HTTPClient.METHOD_POST, "{}")
