@@ -124,20 +124,26 @@ func game_state_changed():
 
 	print("Campaign Manager: Game state changed, current state: ", CampaignState.keys()[current_state])
 
-	if current_state == CampaignState.OVERWORLD:
-		# Move from overworld to plains
-		current_state = CampaignState.PLAINS
-		set_scenario("plains_battle")
-		print("Campaign Manager: Transitioning from overworld to plains battle")
-	elif current_state == CampaignState.PLAINS:
+	if current_state == CampaignState.PLAINS:
 		# Check if all enemies are defeated
 		if all_enemies_defeated():
 			# Return to overworld
 			current_state = CampaignState.OVERWORLD
 			set_scenario("overworld_start")
 			print("Campaign Manager: All enemies defeated - returning to overworld")
-		else:
-			print("Campaign Manager: Still enemies remaining in plains")
+
+func on_move_completed():
+	# Only client 1 controls the campaign flow
+	if client.client_number != 1:
+		return
+
+	print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
+
+	if current_state == CampaignState.OVERWORLD:
+		# Move from overworld to plains
+		current_state = CampaignState.PLAINS
+		set_scenario("plains_battle")
+		print("Campaign Manager: Transitioning from overworld to plains battle")
 
 func all_enemies_defeated() -> bool:
 	# Check health of entities 5, 6, 7, and 8 (enemies)

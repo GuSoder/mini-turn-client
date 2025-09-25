@@ -19,6 +19,7 @@ var grid_node: Node3D
 var initiative_tracker_node: Node2D
 var ui_turn_marker_node: Node2D
 var path_markers_node: Node3D
+var campaign_manager: Node
 var player_positions: Array[Vector2i] = []
 var cached_last_paths: Array[Array] = [[], [], [], [], [], [], [], []]
 var current_map_name: String = "unset"
@@ -40,6 +41,7 @@ func _ready():
 	initiative_tracker_node = get_node("InitiativeTracker")
 	ui_turn_marker_node = get_node("InitiativeTracker/CharacterPanel1/TurnMarker")
 	path_markers_node = get_node("PathMarkers")
+	campaign_manager = get_node("CampaignManager")
 	
 	# Hide all path markers initially
 	hide_all_path_markers()
@@ -145,6 +147,8 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 			end_turn_timeout_timer.stop()
 			if response_data.get("ok", false):
 				print("CLIENT: End turn confirmed by server")
+				# Notify campaign manager of move completion
+				campaign_manager.on_move_completed()
 			else:
 				print("CLIENT: End turn failed: " + str(response_data.get("error", "Unknown error")))
 		# Call pending move callback if exists
@@ -164,9 +168,7 @@ func process_game_state(state: Dictionary):
 	if client_number == 1:
 		current_state_hash = state.hash()
 		# Notify campaign manager of game state change
-		var campaign_manager = get_node_or_null("CampaignManager")
-		if campaign_manager and campaign_manager.has_method("game_state_changed"):
-			campaign_manager.game_state_changed()
+		campaign_manager.game_state_changed()
 
 	# Handle phase changes - reset to choosing if server is back in planning
 	if state.get("phase", "planning") == "planning" and client_status == Status.MOVING:
