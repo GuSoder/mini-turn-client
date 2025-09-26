@@ -49,13 +49,18 @@ func load_characters_party():
 		print("Character Loader: Player1 not found for party mode")
 		return
 
-	# Hide Player1's default Capsule and Chevron
+	# Hide Player1's visual components (works for both original and hero scenes)
 	var capsule = player1.get_node_or_null("Capsule")
 	if capsule:
 		capsule.visible = false
 	var chevron = player1.get_node_or_null("Chevron")
 	if chevron:
 		chevron.visible = false
+
+	# If Player1 is a hero scene (from plains battle), hide its Appearance node
+	var appearance = player1.get_node_or_null("Appearance")
+	if appearance:
+		appearance.visible = false
 
 	# Position offsets for party members
 	var party_positions = [
