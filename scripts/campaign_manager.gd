@@ -95,11 +95,11 @@ func _on_scenario_request_completed(result: int, response_code: int, headers: Pa
 				# Trigger character loading based on current state
 				_load_characters_for_current_state()
 			else:
-				#print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
+				print("Campaign Manager: Scenario set failed: ", response_data.get("error", "Unknown error"))
 		else:
-			#print("Campaign Manager: Failed to parse scenario response JSON")
+			print("Campaign Manager: Failed to parse scenario response JSON")
 	else:
-		#print("Campaign Manager: Scenario set failed with response code: ", response_code)
+		print("Campaign Manager: Scenario set failed with response code: ", response_code)
 
 func _on_scenario_timeout():
 	scenario_retry_count += 1
