@@ -5,15 +5,19 @@ extends Node3D
 @export var zoom_speed: float = 1.0
 @export var min_zoom: float = 2.0
 @export var max_zoom: float = 20.0
+@export var follow_speed: float = 3.0
 
 @onready var hand: Node3D = $Arm/Hand
+var client: Node3D
 
 func _ready():
-	pass
+	# Get reference to the client node (Dolly -> Rendering -> Client)
+	client = get_parent().get_parent()
 
 func _process(delta):
 	handle_movement(delta)
 	handle_rotation(delta)
+	follow_player(delta)
 
 func _input(event):
 	if event is InputEventMouseButton:
@@ -57,3 +61,21 @@ func zoom(amount):
 		var current_z = hand.transform.origin.z
 		var new_z = clamp(current_z + amount, min_zoom, max_zoom)
 		hand.transform.origin.z = new_z
+
+func follow_player(delta):
+	if not client:
+		return
+
+	# Get the player node based on client number
+	var players_node = client.get_node_or_null("Players")
+	if not players_node:
+		return
+
+	var player_name = "Player" + str(client.client_number)
+	var player_node = players_node.get_node_or_null(player_name)
+	if not player_node:
+		return
+
+	# Lerp dolly position to player position
+	var target_position = player_node.global_position
+	global_position = global_position.lerp(target_position, follow_speed * delta)
