@@ -1,6 +1,6 @@
 extends Node
 
-enum CampaignState { LOBBY, OVERWORLD, PLAINS }
+enum CampaignState { LOBBY, OVERWORLD, PLAINS, VILLAGE }
 
 const SERVER_URL = "http://207.154.222.143:5000"
 
@@ -140,7 +140,17 @@ func on_move_completed():
 	#print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
 
 	if current_state == CampaignState.OVERWORLD:
-		# Move from overworld to plains
+		# Check if player moved to village hex (row 14, column 17)
+		if client and client.current_game_state.has("positions"):
+			var player_pos = client.current_game_state["positions"][0]  # Player 1 position
+			if player_pos.get("q", 0) == 17 and player_pos.get("r", 0) == 14:
+				# Move to village
+				current_state = CampaignState.VILLAGE
+				set_scenario("village_battle")
+				#print("Campaign Manager: Transitioning from overworld to village battle")
+				return
+
+		# Default: Move from overworld to plains
 		current_state = CampaignState.PLAINS
 		set_scenario("plains_battle")
 		#print("Campaign Manager: Transitioning from overworld to plains battle")
@@ -180,6 +190,8 @@ func _load_characters_for_current_state():
 			state_string = "overworld"
 		CampaignState.PLAINS:
 			state_string = "plains"
+		CampaignState.VILLAGE:
+			state_string = "village"
 		_:
 			state_string = "default"
 
