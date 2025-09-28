@@ -40,15 +40,31 @@ func _assign_patrol_points():
 		return
 
 	var entity_routes = current_settlement_data["entity_routes"]
-	if not client or not client.current_game_state.has("positions"):
+	if not client:
 		return
 
-	# Assign patrol routes to all 8 entities
+	# Get the Bots node containing all bot clients
+	var bots_node = client.get_node_or_null("Bots")
+	if not bots_node:
+		print("SettlementManager: Bots node not found")
+		return
+
+	# Assign patrol routes to all 8 entities via their BotClient nodes
 	for i in range(8):
-		if i < entity_routes.size() and i < client.current_game_state["positions"].size():
+		if i < entity_routes.size():
 			var route = entity_routes[i]
 			if route.size() >= 2:
-				# For now, just set the entity's target to the second point in their route
-				# This could be expanded to full patrol logic later
-				var target_pos = route[1]
-				print("SettlementManager: Entity ", i + 1, " assigned patrol target: ", target_pos)
+				var patrol_point_1 = Vector2i(route[0]["q"], route[0]["r"])
+				var patrol_point_2 = Vector2i(route[1]["q"], route[1]["r"])
+
+				# Find the corresponding BotClient node
+				var bot_client_name = "BotClient" + str(i + 1)
+				var bot_client = bots_node.get_node_or_null(bot_client_name)
+
+				if bot_client:
+					bot_client.patrol_point_1 = patrol_point_1
+					bot_client.patrol_point_2 = patrol_point_2
+					bot_client.path_strategy = 2  # Set to patrol strategy
+					print("SettlementManager: ", bot_client_name, " assigned patrol points: ", patrol_point_1, " -> ", patrol_point_2)
+				else:
+					print("SettlementManager: ", bot_client_name, " not found")
