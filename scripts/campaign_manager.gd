@@ -140,10 +140,10 @@ func on_move_completed():
 	#print("Campaign Manager: Move completed, current state: ", CampaignState.keys()[current_state])
 
 	if current_state == CampaignState.OVERWORLD:
-		# Check if player moved to village hex (row 14, column 17)
+		# Check if player moved to village hex (row 13, column 14)c
 		if client and client.current_game_state.has("positions"):
 			var player_pos = client.current_game_state["positions"][0]  # Player 1 position
-			if player_pos.get("q", 0) == 17 and player_pos.get("r", 0) == 14:
+			if player_pos.get("q", 0) == 14 and player_pos.get("r", 0) == 13:
 				# Move to village
 				current_state = CampaignState.VILLAGE
 				set_scenario("village_battle")
