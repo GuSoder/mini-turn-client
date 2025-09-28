@@ -149,7 +149,11 @@ func on_move_completed():
 				# Move to village
 				current_state = CampaignState.VILLAGE
 				set_scenario("village_battle")
-				#print("Campaign Manager: Transitioning from overworld to village battle")
+				print("Campaign Manager: Transitioning from overworld to village battle")
+				# Load settlement data for village
+				if settlement_manager:
+					print("Campaign Manager: Got settlement manager")
+					settlement_manager.load_settlement("village1")
 				return
 
 		# Default: Move from overworld to plains
@@ -194,9 +198,6 @@ func _load_characters_for_current_state():
 			state_string = "plains"
 		CampaignState.VILLAGE:
 			state_string = "village"
-			# Load settlement data for village
-			if settlement_manager:
-				settlement_manager.load_settlement("village1")
 		_:
 			state_string = "default"
 
