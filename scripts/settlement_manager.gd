@@ -64,7 +64,7 @@ func _assign_patrol_points():
 				if bot_client:
 					bot_client.patrol_point_1 = patrol_point_1
 					bot_client.patrol_point_2 = patrol_point_2
-					bot_client.path_strategy = 2  # Set to patrol strategy
+					bot_client.path_strategy = 1  # Set to PATROL strategy (0=PONG, 1=PATROL, 2=ATTACK)
 					print("SettlementManager: ", bot_client_name, " assigned patrol points: ", patrol_point_1, " -> ", patrol_point_2)
 				else:
 					print("SettlementManager: ", bot_client_name, " not found")
