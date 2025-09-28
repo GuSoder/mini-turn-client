@@ -7,6 +7,7 @@ const SERVER_URL = "http://207.154.222.143:5000"
 var current_state: CampaignState = CampaignState.LOBBY
 var map_loader: Node
 var character_loader: Node
+var settlement_manager: Node
 var client: Node
 var http_request: HTTPRequest
 var game_id: String
@@ -19,6 +20,7 @@ func _ready():
 	client = get_parent()
 	map_loader = client.get_node_or_null("MapLoader")
 	character_loader = client.get_node_or_null("CharacterLoader")
+	settlement_manager = client.get_node_or_null("SettlementManager")
 
 	# Get game_id from tree meta or client property
 	game_id = get_tree().get_meta("game_id", "")
@@ -192,6 +194,9 @@ func _load_characters_for_current_state():
 			state_string = "plains"
 		CampaignState.VILLAGE:
 			state_string = "village"
+			# Load settlement data for village
+			if settlement_manager:
+				settlement_manager.load_settlement("village1")
 		_:
 			state_string = "default"
 
